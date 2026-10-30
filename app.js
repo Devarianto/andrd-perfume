@@ -333,12 +333,12 @@
             <button type="button" id="closeMobileMenuBtn" aria-label="Tutup" style="padding:6px;font-size:16px;">✕</button>
           </div>
           <nav class="mobile-nav-links" aria-label="Menu Mobile">
-            <a href="index.html">Home</a>
-            <a href="products.html">Products</a>
-            <a href="products.html?view=catalogue">Catalogue</a>
-            <a href="about.html">About</a>
-            <a href="contact.html">Contact</a>
-            <a href="policies.html">Policies</a>
+            <a href="index.html" class="${currentPath === "index.html" ? "active" : ""}">Home</a>
+            <a href="products.html" class="${(currentPath === "products.html" || currentPath === "product.html") && !isCatalogue ? "active" : ""}">Products</a>
+            <a href="products.html?view=catalogue" class="${isCatalogue ? "active" : ""}">Catalogue</a>
+            <a href="about.html" class="${currentPath === "about.html" ? "active" : ""}">About</a>
+            <a href="contact.html" class="${currentPath === "contact.html" ? "active" : ""}">Contact</a>
+            <a href="policies.html" class="${currentPath === "policies.html" ? "active" : ""}">Policies</a>
           </nav>
         </div>
       </div>
