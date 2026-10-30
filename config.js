@@ -1,88 +1,54 @@
-﻿/**
+/**
  * ============================================================================
  * KONFIGURASI UTAMA TOKO PARFUME "ANDRD" (config.js)
  * ============================================================================
- * File ini berisi pengaturan utama website yang mudah diubah tanpa perlu
- * mengerti pemrograman. Cukup ubah teks di dalam tanda kutip ("...").
  */
 
 const STORE_CONFIG = {
   // 1. IDENTITAS BRAND
   brandName: "ANDRD",
-  brandLegalName: "ANDRD Olfactory Studio Indonesia",
-  tagline: "Scent as Memory, Crafted in Small Batches",
-  subTagline: "Fine Extrait de Parfum — Diracik dengan konsentrasi tinggi untuk karakter tropis Indonesia.",
-  domain: "https://andrdperfume.com",
+  brandLegalName: "ANDRD Studio Indonesia",
+  tagline: "Scent as Memory",
+  subTagline: "Extrait de Parfum — Diracik untuk iklim tropis.",
+  domain: "https://andrd-perfume.vercel.app",
 
-  // 2. KONTAK & WHATSAPP ADMIN
-  // PENTING: Gunakan format kode negara 628xxx (tanpa tanda + atau spasi)
+  // 2. KONTAK & WHATSAPP ADMIN (Gunakan awalan 628xxx tanpa + atau spasi)
   whatsappAdmin: "6281234567890",
   whatsappDisplay: "+62 812-3456-7890",
-  email: "concierge@andrdperfume.com",
+  email: "hello@andrdperfume.com",
   instagram: "@andrd.olfactory",
   tiktok: "@andrd.olfactory",
-  address: "Jl. Kemang Timur Raya No. 48, Jakarta Selatan 12730, Indonesia",
+  address: "Kemang Timur Raya No. 48, Jakarta Selatan",
   operationalHours: "Senin – Sabtu, 09.00 – 18.00 WIB",
 
   // 3. PENGATURAN ORDER & PENGIRIMAN
-  orderPrefix: "ANDRD", // Format No. Order: ANDRD-YYMMDD-XXXX
-  returnPolicyDays: 7,  // Garansi retur (hari)
-  announcementText: "FREE 2ml Discovery Vial untuk setiap pembelian • Pengiriman ke seluruh Indonesia",
-  nonCodNotice: "Tanpa COD — Pembayaran dilakukan via Transfer Bank / QRIS resmi setelah konfirmasi pesanan & ongkos kirim bersama Admin di WhatsApp.",
+  orderPrefix: "ANDRD",
+  returnPolicyDays: 7,
+  announcementText: "Free Vial 2ml Setiap Pembelian • Pengiriman Seluruh Indonesia",
+  nonCodNotice: "Pembayaran via Transfer / QRIS setelah konfirmasi WhatsApp (Tanpa COD).",
 
   // 4. PILIHAN KURIR PENGIRIMAN
   couriers: [
-    { id: "JNE Reguler", label: "JNE Reguler (Estimasi 2-4 Hari)" },
-    { id: "JNE YES", label: "JNE YES - Yakin Esok Sampai (1-2 Hari)" },
-    { id: "J&T Express", label: "J&T Express (Estimasi 2-4 Hari)" },
-    { id: "SiCepat REG", label: "SiCepat REG (Estimasi 2-4 Hari)" },
-    { id: "SiCepat BEST", label: "SiCepat BEST - Besok Sampai Tujuan" },
-    { id: "Paxel Sameday", label: "Paxel Sameday / Nextday (Jabodetabek & Kota Besar)" },
-    { id: "GoSend / GrabExpress", label: "Instant / Sameday (Khusus Area Jakarta)" }
+    { id: "JNE Reguler", label: "JNE Reguler (2-4 Hari)" },
+    { id: "JNE YES", label: "JNE YES (1-2 Hari)" },
+    { id: "J&T Express", label: "J&T Express (2-4 Hari)" },
+    { id: "SiCepat REG", label: "SiCepat REG (2-4 Hari)" },
+    { id: "SiCepat BEST", label: "SiCepat BEST (1-2 Hari)" },
+    { id: "Paxel", label: "Paxel Sameday / Nextday" },
+    { id: "Instant / Sameday", label: "GoSend / GrabExpress (Jakarta)" }
   ],
 
   // 5. KATEGORI AROMA (EXPLORE BY SCENT)
   scentCategories: [
-    {
-      id: "Citrus",
-      name: "Citrus",
-      subtitle: "Segar, cerah, dan membangkitkan semangat dari ekstrak bergamot & yuzu",
-      accent: "#000000"
-    },
-    {
-      id: "Floral",
-      name: "Floral",
-      subtitle: "Anggun dan romantis dari kelopak melati malam, tuberose, dan mawar Damaskus",
-      accent: "#000000"
-    },
-    {
-      id: "Fruity",
-      name: "Fruity",
-      subtitle: "Manis segar buah pir matang, fig Mediterranean, dan blackcurrant",
-      accent: "#000000"
-    },
-    {
-      id: "Woody & Vanilla",
-      name: "Woody & Vanilla",
-      subtitle: "Hangat, dewasa, dan memikat dengan sandalwood, cedar, serta vanilla Madagaskar",
-      accent: "#000000"
-    },
-    {
-      id: "Gourmand",
-      name: "Gourmand",
-      subtitle: "Kaya dan adiktif dengan sentuhan roasted tonka, praline, dan espresso",
-      accent: "#000000"
-    },
-    {
-      id: "Musky",
-      name: "Musky",
-      subtitle: "Skin-scent intim yang bersih, lembut, dan menyatu alami dengan kulit",
-      accent: "#000000"
-    }
+    { id: "Citrus", name: "Citrus", subtitle: "Segar & cerah", accent: "#000000" },
+    { id: "Floral", name: "Floral", subtitle: "Lembut & anggun", accent: "#000000" },
+    { id: "Fruity", name: "Fruity", subtitle: "Manis & segar", accent: "#000000" },
+    { id: "Woody & Vanilla", name: "Woody & Vanilla", subtitle: "Hangat & memikat", accent: "#000000" },
+    { id: "Gourmand", name: "Gourmand", subtitle: "Kopi, cacao & tonka", accent: "#000000" },
+    { id: "Musky", name: "Musky", subtitle: "Bersih & menyatu di kulit", accent: "#000000" }
   ],
 
   // 6. TEMPLATE PESAN WHATSAPP OTOMATIS
-  // Template untuk Checkout Pesanan
   buildOrderMessage: function (orderData) {
     const itemsList = orderData.items
       .map(
@@ -113,18 +79,14 @@ const STORE_CONFIG = {
     ].join("\n");
   },
 
-  // Template untuk Permintaan Restock ("Kabari Saya" saat Sold Out)
   buildRestockMessage: function (productName, size) {
-    const sizeText = size ? ` ukuran ${size}` : "";
-    return `Halo ${this.brandName}, saya tertarik dengan parfum *${productName}*${sizeText} yang sedang Sold Out. Mohon kabari saya jika sudah restock kembali ya. Terima kasih!`;
+    const sizeText = size ? ` (${size})` : "";
+    return `Halo ${this.brandName}, mohon kabari saya jika parfum *${productName}*${sizeText} sudah restock kembali. Terima kasih!`;
   },
 
-  // Template untuk Pertanyaan Umum (Floating WA Button)
   buildGeneralInquiryMessage: function () {
-    return `Halo Admin ${this.brandName}, saya ingin berkonsultasi mengenai rekomendasi aroma parfum yang cocok untuk saya.`;
+    return `Halo Admin ${this.brandName}, saya ingin bertanya mengenai rekomendasi parfum.`;
   }
 };
 
-// Ekspos ke global window agar dapat diakses semua script
 window.STORE_CONFIG = STORE_CONFIG;
-

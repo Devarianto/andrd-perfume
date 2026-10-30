@@ -2,17 +2,42 @@
  * ============================================================================
  * DATABASE PRODUK PARFUME "ANDRD" (products.js)
  * ============================================================================
- * Panduan Edit untuk Non-Programmer:
- * - Setiap objek di dalam array PRODUCTS mewakili 1 produk parfum.
- * - "status" dapat diisi: "ready" (Tersedia), "pre-order" (Pre-Order), atau "sold-out" (Habis).
- *   Jika "sold-out", tombol beli otomatis berubah menjadi "Kabari Saya" ke WhatsApp.
- * - "badge" dapat diisi: "Best Seller", "New", "Sale", atau null (tanpa badge).
- * - "gender" dapat diisi: "For Her", "For Him", atau "Unisex".
- * - "scentCategory" harus sesuai dengan kategori di config.js:
- *   "Citrus", "Floral", "Fruity", "Woody & Vanilla", "Gourmand", atau "Musky".
- * - "variants" berisi daftar ukuran botol dan harganya (dalam angka Rupiah tanpa titik).
- *   Isi "compareAtPrice" jika ingin menampilkan harga coret (diskon), atau null jika harga normal.
+ * Cara Ganti Gambar Produk:
+ * Pada bagian "images", Anda dapat menggantinya dengan nama file foto Anda sendiri,
+ * misalnya: ["assets/img/products/foto-1.jpg", "assets/img/products/foto-2.jpg"]
  */
+
+function createBottleSvg(name, category, sub) {
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" width="800" height="800">
+    <rect width="800" height="800" fill="#F6F6F6"/>
+    <ellipse cx="400" cy="650" rx="120" ry="10" fill="#000000" fill-opacity="0.05"/>
+    <rect x="270" y="255" width="260" height="380" rx="28" fill="#FFFFFF" stroke="#E2E2E2" stroke-width="1"/>
+    <rect x="282" y="315" width="236" height="308" rx="20" fill="#EFEFEF"/>
+    <rect x="374" y="224" width="52" height="31" fill="#E5E5E5"/>
+    <rect x="350" y="142" width="100" height="82" rx="14" fill="#111111"/>
+    <rect x="302" y="352" width="196" height="210" rx="12" fill="#FFFFFF" stroke="#E5E5E5" stroke-width="0.8"/>
+    <text x="400" y="396" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="18" font-weight="700" letter-spacing="5" fill="#111111">ANDRD</text>
+    <line x1="340" y1="414" x2="460" y2="414" stroke="#E5E5E5" stroke-width="0.8"/>
+    <text x="400" y="448" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13.5" font-weight="600" letter-spacing="1.5" fill="#111111">${name.toUpperCase()}</text>
+    <text x="400" y="472" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="10.5" font-weight="500" letter-spacing="1" fill="#777777">${category}</text>
+    <text x="400" y="518" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="10" font-weight="400" letter-spacing="1" fill="#666666">${sub}</text>
+    <text x="400" y="540" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="9" font-weight="500" letter-spacing="2" fill="#999999">50 ML</text>
+  </svg>`;
+  return "data:image/svg+xml;utf8," + encodeURIComponent(svg);
+}
+
+function createNotesSvg(name, notesText) {
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" width="800" height="800">
+    <rect width="800" height="800" fill="#F2F2F2"/>
+    <rect x="90" y="90" width="620" height="620" rx="32" fill="#FFFFFF"/>
+    <text x="400" y="240" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="16" font-weight="700" letter-spacing="5" fill="#111111">ANDRD</text>
+    <text x="400" y="345" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="24" font-weight="600" letter-spacing="2" fill="#111111">${name.toUpperCase()}</text>
+    <text x="400" y="382" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11" font-weight="500" letter-spacing="3" fill="#888888">KEY NOTES</text>
+    <text x="400" y="465" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="15" font-weight="500" letter-spacing="0.5" fill="#222222">${notesText}</text>
+    <text x="400" y="585" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="10.5" font-weight="500" letter-spacing="2.5" fill="#888888">EXTRAIT DE PARFUM</text>
+  </svg>`;
+  return "data:image/svg+xml;utf8," + encodeURIComponent(svg);
+}
 
 const PRODUCTS = [
   {
@@ -21,8 +46,8 @@ const PRODUCTS = [
     slug: "01-senja-di-bali",
     gender: "Unisex",
     scentCategory: "Woody & Vanilla",
-    shortDescription: "Kehangatan kayu cendana Bali berpadu dengan vanilla Madagaskar dan sentuhan bergamot saat matahari terbenam.",
-    description: "01 Senja di Bali menangkap momen magis ketika langit keemasan menyentuh pesisir Uluwatu. Dibuka dengan kesegaran Calabrian Bergamot dan kapulaga hangat, perlahan melebur ke dalam inti Creamy Sandalwood lokal dan diakhiri oleh pelukan Madagascar Vanilla serta Amber yang sensual dan tahan hingga 12 jam.",
+    shortDescription: "Kehangatan cendana Bali berpadu dengan vanilla Madagaskar dan bergamot.",
+    description: "01 Senja di Bali menangkap momen keemasan di pesisir Uluwatu. Dibuka dengan kesegaran Calabrian Bergamot dan kapulaga hangat, melebur ke dalam Creamy Sandalwood lokal dan diakhiri oleh Madagascar Vanilla serta Amber.",
     concentration: "Extrait de Parfum (30%)",
     longevity: "10 – 12 Jam",
     sillage: "Moderate to Strong",
@@ -37,8 +62,8 @@ const PRODUCTS = [
       { size: "100ml", price: 549000, compareAtPrice: 620000 }
     ],
     images: [
-      "assets/img/products/perfume-1-a.svg",
-      "assets/img/products/perfume-1-b.svg"
+      createBottleSvg("01 Senja di Bali", "Woody & Vanilla", "Extrait de Parfum"),
+      createNotesSvg("01 Senja di Bali", "Bergamot  •  Sandalwood  •  Vanilla")
     ],
     status: "ready",
     badge: "Best Seller",
@@ -51,11 +76,11 @@ const PRODUCTS = [
     slug: "02-embun-pagi",
     gender: "Unisex",
     scentCategory: "Citrus",
-    shortDescription: "Kesegaran yuzu Jepang, pucuk teh putih pegunungan, dan bergamot yang jernih seperti udara pukul enam pagi.",
-    description: "Dirancang khusus untuk iklim tropis Indonesia, 02 Embun Pagi adalah definisi kesegaran yang rapi dan berkelas. Perpaduan Yuzu segar dan Mandarin hijau membuka komposisi dengan ceria, diikuti ketenangan seduhan White Tea dan daun Mate yang menenangkan pikiran sepanjang hari.",
+    shortDescription: "Kesegaran yuzu Jepang, teh putih pegunungan, dan bergamot yang jernih.",
+    description: "Dirancang khusus untuk iklim tropis Indonesia, 02 Embun Pagi memadukan Yuzu segar dan Mandarin hijau, diikuti ketenangan seduhan White Tea yang menenangkan sepanjang hari.",
     concentration: "Extrait de Parfum (25%)",
     longevity: "8 – 10 Jam",
-    sillage: "Moderate (Office Friendly)",
+    sillage: "Moderate",
     notes: {
       top: ["Japanese Yuzu", "Crisp Bergamot", "Green Mandarin"],
       middle: ["Silver Needle White Tea", "Neroli Petals", "Petitgrain"],
@@ -67,8 +92,8 @@ const PRODUCTS = [
       { size: "100ml", price: 519000, compareAtPrice: null }
     ],
     images: [
-      "assets/img/products/perfume-2-a.svg",
-      "assets/img/products/perfume-2-b.svg"
+      createBottleSvg("02 Embun Pagi", "Citrus", "Extrait de Parfum"),
+      createNotesSvg("02 Embun Pagi", "Yuzu  •  White Tea  •  Bergamot")
     ],
     status: "ready",
     badge: "Best Seller",
@@ -81,11 +106,11 @@ const PRODUCTS = [
     slug: "03-malam-melati",
     gender: "For Her",
     scentCategory: "Floral",
-    shortDescription: "Buket melati malam Jawa dan tuberose lembut yang dibalut kasmir hangat nan anggun.",
-    description: "Sebuah penghormatan modern terhadap bunga puspa bangsa. 03 Malam Melati tidak hadir sebagai melati tradisional yang tajam, melainkan diramu secara kontemporer bersama Indian Tuberose, buah pir segar, dan Cashmere Wood yang lembut bagaikan gaun sutra di malam hari.",
+    shortDescription: "Buket melati malam Jawa dan tuberose lembut berbalut kayu kasmir.",
+    description: "03 Malam Melati diramu secara kontemporer bersama Indian Tuberose, buah pir segar, dan Cashmere Wood yang lembut di malam hari.",
     concentration: "Extrait de Parfum (30%)",
     longevity: "10 – 12 Jam",
-    sillage: "Strong & Radiant",
+    sillage: "Strong",
     notes: {
       top: ["Anjou Pear", "Mandarin Blossom", "White Peach"],
       middle: ["Javanese Sambac Jasmine", "Creamy Tuberose", "Orange Blossom"],
@@ -97,8 +122,8 @@ const PRODUCTS = [
       { size: "100ml", price: 569000, compareAtPrice: 610000 }
     ],
     images: [
-      "assets/img/products/perfume-3-a.svg",
-      "assets/img/products/perfume-3-b.svg"
+      createBottleSvg("03 Malam Melati", "Floral", "Extrait de Parfum"),
+      createNotesSvg("03 Malam Melati", "Night Jasmine  •  Tuberose  •  Cashmere")
     ],
     status: "ready",
     badge: "Best Seller",
@@ -111,14 +136,11 @@ const PRODUCTS = [
     slug: "04-kayu-dan-rupa",
     gender: "For Him",
     scentCategory: "Woody & Vanilla",
-    shortDescription: "Karakter maskulin yang tenang dari vetiver asap, kayu cedar Atlas, dan sentuhan amber gelap.",
-    description: "04 Kayu & Rupa diciptakan untuk pribadi yang menghargai ketenangan dan karisma tanpa perlu berteriak. Akar wangi (Vetiver) dari Garut dipadukan dengan Atlas Cedarwood, kulit kayu manis, dan sejumput Vanilla kering yang meninggalkan jejak aroma misterius.",
+    shortDescription: "Karakter tenang dari vetiver asap, kayu cedar Atlas, dan amber gelap.",
+    description: "Akar wangi (Vetiver) dari Garut dipadukan dengan Atlas Cedarwood, kulit kayu manis, dan Vanilla kering yang berkarisma.",
     concentration: "Extrait de Parfum (32%)",
     longevity: "12+ Jam",
     sillage: "Strong",
-    notes: [
-      "Garut Vetiver, Black Pepper, Elemi Resin"
-    ],
     notes: {
       top: ["Black Pepper", "Cardamom Pod", "Cypress Leaf"],
       middle: ["Smoked Garut Vetiver", "Atlas Cedarwood", "Guaiac Wood"],
@@ -130,8 +152,8 @@ const PRODUCTS = [
       { size: "100ml", price: 579000, compareAtPrice: null }
     ],
     images: [
-      "assets/img/products/perfume-4-a.svg",
-      "assets/img/products/perfume-4-b.svg"
+      createBottleSvg("04 Kayu & Rupa", "Woody & Vanilla", "Extrait de Parfum"),
+      createNotesSvg("04 Kayu & Rupa", "Smoked Vetiver  •  Cedar  •  Amber")
     ],
     status: "ready",
     badge: "Best Seller",
@@ -144,13 +166,13 @@ const PRODUCTS = [
     slug: "05-kulit-kedua",
     gender: "Unisex",
     scentCategory: "Musky",
-    shortDescription: "Aroma skin-scent intim dari biji ambrette, iris pallida, dan white musk yang menyatu dengan suhu tubuh.",
-    description: "Terinspirasi dari kehangatan kulit bersih setelah mandi air hangat. 05 Kulit Kedua menggunakan molekul Iso E Super dan Ambrette Seed alami yang bereaksi unik pada setiap pemakainya—menciptakan aura bersih, lembut, dan memikat dari jarak dekat.",
+    shortDescription: "Skin-scent intim dari biji ambrette, iris pallida, dan white musk bersih.",
+    description: "Menggunakan Ambrette Seed alami dan Florentine Iris yang menyatu lembut dengan suhu tubuh pemakainya.",
     concentration: "Extrait de Parfum (25%)",
     longevity: "8 – 10 Jam",
-    sillage: "Intimate to Moderate",
+    sillage: "Intimate",
     notes: {
-      top: ["Ambrette Seed (Vegan Musk)", "Aldehydes", "Pink Peppercorn"],
+      top: ["Ambrette Seed", "Aldehydes", "Pink Peppercorn"],
       middle: ["Florentine Iris Pallida", "Violet Leaf", "Magnolia"],
       base: ["Velvet White Musk", "Ambroxan", "Blonde Woods"]
     },
@@ -160,8 +182,8 @@ const PRODUCTS = [
       { size: "100ml", price: 529000, compareAtPrice: 589000 }
     ],
     images: [
-      "assets/img/products/perfume-5-a.svg",
-      "assets/img/products/perfume-5-b.svg"
+      createBottleSvg("05 Kulit Kedua", "Musky", "Extrait de Parfum"),
+      createNotesSvg("05 Kulit Kedua", "Ambrette Seed  •  Iris  •  White Musk")
     ],
     status: "ready",
     badge: "Sale",
@@ -174,8 +196,8 @@ const PRODUCTS = [
     slug: "06-kopi-dan-tonka",
     gender: "For Him",
     scentCategory: "Gourmand",
-    shortDescription: "Seduhan espresso Arabika Gayo, dark cacao, dan panggang biji tonka yang kaya serta adiktif.",
-    description: "Bukan aroma kopi manis biasa, 06 Kopi & Tonka adalah interpretasi olfaktori dari kedai kopi artisan di malam hujan. Ekstrak kopi Arabika Gayo yang pekat bertemu dengan Dark Cacao, Rum Accord (non-alkoholik), serta Roasted Tonka Bean yang memberikan kesan dewasa dan mewah.",
+    shortDescription: "Seduhan espresso Arabika Gayo, dark cacao, dan panggang biji tonka.",
+    description: "Ekstrak kopi Arabika Gayo pekat bertemu dengan Dark Cacao dan Roasted Tonka Bean yang hangat serta dewasa.",
     concentration: "Extrait de Parfum (32%)",
     longevity: "12+ Jam",
     sillage: "Strong",
@@ -190,8 +212,8 @@ const PRODUCTS = [
       { size: "100ml", price: 589000, compareAtPrice: null }
     ],
     images: [
-      "assets/img/products/perfume-6-a.svg",
-      "assets/img/products/perfume-6-b.svg"
+      createBottleSvg("06 Kopi & Tonka", "Gourmand", "Extrait de Parfum"),
+      createNotesSvg("06 Kopi & Tonka", "Espresso  •  Dark Cacao  •  Tonka Bean")
     ],
     status: "pre-order",
     badge: "New",
@@ -204,8 +226,8 @@ const PRODUCTS = [
     slug: "07-kebun-surya",
     gender: "Unisex",
     scentCategory: "Citrus",
-    shortDescription: "Perpaduan mandarin Mediterania, bunga neroli, dan daun fig di bawah sinar matahari pagi.",
-    description: "Cerah, optimis, dan membangkitkan mood seketika. 07 Kebun Surya memadukan kulit jeruk Mandarin yang baru dikupas dengan bunga Neroli yang segar dan hijau daun pohon ara (Fig Leaf), menjadikannya teman terbaik untuk aktivitas luar ruang maupun bekerja.",
+    shortDescription: "Mandarin Mediterania, bunga neroli, dan daun fig di pagi hari.",
+    description: "Memadukan kulit jeruk Mandarin segar dengan bunga Neroli dan daun pohon ara (Fig Leaf) yang cerah.",
     concentration: "Extrait de Parfum (25%)",
     longevity: "7 – 9 Jam",
     sillage: "Moderate",
@@ -220,8 +242,8 @@ const PRODUCTS = [
       { size: "100ml", price: 499000, compareAtPrice: null }
     ],
     images: [
-      "assets/img/products/perfume-7-a.svg",
-      "assets/img/products/perfume-7-b.svg"
+      createBottleSvg("07 Kebun Surya", "Citrus", "Extrait de Parfum"),
+      createNotesSvg("07 Kebun Surya", "Mandarin  •  Neroli  •  Vetiver")
     ],
     status: "ready",
     badge: "New",
@@ -234,11 +256,11 @@ const PRODUCTS = [
     slug: "08-buah-terlarang",
     gender: "For Her",
     scentCategory: "Fruity",
-    shortDescription: "Manis segar buah fig hitam, red pear, dan blackcurrant dengan dasar kayu kasmir yang menggoda.",
-    description: "08 Buah Terlarang mengeksplorasi sisi dewasa dari parfum beraroma buah. Alih-alih manis seperti permen, racikan ini menggabungkan Black Fig yang creamy, Red Pear yang renyah, dan anggur hitam (Cassis) di atas fondasi kayu Cedar dan Musk yang elegan.",
+    shortDescription: "Manis segar buah fig hitam, red pear, dan blackcurrant.",
+    description: "Menggabungkan Black Fig yang lembut, Red Pear renyah, dan Cassis di atas fondasi kayu Cedar serta Musk.",
     concentration: "Extrait de Parfum (30%)",
     longevity: "9 – 11 Jam",
-    sillage: "Moderate to Strong",
+    sillage: "Moderate",
     notes: {
       top: ["Black Fig Nectar", "Crisp Red Pear", "Blackcurrant Bud"],
       middle: ["Peony Blossom", "Freesia", "Rosewater"],
@@ -250,8 +272,8 @@ const PRODUCTS = [
       { size: "100ml", price: 539000, compareAtPrice: 599000 }
     ],
     images: [
-      "assets/img/products/perfume-8-a.svg",
-      "assets/img/products/perfume-8-b.svg"
+      createBottleSvg("08 Buah Terlarang", "Fruity", "Extrait de Parfum"),
+      createNotesSvg("08 Buah Terlarang", "Black Fig  •  Red Pear  •  Pink Pepper")
     ],
     status: "ready",
     badge: "Sale",
@@ -264,8 +286,8 @@ const PRODUCTS = [
     slug: "09-sutra-putih",
     gender: "For Her",
     scentCategory: "Musky",
-    shortDescription: "Kelembutan bunga kapas, putih mawar, dan clean linen musk yang menenangkan jiwa.",
-    description: "Bayangkan berbaring di atas seprai linen putih bersih di pagi hari Minggu yang tenang. 09 Sutra Putih merangkai Cotton Flower, White Rose, dan Rice Steam accord menjadi wewangian lembut yang memberikan kesan rapi, bersih, dan effortlessly chic.",
+    shortDescription: "Kelembutan bunga kapas, mawar putih, dan clean linen musk.",
+    description: "Merangkai Cotton Flower, White Rose, dan Clean Linen Musk menjadi wewangian lembut yang bersih dan rapi.",
     concentration: "Extrait de Parfum (28%)",
     longevity: "8 – 10 Jam",
     sillage: "Moderate",
@@ -280,8 +302,8 @@ const PRODUCTS = [
       { size: "100ml", price: 525000, compareAtPrice: null }
     ],
     images: [
-      "assets/img/products/perfume-9-a.svg",
-      "assets/img/products/perfume-9-b.svg"
+      createBottleSvg("09 Sutra Putih", "Musky", "Extrait de Parfum"),
+      createNotesSvg("09 Sutra Putih", "Aldehydes  •  Cotton Flower  •  Musk")
     ],
     status: "sold-out",
     badge: null,
@@ -294,11 +316,11 @@ const PRODUCTS = [
     slug: "10-mawar-hitam",
     gender: "Unisex",
     scentCategory: "Floral",
-    shortDescription: "Kombinasi mewah Damask Rose, rempah saffron, dan kayu gaharu (oud) Nusantara yang megah.",
-    description: "Karya paling opulent dari koleksi ANDRD. 10 Mawar Hitam mempertemukan ribuan kelopak Damask Rose dengan rempah Saffron merah dan sentuhan Gaharu (Agarwood) Kalimantan yang dihaluskan bersama praline serta amber. Diproduksi dalam jumlah sangat terbatas setiap batch.",
+    shortDescription: "Kombinasi Damask Rose, rempah saffron, dan kayu gaharu Nusantara.",
+    description: "Mempertemukan Damask Rose dengan Saffron merah dan sentuhan Gaharu Kalimantan dalam batch terbatas.",
     concentration: "Extrait de Parfum (35%)",
     longevity: "14+ Jam",
-    sillage: "Strong & Majestic",
+    sillage: "Strong",
     notes: {
       top: ["Red Saffron", "Clove Bud", "Bergamot"],
       middle: ["Damask Rose Absolute", "Geranium", "Roasted Praline"],
@@ -310,8 +332,8 @@ const PRODUCTS = [
       { size: "100ml", price: 689000, compareAtPrice: null }
     ],
     images: [
-      "assets/img/products/perfume-10-a.svg",
-      "assets/img/products/perfume-10-b.svg"
+      createBottleSvg("10 Mawar Hitam", "Floral", "Extrait de Parfum"),
+      createNotesSvg("10 Mawar Hitam", "Damask Rose  •  Saffron  •  Dark Oud")
     ],
     status: "sold-out",
     badge: "Best Seller",
@@ -320,5 +342,4 @@ const PRODUCTS = [
   }
 ];
 
-// Ekspos ke global window agar mudah diakses semua halaman
 window.PRODUCTS = PRODUCTS;
