@@ -1,14 +1,12 @@
 ﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" width="800" height="800">
-  <rect width="800" height="800" fill="#ECDFDF"/>
-  <rect x="60" y="60" width="680" height="680" fill="#FAF7F2" stroke="#A66E6E" stroke-width="1.5" stroke-opacity="0.45"/>
-  <rect x="84" y="84" width="632" height="632" fill="none" stroke="#181615" stroke-width="0.75" stroke-opacity="0.18"/>
-  <circle cx="400" cy="245" r="78" fill="#A66E6E" fill-opacity="0.16"/>
-  <circle cx="400" cy="245" r="46" fill="none" stroke="#A66E6E" stroke-width="1.5"/>
-  <text x="400" y="252" text-anchor="middle" font-family="Georgia, serif" font-size="22" letter-spacing="5" fill="#181615">ANDRD</text>
-  <text x="400" y="385" text-anchor="middle" font-family="Georgia, serif" font-size="28" font-weight="bold" letter-spacing="3" fill="#181615">03 MALAM MELATI</text>
-  <text x="400" y="422" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" letter-spacing="4" fill="#A66E6E">OLFACTORY ARCHITECTURE</text>
-  <line x1="280" y1="455" x2="520" y2="455" stroke="#A66E6E" stroke-width="1" stroke-opacity="0.5"/>
-  <text x="400" y="505" text-anchor="middle" font-family="Georgia, serif" font-style="italic" font-size="18" fill="#2C2825">Night Jasmine • Tuberose • Cashmere Wood</text>
-  <text x="400" y="575" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" letter-spacing="3" fill="#6E6862">SMALL BATCH EXTRAIT DE PARFUM</text>
-  <text x="400" y="640" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" letter-spacing="4" fill="#181615">HANDCRAFTED IN INDONESIA</text>
+  <rect width="800" height="800" fill="#F0F0F0"/>
+  <rect x="80" y="80" width="640" height="640" fill="#FFFFFF" stroke="#000000" stroke-width="2"/>
+  <text x="400" y="220" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="18" font-weight="700" letter-spacing="6" fill="#000000">ANDRD</text>
+  <line x1="350" y1="245" x2="450" y2="245" stroke="#000000" stroke-width="1.5"/>
+  <text x="400" y="340" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" font-weight="700" letter-spacing="3" fill="#000000">03 MALAM MELATI</text>
+  <text x="400" y="380" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" font-weight="500" letter-spacing="4" fill="#666666">OLFACTORY NOTES</text>
+  <line x1="240" y1="425" x2="560" y2="425" stroke="#E0E0E0" stroke-width="1"/>
+  <text x="400" y="480" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="15" font-weight="600" letter-spacing="1.5" fill="#111111">NIGHT JASMINE  /  TUBEROSE  /  CASHMERE</text>
+  <line x1="240" y1="525" x2="560" y2="525" stroke="#E0E0E0" stroke-width="1"/>
+  <text x="400" y="610" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11" font-weight="500" letter-spacing="3" fill="#666666">SMALL BATCH  •  INDONESIA</text>
 </svg>

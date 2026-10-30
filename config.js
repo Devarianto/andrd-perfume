@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ============================================================================
  * KONFIGURASI UTAMA TOKO PARFUME "ANDRD" (config.js)
  * ============================================================================
@@ -47,37 +47,37 @@ const STORE_CONFIG = {
       id: "Citrus",
       name: "Citrus",
       subtitle: "Segar, cerah, dan membangkitkan semangat dari ekstrak bergamot & yuzu",
-      accent: "#D9A441"
+      accent: "#000000"
     },
     {
       id: "Floral",
       name: "Floral",
       subtitle: "Anggun dan romantis dari kelopak melati malam, tuberose, dan mawar Damaskus",
-      accent: "#C87D75"
+      accent: "#000000"
     },
     {
       id: "Fruity",
       name: "Fruity",
       subtitle: "Manis segar buah pir matang, fig Mediterranean, dan blackcurrant",
-      accent: "#B85D6F"
+      accent: "#000000"
     },
     {
       id: "Woody & Vanilla",
       name: "Woody & Vanilla",
       subtitle: "Hangat, dewasa, dan memikat dengan sandalwood, cedar, serta vanilla Madagaskar",
-      accent: "#8C6239"
+      accent: "#000000"
     },
     {
       id: "Gourmand",
       name: "Gourmand",
       subtitle: "Kaya dan adiktif dengan sentuhan roasted tonka, praline, dan espresso",
-      accent: "#734B32"
+      accent: "#000000"
     },
     {
       id: "Musky",
       name: "Musky",
       subtitle: "Skin-scent intim yang bersih, lembut, dan menyatu alami dengan kulit",
-      accent: "#7E827A"
+      accent: "#000000"
     }
   ],
 
@@ -127,3 +127,4 @@ const STORE_CONFIG = {
 
 // Ekspos ke global window agar dapat diakses semua script
 window.STORE_CONFIG = STORE_CONFIG;
+
