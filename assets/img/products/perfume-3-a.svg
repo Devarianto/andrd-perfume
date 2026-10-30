@@ -1,0 +1,40 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" width="800" height="800">
+  <defs>
+    <linearGradient id="bgGrad3" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#F6EFEF"/>
+      <stop offset="100%" stop-color="#ECDFDF"/>
+    </linearGradient>
+    <linearGradient id="liquid3" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#A66E6E" stop-opacity="0.28"/>
+      <stop offset="100%" stop-color="#A66E6E" stop-opacity="0.52"/>
+    </linearGradient>
+    <filter id="shadow3" x="-15%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="24" stdDeviation="22" flood-color="#181615" flood-opacity="0.12"/>
+    </filter>
+  </defs>
+  <rect width="800" height="800" fill="url(#bgGrad3)"/>
+  <circle cx="400" cy="400" r="290" fill="#FFFFFF" fill-opacity="0.35"/>
+  <ellipse cx="400" cy="655" rx="145" ry="18" fill="#181615" fill-opacity="0.08"/>
+  <g filter="url(#shadow3)">
+    <!-- Bottle Body -->
+    <rect x="260" y="250" width="280" height="390" rx="22" fill="#FAF8F5" fill-opacity="0.88" stroke="#FFFFFF" stroke-width="3"/>
+    <!-- Perfume Liquid -->
+    <rect x="272" y="310" width="256" height="318" rx="14" fill="url(#liquid3)"/>
+    <!-- Glass Inner Highlight -->
+    <rect x="266" y="256" width="268" height="378" rx="18" fill="none" stroke="#181615" stroke-opacity="0.12" stroke-width="1.5"/>
+    <!-- Atomizer Neck -->
+    <rect x="372" y="218" width="56" height="32" fill="#D4C4A8" stroke="#181615" stroke-opacity="0.2"/>
+    <!-- Heavy Luxury Cap -->
+    <rect x="348" y="135" width="104" height="86" rx="8" fill="#231919"/>
+    <line x1="348" y1="198" x2="452" y2="198" stroke="#A66E6E" stroke-width="3"/>
+    <!-- Editorial Label -->
+    <rect x="295" y="340" width="210" height="230" fill="#FAF7F2" stroke="#181615" stroke-width="1.2"/>
+    <rect x="301" y="346" width="198" height="218" fill="none" stroke="#A66E6E" stroke-width="0.75" stroke-opacity="0.6"/>
+    <text x="400" y="388" text-anchor="middle" font-family="Georgia, serif" font-size="24" font-weight="bold" letter-spacing="6" fill="#181615">ANDRD</text>
+    <line x1="345" y1="404" x2="455" y2="404" stroke="#181615" stroke-width="0.8" stroke-opacity="0.3"/>
+    <text x="400" y="444" text-anchor="middle" font-family="Georgia, serif" font-size="15" font-weight="bold" letter-spacing="2.5" fill="#181615">03 MALAM MELATI</text>
+    <text x="400" y="470" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" letter-spacing="2" fill="#A66E6E">FLORAL</text>
+    <text x="400" y="520" text-anchor="middle" font-family="Georgia, serif" font-style="italic" font-size="11" fill="#5A5550">Extrait de Parfum</text>
+    <text x="400" y="546" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" letter-spacing="3" fill="#7A746E">50 ML  •  1.7 FL. OZ.</text>
+  </g>
+</svg>
