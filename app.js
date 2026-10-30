@@ -438,7 +438,10 @@
 
           <div class="footer-bottom">
             <span>&copy; ${new Date().getFullYear()} ${STORE_CONFIG.brandName}.</span>
-            <span>${STORE_CONFIG.instagram}</span>
+            <div style="display:flex;gap:14px;align-items:center;">
+              <span>${STORE_CONFIG.instagram}</span>
+              <a href="admin.html" style="color:var(--color-primary);font-weight:600;">CMS Admin</a>
+            </div>
           </div>
         </div>
       `;
@@ -660,13 +663,61 @@
      6. HOME PAGE CONTROLLER (index.html)
      ========================================================================== */
   function initHomePage() {
-    // Sinkronkan gambar Hero & Segmentasi dengan gambar monokrom terbaru dari PRODUCTS
-    document.querySelectorAll('img[src*="perfume-1-a.svg"]').forEach((img) => { if (PRODUCTS[0]) img.src = PRODUCTS[0].images[0]; });
-    document.querySelectorAll('img[src*="perfume-2-a.svg"]').forEach((img) => { if (PRODUCTS[1]) img.src = PRODUCTS[1].images[0]; });
-    document.querySelectorAll('img[src*="perfume-3-a.svg"]').forEach((img) => { if (PRODUCTS[2]) img.src = PRODUCTS[2].images[0]; });
-    document.querySelectorAll('img[src*="perfume-4-a.svg"]').forEach((img) => { if (PRODUCTS[3]) img.src = PRODUCTS[3].images[0]; });
-
     const track = document.getElementById("heroTrack");
+
+    // Render Hero Slides dinamis dari STORE_CONFIG.heroSlides (CMS)
+    if (track && Array.isArray(STORE_CONFIG.heroSlides) && STORE_CONFIG.heroSlides.length > 0) {
+      track.innerHTML = STORE_CONFIG.heroSlides
+        .map((slide, idx) => {
+          const fallbackProduct = PRODUCTS[idx] || PRODUCTS[0];
+          const imgSrc = slide.image || (fallbackProduct ? fallbackProduct.images[0] : "");
+          const titleTag = idx === 0 ? "h1" : "h2";
+          return `
+            <div class="hero-slide">
+              <div class="hero-content">
+                <span class="hero-eyebrow">${slide.eyebrow || ""}</span>
+                <${titleTag} class="hero-title">${slide.title || ""}</${titleTag}>
+                <p class="hero-desc">${slide.desc || ""}</p>
+                <div class="hero-actions">
+                  <a href="${slide.btnPrimaryLink || "products.html"}" class="btn btn-primary">${slide.btnPrimaryText || "Belanja"}</a>
+                  ${
+                    slide.btnSecondaryText
+                      ? `<a href="${slide.btnSecondaryLink || "products.html"}" class="btn btn-outline">${slide.btnSecondaryText}</a>`
+                      : ""
+                  }
+                </div>
+              </div>
+              <div class="hero-visual">
+                <img src="${imgSrc}" alt="${slide.title || "ANDRD"}" width="340" height="340">
+              </div>
+            </div>
+          `;
+        })
+        .join("");
+    }
+
+    // Render Kartu Segmentasi dinamis dari STORE_CONFIG.segments (CMS)
+    const segmentGrid = document.querySelector(".segment-grid");
+    if (segmentGrid && Array.isArray(STORE_CONFIG.segments) && STORE_CONFIG.segments.length > 0 && document.getElementById("featuredProductsGrid")) {
+      const fallbackIndices = [2, 3, 0];
+      segmentGrid.innerHTML = STORE_CONFIG.segments
+        .map((seg, idx) => {
+          const fbProd = PRODUCTS[fallbackIndices[idx]] || PRODUCTS[0];
+          const segImg = seg.image || (fbProd ? fbProd.images[0] : "");
+          return `
+            <a href="${seg.link || `products.html?gender=${encodeURIComponent(seg.gender)}`}" class="segment-card">
+              <img src="${segImg}" alt="${seg.title}" class="segment-bg" loading="lazy">
+              <div class="segment-overlay">
+                <h3 class="segment-title">${seg.title}</h3>
+                <p class="segment-desc">${seg.desc}</p>
+                <span class="segment-link">Eksplor →</span>
+              </div>
+            </a>
+          `;
+        })
+        .join("");
+    }
+
     const dots = document.querySelectorAll(".hero-dot");
     if (track && dots.length > 0) {
       let currentSlide = 0;
@@ -1499,6 +1550,22 @@
           LAST_ORDER_KEY,
           JSON.stringify({ orderNumber, whatsappUrl, messageText, timestamp: Date.now() })
         );
+        const rawOrders = localStorage.getItem("andrd_cms_orders_v1");
+        const cmsOrders = rawOrders ? JSON.parse(rawOrders) : [];
+        cmsOrders.unshift({
+          orderNumber: orderPayload.orderNumber,
+          createdAt: new Date().toISOString(),
+          status: "Pending",
+          nama: orderPayload.nama,
+          wa: orderPayload.wa,
+          email: orderPayload.email,
+          alamat: `${orderPayload.alamat}, ${orderPayload.kecamatan}, ${orderPayload.kota}, ${orderPayload.provinsi} ${orderPayload.kodepos}`,
+          kurir: orderPayload.kurir,
+          catatan: orderPayload.catatan,
+          items: orderPayload.items,
+          total: orderPayload.total
+        });
+        localStorage.setItem("andrd_cms_orders_v1", JSON.stringify(cmsOrders));
       } catch (err) {}
 
       window.open(whatsappUrl, "_blank", "noopener,noreferrer");

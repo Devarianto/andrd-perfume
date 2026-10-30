@@ -39,7 +39,7 @@ function createNotesSvg(name, notesText) {
   return "data:image/svg+xml;utf8," + encodeURIComponent(svg);
 }
 
-const PRODUCTS = [
+const DEFAULT_PRODUCTS = [
   {
     id: "andrd-01",
     name: "01 Senja di Bali",
@@ -342,4 +342,18 @@ const PRODUCTS = [
   }
 ];
 
+let PRODUCTS = DEFAULT_PRODUCTS;
+try {
+  const rawCmsProducts = localStorage.getItem("andrd_cms_products_v1");
+  if (rawCmsProducts) {
+    const parsed = JSON.parse(rawCmsProducts);
+    if (Array.isArray(parsed) && parsed.length > 0) {
+      PRODUCTS = parsed;
+    }
+  }
+} catch (e) {}
+
+window.createBottleSvg = createBottleSvg;
+window.createNotesSvg = createNotesSvg;
+window.DEFAULT_PRODUCTS = DEFAULT_PRODUCTS;
 window.PRODUCTS = PRODUCTS;

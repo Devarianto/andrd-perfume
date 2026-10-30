@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CMS Admin Panel — ANDRD</title>
+  <meta name="robots" content="noindex, nofollow">
+
+  <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    /* ========================================================================
+       CMS ADMIN CUSTOM LAYOUT (MOBILE-FIT, ROUNDED MONOCHROME)
+       ======================================================================== */
+    body {
+      background-color: #F6F6F6;
+    }
+
+    /* Login Screen */
+    .cms-auth-screen {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .cms-auth-card {
+      background: #FFFFFF;
+      border-radius: var(--radius-lg);
+      padding: 28px 22px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .cms-demo-acc-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .cms-demo-acc-btn {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      background: #F6F6F6;
+      transition: all var(--transition-fast);
+    }
+
+    .cms-demo-acc-btn:hover {
+      background: #EAEAEA;
+    }
+
+    /* CMS App Shell */
+    .cms-app-screen {
+      display: none;
+      min-height: 100vh;
+      grid-template-rows: auto 1fr;
+      width: 100%;
+      max-width: 100%;
+    }
+
+    .cms-topbar {
+      position: sticky;
+      top: 0;
+      z-index: 800;
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid #EAEAEA;
+      padding: 10px 0;
+    }
+
+    .cms-topbar-inner {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .cms-main-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 18px;
+      padding-top: 18px;
+      padding-bottom: 48px;
+    }
+
+    @media (min-width: 960px) {
+      .cms-main-layout {
+        grid-template-columns: 220px minmax(0, 1fr);
+        align-items: start;
+        gap: 24px;
+        padding-top: 24px;
+      }
+    }
+
+    /* Sidebar / Mobile Horizontal Pills */
+    .cms-sidebar {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      background: #FFFFFF;
+      padding: 8px;
+      border-radius: var(--radius-md);
+    }
+
+    .cms-sidebar::-webkit-scrollbar {
+      display: none;
+    }
+
+    @media (min-width: 960px) {
+      .cms-sidebar {
+        flex-direction: column;
+        padding: 12px;
+        position: sticky;
+        top: 76px;
+      }
+    }
+
+    .cms-nav-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--color-text-muted);
+      white-space: nowrap;
+      text-align: left;
+      transition: all var(--transition-fast);
+    }
+
+    .cms-nav-btn:hover {
+      background: #F6F6F6;
+      color: #111111;
+    }
+
+    .cms-nav-btn.active {
+      background: #111111;
+      color: #FFFFFF;
+      font-weight: 600;
+    }
+
+    /* Tab Panels */
+    .cms-tab-panel {
+      display: none;
+      animation: fadeInDown 0.28s var(--ease-smooth);
+    }
+
+    .cms-tab-panel.active {
+      display: block;
+    }
+
+    .cms-surface {
+      background: #FFFFFF;
+      border-radius: var(--radius-lg);
+      padding: 18px;
+      margin-bottom: 18px;
+      width: 100%;
+      min-width: 0;
+    }
+
+    @media (min-width: 768px) {
+      .cms-surface {
+        padding: 24px;
+      }
+    }
+
+    .cms-stat-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    @media (min-width: 900px) {
+      .cms-stat-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+    }
+
+    .cms-stat-card {
+      background: #FFFFFF;
+      border-radius: var(--radius-md);
+      padding: 16px;
+    }
+
+    /* Responsive Table */
+    .cms-table-wrap {
+      width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .cms-table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 580px;
+    }
+
+    .cms-table th {
+      text-align: left;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--color-text-muted);
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .cms-table td {
+      padding: 12px;
+      border-bottom: 1px solid var(--color-border);
+      vertical-align: middle;
+    }
+
+    /* Large Modal for Product Editing */
+    .cms-modal-large {
+      background: #FFFFFF;
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 680px;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 22px;
+      text-align: left;
+      box-shadow: var(--shadow-lg);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ========================================================================
+       1. LOGIN SCREEN (DENGAN 1-KLIK PILIH ROLE DEMO)
+       ======================================================================== -->
+  <section class="cms-auth-screen" id="cmsAuthScreen">
+    <div class="cms-auth-card">
+      <div style="text-align:center;margin-bottom:20px;">
+        <span class="brand-logo" style="font-size:22px;display:block;margin-bottom:4px;">ANDRD</span>
+        <p style="font-size:12.5px;color:var(--color-text-muted);">Content, Product &amp; Role Management System</p>
+      </div>
+
+      <form id="cmsLoginForm">
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="loginEmail">Email Staf / Admin</label>
+            <input type="email" id="loginEmail" class="form-control" value="admin@andrd.com" required>
+          </div>
+          <div class="form-group">
+            <label for="loginPin">PIN / Password</label>
+            <input type="password" id="loginPin" class="form-control" value="123456" required>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">Masuk ke CMS</button>
+        </div>
+      </form>
+
+      <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--color-border);">
+        <span style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:var(--color-text-muted);">
+          Klik Cepat Masuk Sesuai Role (PIN: 123456):
+        </span>
+        <div class="cms-demo-acc-grid" id="quickDemoAccounts"></div>
+      </div>
+
+      <div style="text-align:center;margin-top:16px;">
+        <a href="index.html" style="font-size:12.5px;color:var(--color-text-muted);text-decoration:underline;">← Kembali ke Toko Depan</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================================
+       2. MAIN CMS APPLICATION SHELL
+       ======================================================================== -->
+  <div class="cms-app-screen" id="cmsAppScreen">
+    <!-- Topbar -->
+    <header class="cms-topbar">
+      <div class="container cms-topbar-inner">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <a href="index.html" class="brand-logo" style="font-size:17px;">ANDRD</a>
+          <span class="badge badge-bestseller">CMS</span>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <!-- Quick Role Switcher untuk menguji hak akses -->
+          <select id="cmsQuickRoleSwitcher" class="select-control" style="width:auto;padding:6px 10px;font-size:12px;background:#F6F6F6;border:none;" aria-label="Ganti Role"></select>
+
+          <a href="index.html" target="_blank" class="btn btn-outline" style="padding:7px 12px;font-size:11.5px;">
+            Lihat Toko ↗
+          </a>
+          <button type="button" id="cmsLogoutBtn" class="btn btn-primary" style="padding:7px 12px;font-size:11.5px;">
+            Keluar
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <div class="container cms-main-layout">
+      <!-- Sidebar Navigation -->
+      <nav class="cms-sidebar" aria-label="Menu CMS">
+        <button type="button" class="cms-nav-btn active" data-tab="overview">
+          <span>Ringkasan</span>
+        </button>
+        <button type="button" class="cms-nav-btn" data-tab="products">
+          <span>Produk &amp; Gambar</span>
+        </button>
+        <button type="button" class="cms-nav-btn" data-tab="content">
+          <span>Konten &amp; Banner</span>
+        </button>
+        <button type="button" class="cms-nav-btn" data-tab="orders">
+          <span>Pesanan WA</span>
+        </button>
+        <button type="button" class="cms-nav-btn" data-tab="users">
+          <span>User &amp; Role</span>
+        </button>
+        <button type="button" class="cms-nav-btn" data-tab="settings">
+          <span>Pengaturan &amp; Publish</span>
+        </button>
+      </nav>
+
+      <!-- Panels -->
+      <div>
+        <!-- ==================================================================
+             PANEL 1: OVERVIEW DASHBOARD
+             ================================================================== -->
+        <section class="cms-tab-panel active" id="tab-overview">
+          <div class="cms-stat-grid">
+            <div class="cms-stat-card">
+              <span style="font-size:11px;color:var(--color-text-muted);text-transform:uppercase;">Total Produk</span>
+              <div style="font-size:24px;font-weight:700;margin:4px 0;" id="statTotalProducts">10</div>
+              <div style="font-size:11.5px;color:var(--color-text-muted);" id="statStockBreakdown">-</div>
+            </div>
+
+            <div class="cms-stat-card">
+              <span style="font-size:11px;color:var(--color-text-muted);text-transform:uppercase;">Pesanan Masuk</span>
+              <div style="font-size:24px;font-weight:700;margin:4px 0;" id="statTotalOrders">0</div>
+              <div style="font-size:11.5px;color:var(--color-text-muted);">Dari Checkout WhatsApp</div>
+            </div>
+
+            <div class="cms-stat-card">
+              <span style="font-size:11px;color:var(--color-text-muted);text-transform:uppercase;">Nilai Pesanan</span>
+              <div style="font-size:22px;font-weight:700;margin:4px 0;" id="statTotalRevenue">Rp 0</div>
+              <div style="font-size:11.5px;color:var(--color-text-muted);">Akumulasi Subtotal</div>
+            </div>
+
+            <div class="cms-stat-card">
+              <span style="font-size:11px;color:var(--color-text-muted);text-transform:uppercase;">Login Sebagai</span>
+              <div style="font-size:17px;font-weight:700;margin:4px 0;" id="statActiveRole">Super Admin</div>
+              <div style="font-size:11px;color:var(--color-text-muted);" id="cmsCurrentUserName">-</div>
+              <span id="cmsCurrentUserRole" style="display:none;"></span>
+            </div>
+          </div>
+
+          <div class="cms-surface">
+            <h2 style="font-size:16px;margin-bottom:6px;">Hak Akses Role Anda Saat Ini</h2>
+            <p id="statRoleDesc" style="font-size:13px;color:var(--color-text-muted);margin-bottom:14px;"></p>
+            <div style="display:flex;flex-wrap:wrap;gap:8px;">
+              <button type="button" class="btn btn-primary" onclick="document.querySelector('[data-tab=products]').click()">Kelola Produk &amp; Gambar</button>
+              <button type="button" class="btn btn-outline" onclick="document.querySelector('[data-tab=content]').click()">Ganti Gambar Banner</button>
+              <button type="button" class="btn btn-outline" onclick="document.querySelector('[data-tab=orders]').click()">Lihat Pesanan</button>
+            </div>
+          </div>
+
+          <div class="cms-surface">
+            <h2 style="font-size:16px;margin-bottom:12px;">Log Aktivitas Terbaru</h2>
+            <div id="cmsActivityLogs"></div>
+          </div>
+        </section>
+
+        <!-- ==================================================================
+             PANEL 2: MANAJEMEN PRODUK & GAMBAR
+             ================================================================== -->
+        <section class="cms-tab-panel" id="tab-products">
+          <div class="cms-surface">
+            <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px;">
+              <div>
+                <h2 style="font-size:18px;">Daftar Produk Parfum</h2>
+                <p style="font-size:12.5px;color:var(--color-text-muted);">Tambah produk baru, ganti foto botol, ubah harga, atau atur status stok.</p>
+              </div>
+              <button type="button" class="btn btn-primary" id="openAddProductModalBtn">
+                + Tambah Produk Baru
+              </button>
+            </div>
+
+            <div style="margin-bottom:14px;">
+              <input type="search" id="cmsProductSearch" class="form-control" placeholder="Cari nama produk, kategori aroma, atau gender...">
+            </div>
+
+            <div class="cms-table-wrap">
+              <table class="cms-table">
+                <thead>
+                  <tr>
+                    <th>Produk</th>
+                    <th>Harga &amp; Ukuran</th>
+                    <th>Status Stok</th>
+                    <th>Badge</th>
+                    <th style="text-align:right;">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="cmsProductsTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==================================================================
+             PANEL 3: KONTEN VISUAL & GAMBAR BANNER
+             ================================================================== -->
+        <section class="cms-tab-panel" id="tab-content">
+          <div class="cms-surface">
+            <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px;">
+              <div>
+                <h2 style="font-size:18px;">Konten Halaman Utama &amp; Gambar Banner</h2>
+                <p style="font-size:12.5px;color:var(--color-text-muted);">Upload foto baru dari HP/Laptop untuk mengganti gambar Hero Slider &amp; Kartu Segmentasi.</p>
+              </div>
+              <button type="button" class="btn btn-primary" id="saveContentBtn">
+                Simpan Perubahan Konten
+              </button>
+            </div>
+
+            <div class="form-group" style="margin-bottom:20px;">
+              <label for="cmsAnnouncementInput">Teks Pengumuman Atas (Announcement Bar)</label>
+              <input type="text" id="cmsAnnouncementInput" class="form-control">
+            </div>
+
+            <h3 style="font-size:15px;margin-bottom:12px;">Hero Slider (3 Slide Utama)</h3>
+            <div class="segment-grid" id="cmsHeroSlidesEditor" style="margin-bottom:24px;"></div>
+
+            <h3 style="font-size:15px;margin-bottom:12px;">Kartu Segmentasi (For Her, For Him, Unisex)</h3>
+            <div class="segment-grid" id="cmsSegmentsEditor"></div>
+          </div>
+        </section>
+
+        <!-- ==================================================================
+             PANEL 4: MANAJEMEN PESANAN WHATSAPP
+             ================================================================== -->
+        <section class="cms-tab-panel" id="tab-orders">
+          <div class="cms-surface">
+            <div style="margin-bottom:16px;">
+              <h2 style="font-size:18px;">Pesanan Masuk (Checkout WhatsApp)</h2>
+              <p style="font-size:12.5px;color:var(--color-text-muted);">Pantau status pembayaran dan hubungi pembeli langsung dengan 1 klik.</p>
+            </div>
+
+            <div class="cms-table-wrap">
+              <table class="cms-table">
+                <thead>
+                  <tr>
+                    <th>No. Order</th>
+                    <th>Pelanggan</th>
+                    <th>Detail Item &amp; Alamat</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                    <th>Follow-Up</th>
+                  </tr>
+                </thead>
+                <tbody id="cmsOrdersTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==================================================================
+             PANEL 5: MANAJEMEN USER & ROLE (RBAC)
+             ================================================================== -->
+        <section class="cms-tab-panel" id="tab-users">
+          <div class="cms-surface">
+            <h2 style="font-size:18px;margin-bottom:4px;">Manajemen Staf &amp; Role</h2>
+            <p style="font-size:12.5px;color:var(--color-text-muted);margin-bottom:16px;">Atur hak akses untuk Super Admin, Content Editor, Admin CS, dan Viewer.</p>
+
+            <div class="cms-table-wrap" style="margin-bottom:24px;">
+              <table class="cms-table">
+                <thead>
+                  <tr>
+                    <th>Nama &amp; Email</th>
+                    <th>Role</th>
+                    <th>PIN Login</th>
+                    <th>Status</th>
+                    <th>Hak Akses</th>
+                    <th>Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="cmsUsersTableBody"></tbody>
+              </table>
+            </div>
+
+            <div style="background:#F6F6F6;padding:18px;border-radius:var(--radius-md);">
+              <h3 style="font-size:15px;margin-bottom:12px;">+ Tambah Akun Staf Baru</h3>
+              <form id="cmsAddUserForm">
+                <div class="form-grid form-grid-2">
+                  <div class="form-group">
+                    <label for="newUserName">Nama Lengkap</label>
+                    <input type="text" id="newUserName" class="form-control" placeholder="Nama staf" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="newUserEmail">Email Login</label>
+                    <input type="email" id="newUserEmail" class="form-control" placeholder="staf@andrd.com" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="newUserRole">Pilih Role</label>
+                    <select id="newUserRole" class="select-control">
+                      <option value="Editor">Editor (Konten &amp; Produk)</option>
+                      <option value="Admin CS">Admin CS (Order &amp; Stok)</option>
+                      <option value="Super Admin">Super Admin (Akses Penuh)</option>
+                      <option value="Viewer">Viewer (Read-Only)</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="newUserPin">PIN / Password</label>
+                    <input type="text" id="newUserPin" class="form-control" placeholder="123456" required>
+                  </div>
+                </div>
+                <button type="submit" class="btn btn-primary" style="margin-top:12px;">Tambah Staf</button>
+              </form>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==================================================================
+             PANEL 6: PENGATURAN TOKO, DOWNLOAD FILE & PUBLISH KE GITHUB/VERCEL
+             ================================================================== -->
+        <section class="cms-tab-panel" id="tab-settings">
+          <div class="cms-surface">
+            <h2 style="font-size:18px;margin-bottom:4px;">Pengaturan Identitas &amp; WhatsApp Toko</h2>
+            <p style="font-size:12.5px;color:var(--color-text-muted);margin-bottom:16px;">Ubah nomor WhatsApp Admin penerima pesanan dan info kontak toko.</p>
+
+            <form id="cmsSettingsForm">
+              <div class="form-grid form-grid-2">
+                <div class="form-group">
+                  <label for="setBrandName">Nama Brand</label>
+                  <input type="text" id="setBrandName" class="form-control" required>
+                </div>
+                <div class="form-group">
+                  <label for="setTagline">Tagline</label>
+                  <input type="text" id="setTagline" class="form-control">
+                </div>
+                <div class="form-group">
+                  <label for="setWaAdmin">Nomor WhatsApp Admin (Format 628xxx)</label>
+                  <input type="text" id="setWaAdmin" class="form-control" placeholder="6281234567890" required>
+                </div>
+                <div class="form-group">
+                  <label for="setWaDisplay">Tampilan Nomor WA di Footer</label>
+                  <input type="text" id="setWaDisplay" class="form-control" placeholder="+62 812-3456-7890">
+                </div>
+                <div class="form-group">
+                  <label for="setInstagram">Username Instagram</label>
+                  <input type="text" id="setInstagram" class="form-control">
+                </div>
+                <div class="form-group">
+                  <label for="setHours">Jam Operasional</label>
+                  <input type="text" id="setHours" class="form-control">
+                </div>
+              </div>
+              <div class="form-group" style="margin-top:12px;">
+                <label for="setAddress">Alamat Studio</label>
+                <input type="text" id="setAddress" class="form-control">
+              </div>
+              <button type="submit" class="btn btn-primary" style="margin-top:14px;">Simpan Pengaturan Toko</button>
+            </form>
+          </div>
+
+          <!-- Sinkronisasi Permanen ke Website Live (GitHub & Vercel) -->
+          <div class="cms-surface">
+            <h2 style="font-size:18px;margin-bottom:4px;">Publish Perubahan ke Website Live (Vercel)</h2>
+            <p style="font-size:12.5px;color:var(--color-text-muted);margin-bottom:16px;">
+              Setiap perubahan di CMS langsung aktif di browser Anda. Untuk menerapkannya ke seluruh pengunjung di <strong>andrd-perfume.vercel.app</strong>, pilih salah satu cara di bawah:
+            </p>
+
+            <div class="form-grid form-grid-2" style="margin-bottom:20px;">
+              <div style="background:#F6F6F6;padding:16px;border-radius:var(--radius-md);">
+                <strong style="font-size:14px;display:block;margin-bottom:6px;">Opsi 1: Download File Siap Upload</strong>
+                <p style="font-size:12px;color:var(--color-text-muted);margin-bottom:12px;">
+                  Unduh file <code>products.js</code> &amp; <code>config.js</code> terbaru hasil editan CMS Anda.
+                </p>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                  <button type="button" class="btn btn-primary" id="downloadProductsJsBtn">Download products.js</button>
+                  <button type="button" class="btn btn-outline" id="downloadConfigJsBtn" style="background:#FFFFFF;">Download config.js</button>
+                </div>
+              </div>
+
+              <div style="background:#F6F6F6;padding:16px;border-radius:var(--radius-md);">
+                <strong style="font-size:14px;display:block;margin-bottom:6px;">Opsi 2: 1-Klik Auto-Publish ke GitHub &amp; Vercel</strong>
+                <div class="form-group" style="margin-bottom:8px;">
+                  <input type="text" id="setGhRepo" class="form-control" value="Devarianto/andrd-perfume" placeholder="Username/Repo">
+                </div>
+                <div class="form-group" style="margin-bottom:10px;">
+                  <input type="password" id="setGhToken" class="form-control" placeholder="GitHub Personal Access Token (ghp_...)">
+                </div>
+                <button type="button" class="btn btn-primary btn-block" id="publishToGitHubBtn">
+                  Publish Langsung ke GitHub &amp; Vercel
+                </button>
+              </div>
+            </div>
+
+            <div style="padding-top:14px;border-top:1px solid var(--color-border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+              <span style="font-size:12px;color:var(--color-text-muted);">Ingin mengembalikan produk &amp; banner ke pengaturan awal pabrik?</span>
+              <button type="button" class="btn btn-outline" id="resetCmsDataBtn" style="color:var(--color-danger);">
+                Reset ke Data Default
+              </button>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       3. MODAL TAMBAH / EDIT PRODUK & UPLOAD GAMBAR
+       ======================================================================== -->
+  <div class="modal-backdrop" id="cmsProductModal" role="dialog" aria-modal="true">
+    <div class="cms-modal-large">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--color-border);">
+        <h2 id="productModalTitle" style="font-size:18px;">Tambah / Edit Produk</h2>
+        <button type="button" id="closeProductModalBtn" style="font-size:18px;padding:4px;">✕</button>
+      </div>
+
+      <form id="cmsProductForm">
+        <!-- Upload Gambar Produk (Utama & Hover Kedua) -->
+        <div style="background:#F6F6F6;padding:14px;border-radius:var(--radius-md);margin-bottom:16px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px;">
+            <strong style="font-size:13px;">Gambar Produk (Rasio 1:1)</strong>
+            <button type="button" class="btn btn-outline" id="generateAutoBottleSvgBtn" style="background:#FFFFFF;padding:6px 12px;font-size:11px;">
+              Generate Ilustrasi Botol Otomatis
+            </button>
+          </div>
+
+          <div class="form-grid form-grid-2">
+            <div style="display:flex;align-items:center;gap:12px;background:#FFFFFF;padding:10px;border-radius:var(--radius-sm);">
+              <img src="" id="prodImg1Preview" alt="Gambar 1" style="width:64px;height:64px;border-radius:8px;object-fit:cover;background:#F6F6F6;">
+              <div style="flex:1;">
+                <div style="font-size:12px;font-weight:600;margin-bottom:4px;">1. Foto Utama</div>
+                <label class="btn btn-outline" style="padding:6px 10px;font-size:11px;cursor:pointer;width:100%;">
+                  Upload Foto Utama
+                  <input type="file" id="prodImg1File" accept="image/*" style="display:none;">
+                </label>
+              </div>
+            </div>
+
+            <div style="display:flex;align-items:center;gap:12px;background:#FFFFFF;padding:10px;border-radius:var(--radius-sm);">
+              <img src="" id="prodImg2Preview" alt="Gambar 2" style="width:64px;height:64px;border-radius:8px;object-fit:cover;background:#F6F6F6;">
+              <div style="flex:1;">
+                <div style="font-size:12px;font-weight:600;margin-bottom:4px;">2. Foto Hover Kedua</div>
+                <label class="btn btn-outline" style="padding:6px 10px;font-size:11px;cursor:pointer;width:100%;">
+                  Upload Foto Kedua
+                  <input type="file" id="prodImg2File" accept="image/*" style="display:none;">
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-grid form-grid-2">
+            <div class="form-group">
+              <label for="prodName">Nama Parfum <span class="req-star">*</span></label>
+              <input type="text" id="prodName" class="form-control" placeholder="Contoh: 11 Hujan Sore" required>
+            </div>
+            <div class="form-group">
+              <label for="prodCategory">Kategori Aroma</label>
+              <select id="prodCategory" class="select-control">
+                <option value="Citrus">Citrus</option>
+                <option value="Floral">Floral</option>
+                <option value="Fruity">Fruity</option>
+                <option value="Woody & Vanilla">Woody &amp; Vanilla</option>
+                <option value="Gourmand">Gourmand</option>
+                <option value="Musky">Musky</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-grid form-grid-2">
+            <div class="form-group">
+              <label for="prodGender">Karakter Gender</label>
+              <select id="prodGender" class="select-control">
+                <option value="Unisex">Unisex</option>
+                <option value="For Her">For Her</option>
+                <option value="For Him">For Him</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="prodStatus">Status Ketersediaan</label>
+              <select id="prodStatus" class="select-control">
+                <option value="ready">Ready Stock</option>
+                <option value="pre-order">Pre-Order</option>
+                <option value="sold-out">Sold Out (Tampil "Kabari Saya")</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-grid form-grid-2">
+            <div class="form-group">
+              <label for="prodBadge">Label Badge</label>
+              <select id="prodBadge" class="select-control">
+                <option value="">Tanpa Badge</option>
+                <option value="Best Seller">Best Seller</option>
+                <option value="New">New</option>
+                <option value="Sale">Sale</option>
+              </select>
+            </div>
+            <div class="form-group" style="display:flex;align-items:center;gap:16px;padding-top:22px;">
+              <label style="display:inline-flex;align-items:center;gap:6px;cursor:pointer;margin-bottom:0;">
+                <input type="checkbox" id="prodFeatured" checked> Best Seller Home
+              </label>
+              <label style="display:inline-flex;align-items:center;gap:6px;cursor:pointer;margin-bottom:0;">
+                <input type="checkbox" id="prodSeasonal" checked> Fresh Picks
+              </label>
+            </div>
+          </div>
+
+          <!-- Varian Ukuran & Harga -->
+          <div style="background:#F6F6F6;padding:12px;border-radius:var(--radius-sm);">
+            <strong style="font-size:12.5px;display:block;margin-bottom:8px;">Varian Ukuran &amp; Harga (Rupiah)</strong>
+            <div style="display:grid;grid-template-columns:1fr 1.3fr 1.3fr;gap:8px;margin-bottom:6px;">
+              <input type="text" id="v1Size" class="form-control" placeholder="15ml">
+              <input type="number" id="v1Price" class="form-control" placeholder="Harga (149000)">
+              <input type="number" id="v1Compare" class="form-control" placeholder="Harga Coret (Opsional)">
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1.3fr 1.3fr;gap:8px;margin-bottom:6px;">
+              <input type="text" id="v2Size" class="form-control" placeholder="50ml">
+              <input type="number" id="v2Price" class="form-control" placeholder="Harga (349000)">
+              <input type="number" id="v2Compare" class="form-control" placeholder="Harga Coret (Opsional)">
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1.3fr 1.3fr;gap:8px;">
+              <input type="text" id="v3Size" class="form-control" placeholder="100ml">
+              <input type="number" id="v3Price" class="form-control" placeholder="Harga (549000)">
+              <input type="number" id="v3Compare" class="form-control" placeholder="Harga Coret (Opsional)">
+            </div>
+          </div>
+
+          <!-- Piramida Notes -->
+          <div class="form-grid form-grid-2">
+            <div class="form-group">
+              <label for="prodTopNotes">Top Notes (Pisahkan koma)</label>
+              <input type="text" id="prodTopNotes" class="form-control" placeholder="Bergamot, Yuzu">
+            </div>
+            <div class="form-group">
+              <label for="prodMiddleNotes">Middle Notes</label>
+              <input type="text" id="prodMiddleNotes" class="form-control" placeholder="Sandalwood, Jasmine">
+            </div>
+          </div>
+
+          <div class="form-grid form-grid-2">
+            <div class="form-group">
+              <label for="prodBaseNotes">Base Notes</label>
+              <input type="text" id="prodBaseNotes" class="form-control" placeholder="Vanilla, White Musk">
+            </div>
+            <div class="form-group">
+              <label for="prodLongevity">Ketahanan (Longevity)</label>
+              <input type="text" id="prodLongevity" class="form-control" placeholder="10 – 12 Jam">
+            </div>
+            <input type="hidden" id="prodSillage" value="Moderate">
+          </div>
+
+          <div class="form-group">
+            <label for="prodShortDesc">Deskripsi Singkat</label>
+            <input type="text" id="prodShortDesc" class="form-control" placeholder="Satu kalimat ringkas tentang karakter parfum ini.">
+          </div>
+
+          <div class="form-group">
+            <label for="prodFullDesc">Cerita / Deskripsi Lengkap</label>
+            <textarea id="prodFullDesc" rows="3" class="form-control"></textarea>
+          </div>
+
+          <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:8px;">
+            <button type="button" class="btn btn-outline" onclick="document.getElementById('cmsProductModal').classList.remove('open')">Batal</button>
+            <button type="submit" class="btn btn-primary">Simpan Produk</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="products.js"></script>
+  <script src="cms.js"></script>
+</body>
+</html>
