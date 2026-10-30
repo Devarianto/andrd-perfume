@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hubungi Kami &amp; Fragrance Concierge — ANDRD</title>
+  <meta name="description" content="Hubungi tim Fragrance Concierge ANDRD untuk konsultasi aroma parfum, kerjasama korporat/souvenir pernikahan, atau bantuan status pengiriman.">
+  <meta name="robots" content="index, follow">
+
+  <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+  <div class="announcement-bar" id="announcementBar"></div>
+  <header class="site-header" id="siteHeader"></header>
+
+  <main>
+    <div class="non-cod-banner js-non-cod-banner"></div>
+
+    <section class="section">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-eyebrow">Fragrance Concierge</span>
+          <h1 class="section-title">Hubungi Studio Kami</h1>
+          <p class="section-desc">Bingung memilih aroma yang cocok untuk aktivitas harian atau hadiah spesial? Tim kurator aroma kami siap membantu Anda melalui WhatsApp.</p>
+        </div>
+
+        <div class="checkout-grid">
+          <!-- Form Kirim Pesan Konsultasi ke WhatsApp -->
+          <div class="checkout-card">
+            <h2 style="font-size:24px;margin-bottom:16px;">Kirim Pesan Langsung ke WhatsApp</h2>
+            <form id="contactWaForm">
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="contactName">Nama Anda <span class="req-star">*</span></label>
+                  <input type="text" id="contactName" class="form-control" placeholder="Nama lengkap Anda" required>
+                </div>
+                <div class="form-group">
+                  <label for="contactTopic">Topik Pertanyaan</label>
+                  <select id="contactTopic" class="select-control">
+                    <option value="Konsultasi Rekomendasi Aroma">Konsultasi Rekomendasi Aroma</option>
+                    <option value="Konfirmasi Status Pesanan">Konfirmasi Status Pesanan</option>
+                    <option value="Pemesanan Souvenir / Corporate Gift">Pemesanan Souvenir / Corporate Gift</option>
+                    <option value="Pertanyaan Umum Lainnya">Pertanyaan Umum Lainnya</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="contactMessage">Pesan Anda <span class="req-star">*</span></label>
+                  <textarea id="contactMessage" rows="4" class="form-control" placeholder="Ceritakan karakter aroma yang Anda sukai (mis. segar citrus, hangat vanilla, atau floral lembut)..." required></textarea>
+                </div>
+                <button type="submit" class="btn btn-whatsapp btn-block">
+                  Kirim Pertanyaan via WhatsApp
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Info Kontak Studio -->
+          <div class="checkout-card">
+            <h2 style="font-size:24px;margin-bottom:16px;">Informasi Studio</h2>
+            <div style="display:flex;flex-direction:column;gap:18px;font-size:14px;">
+              <div>
+                <strong style="display:block;text-transform:uppercase;font-size:11.5px;letter-spacing:0.1em;color:var(--color-accent);">Alamat Atelier</strong>
+                <span>Jl. Kemang Timur Raya No. 48, Jakarta Selatan 12730, Indonesia</span>
+              </div>
+              <div>
+                <strong style="display:block;text-transform:uppercase;font-size:11.5px;letter-spacing:0.1em;color:var(--color-accent);">Jam Operasional Admin</strong>
+                <span>Senin – Sabtu: 09.00 – 18.00 WIB<br>Minggu &amp; Hari Libur Nasional: Slow Response</span>
+              </div>
+              <div>
+                <strong style="display:block;text-transform:uppercase;font-size:11.5px;letter-spacing:0.1em;color:var(--color-accent);">WhatsApp Concierge Resmi</strong>
+                <span>+62 812-3456-7890 (Hanya Chat &amp; Konfirmasi Order)</span>
+              </div>
+              <div>
+                <strong style="display:block;text-transform:uppercase;font-size:11.5px;letter-spacing:0.1em;color:var(--color-accent);">Email Resmi</strong>
+                <span>concierge@andrdperfume.com</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer" id="siteFooter"></footer>
+
+  <script src="config.js"></script>
+  <script src="products.js"></script>
+  <script src="assets/js/app.js"></script>
+  <script>
+    document.getElementById("contactWaForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      var name = document.getElementById("contactName").value.trim();
+      var topic = document.getElementById("contactTopic").value;
+      var msg = document.getElementById("contactMessage").value.trim();
+      if (!name || !msg) return;
+      var text = "Halo Admin " + STORE_CONFIG.brandName + ",\n\nNama: " + name + "\nTopik: " + topic + "\nPesan: " + msg;
+      var url = "https://wa.me/" + STORE_CONFIG.whatsappAdmin + "?text=" + encodeURIComponent(text);
+      window.open(url, "_blank", "noopener,noreferrer");
+    });
+  </script>
+</body>
+</html>

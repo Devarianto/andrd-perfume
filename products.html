@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Koleksi &amp; Katalog Parfum — ANDRD Extrait de Parfum</title>
+  <meta name="description" content="Jelajahi seluruh koleksi parfum lokal ANDRD. Filter berdasarkan kategori aroma (Citrus, Floral, Fruity, Woody & Vanilla, Gourmand, Musky), gender, ukuran, dan harga.">
+  <meta name="robots" content="index, follow">
+
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Koleksi & Katalog Parfum — ANDRD">
+  <meta property="og:description" content="Temukan wewangian Extrait de Parfum lokal yang diracik dalam batch terbatas.">
+  <meta property="og:image" content="assets/img/products/perfume-1-a.svg">
+
+  <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+  <div class="announcement-bar" id="announcementBar"></div>
+  <header class="site-header" id="siteHeader"></header>
+
+  <main>
+    <!-- Header Katalog -->
+    <section style="background:var(--color-bg-alt);padding:44px 0;border-bottom:1px solid var(--color-border);">
+      <div class="container" style="text-align:center;max-width:680px;">
+        <span class="section-eyebrow">ANDRD Olfactory Archive</span>
+        <h1 class="section-title" id="catalogPageTitle" style="margin-bottom:10px;">Semua Koleksi Parfum</h1>
+        <p class="section-desc">
+          Setiap botol dikemas dengan konsentrasi Extrait de Parfum dan dilengkapi gratis 2ml Discovery Vial. Gunakan filter di bawah untuk menemukan aroma yang paling sesuai dengan kepribadian Anda.
+        </p>
+      </div>
+    </section>
+
+    <div class="non-cod-banner js-non-cod-banner"></div>
+
+    <section class="section" style="padding-top:40px;">
+      <div class="container">
+        <div class="catalog-layout">
+          <!-- Sidebar Filter -->
+          <aside class="filter-panel" aria-label="Filter Produk">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+              <h2 style="font-size:20px;">Filter Katalog</h2>
+              <button type="button" id="resetFiltersBtn" style="font-size:12px;color:var(--color-accent);font-weight:700;text-decoration:underline;">Reset</button>
+            </div>
+
+            <!-- Cari Kata Kunci -->
+            <div class="filter-group">
+              <label for="catalogSearchInput" class="filter-title" style="display:block;">Cari Nama / Notes</label>
+              <input type="search" id="catalogSearchInput" class="form-control" placeholder="Mis. Vanilla, Yuzu, Melati...">
+            </div>
+
+            <!-- Filter Kategori Aroma -->
+            <div class="filter-group">
+              <h3 class="filter-title">Kategori Aroma</h3>
+              <div class="filter-options">
+                <label class="filter-checkbox"><input type="checkbox" name="filterScent" value="Citrus"> Citrus</label>
+                <label class="filter-checkbox"><input type="checkbox" name="filterScent" value="Floral"> Floral</label>
+                <label class="filter-checkbox"><input type="checkbox" name="filterScent" value="Fruity"> Fruity</label>
+                <label class="filter-checkbox"><input type="checkbox" name="filterScent" value="Woody & Vanilla"> Woody &amp; Vanilla</label>
+                <label class="filter-checkbox"><input type="checkbox" name="filterScent" value="Gourmand"> Gourmand</label>
+                <label class="filter-checkbox"><input type="checkbox" name="filterScent" value="Musky"> Musky</label>
+              </div>
+            </div>
+
+            <!-- Filter Gender -->
+            <div class="filter-group">
+              <h3 class="filter-title">Karakter Gender</h3>
+              <div class="filter-options">
+                <label class="filter-checkbox"><input type="checkbox" name="filterGender" value="For Her"> For Her</label>
+                <label class="filter-checkbox"><input type="checkbox" name="filterGender" value="For Him"> For Him</label>
+                <label class="filter-checkbox"><input type="checkbox" name="filterGender" value="Unisex"> Unisex</label>
+              </div>
+            </div>
+
+            <!-- Filter Ukuran -->
+            <div class="filter-group">
+              <h3 class="filter-title">Ukuran Botol</h3>
+              <div class="filter-options">
+                <label class="filter-checkbox"><input type="checkbox" name="filterSize" value="15ml"> 15ml (Travel Spray)</label>
+                <label class="filter-checkbox"><input type="checkbox" name="filterSize" value="50ml"> 50ml (Signature Flacon)</label>
+                <label class="filter-checkbox"><input type="checkbox" name="filterSize" value="100ml"> 100ml (Atelier Edition)</label>
+              </div>
+            </div>
+
+            <!-- Filter Rentang Harga -->
+            <div class="filter-group">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                <label for="catalogPriceRange" class="filter-title" style="margin-bottom:0;">Batas Harga</label>
+                <strong id="catalogPriceLabel" style="font-size:13px;color:var(--color-accent);">Rp 700.000</strong>
+              </div>
+              <input type="range" id="catalogPriceRange" min="135000" max="700000" step="10000" value="700000" style="width:100%;accent-color:var(--color-primary);">
+              <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--color-text-muted);margin-top:4px;">
+                <span>Rp 135rb</span>
+                <span>Rp 700rb</span>
+              </div>
+            </div>
+          </aside>
+
+          <!-- Daftar Produk & Sorting -->
+          <div>
+            <div class="catalog-toolbar">
+              <span id="catalogCountLabel" style="font-size:13.5px;color:var(--color-text-muted);font-weight:500;">Menampilkan parfum...</span>
+              <div style="display:flex;align-items:center;gap:10px;">
+                <label for="catalogSortSelect" style="font-size:13px;color:var(--color-text-muted);white-space:nowrap;">Urutkan:</label>
+                <select id="catalogSortSelect" class="select-control" style="width:auto;padding:8px 12px;">
+                  <option value="featured">Unggulan (Best Seller)</option>
+                  <option value="price-asc">Harga: Rendah ke Tinggi</option>
+                  <option value="price-desc">Harga: Tinggi ke Rendah</option>
+                  <option value="name-asc">Nama: A – Z</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="product-grid" id="catalogProductsGrid">
+              <!-- Diisi otomatis oleh app.js -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer" id="siteFooter"></footer>
+
+  <script src="config.js"></script>
+  <script src="products.js"></script>
+  <script src="assets/js/app.js"></script>
+</body>
+</html>
