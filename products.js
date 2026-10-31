@@ -2,12 +2,21 @@
  * ============================================================================
  * DATABASE PRODUK PARFUME "ANDRD" (products.js)
  * ============================================================================
- * Cara Ganti Gambar Produk:
- * Pada bagian "images", Anda dapat menggantinya dengan nama file foto Anda sendiri,
- * misalnya: ["assets/img/products/foto-1.jpg", "assets/img/products/foto-2.jpg"]
  */
 
+function escapeXml(str) {
+  return String(str || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&apos;");
+}
+
 function createBottleSvg(name, category, sub) {
+  const safeName = escapeXml(String(name || "").toUpperCase());
+  const safeCat = escapeXml(category);
+  const safeSub = escapeXml(sub);
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" width="800" height="800">
     <rect width="800" height="800" fill="#F6F6F6"/>
     <ellipse cx="400" cy="650" rx="120" ry="10" fill="#000000" fill-opacity="0.05"/>
@@ -18,25 +27,27 @@ function createBottleSvg(name, category, sub) {
     <rect x="302" y="352" width="196" height="210" rx="12" fill="#FFFFFF" stroke="#E5E5E5" stroke-width="0.8"/>
     <text x="400" y="396" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="18" font-weight="700" letter-spacing="5" fill="#111111">ANDRD</text>
     <line x1="340" y1="414" x2="460" y2="414" stroke="#E5E5E5" stroke-width="0.8"/>
-    <text x="400" y="448" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13.5" font-weight="600" letter-spacing="1.5" fill="#111111">${name.toUpperCase()}</text>
-    <text x="400" y="472" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="10.5" font-weight="500" letter-spacing="1" fill="#777777">${category}</text>
-    <text x="400" y="518" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="10" font-weight="400" letter-spacing="1" fill="#666666">${sub}</text>
+    <text x="400" y="448" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13.5" font-weight="600" letter-spacing="1.5" fill="#111111">${safeName}</text>
+    <text x="400" y="472" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="10.5" font-weight="500" letter-spacing="1" fill="#777777">${safeCat}</text>
+    <text x="400" y="518" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="10" font-weight="400" letter-spacing="1" fill="#666666">${safeSub}</text>
     <text x="400" y="540" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="9" font-weight="500" letter-spacing="2" fill="#999999">50 ML</text>
   </svg>`;
-  return "data:image/svg+xml;utf8," + encodeURIComponent(svg);
+  return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
 }
 
 function createNotesSvg(name, notesText) {
+  const safeName = escapeXml(String(name || "").toUpperCase());
+  const safeNotes = escapeXml(notesText);
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" width="800" height="800">
     <rect width="800" height="800" fill="#F2F2F2"/>
     <rect x="90" y="90" width="620" height="620" rx="32" fill="#FFFFFF"/>
     <text x="400" y="240" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="16" font-weight="700" letter-spacing="5" fill="#111111">ANDRD</text>
-    <text x="400" y="345" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="24" font-weight="600" letter-spacing="2" fill="#111111">${name.toUpperCase()}</text>
+    <text x="400" y="345" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="24" font-weight="600" letter-spacing="2" fill="#111111">${safeName}</text>
     <text x="400" y="382" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11" font-weight="500" letter-spacing="3" fill="#888888">KEY NOTES</text>
-    <text x="400" y="465" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="15" font-weight="500" letter-spacing="0.5" fill="#222222">${notesText}</text>
+    <text x="400" y="465" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="15" font-weight="500" letter-spacing="0.5" fill="#222222">${safeNotes}</text>
     <text x="400" y="585" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="10.5" font-weight="500" letter-spacing="2.5" fill="#888888">EXTRAIT DE PARFUM</text>
   </svg>`;
-  return "data:image/svg+xml;utf8," + encodeURIComponent(svg);
+  return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
 }
 
 const DEFAULT_PRODUCTS = [
@@ -348,6 +359,16 @@ try {
   if (rawCmsProducts) {
     const parsed = JSON.parse(rawCmsProducts);
     if (Array.isArray(parsed) && parsed.length > 0) {
+      // Perbaiki otomatis jika ada gambar SVG lama yang belum di-escape karakter '&'-nya
+      parsed.forEach((p, idx) => {
+        if (!p.images || !p.images[0] || (p.images[0].startsWith("data:image/svg+xml") && !p.images[0].includes("%26amp%3B") && (p.name.includes("&") || p.scentCategory.includes("&")))) {
+          const def = DEFAULT_PRODUCTS.find((d) => d.id === p.id) || DEFAULT_PRODUCTS[idx] || DEFAULT_PRODUCTS[0];
+          p.images = [
+            createBottleSvg(p.name, p.scentCategory, "Extrait de Parfum"),
+            createNotesSvg(p.name, (p.notes && p.notes.top ? p.notes.top.join("  •  ") : def.notes.top.join("  •  ")))
+          ];
+        }
+      });
       PRODUCTS = parsed;
     }
   }

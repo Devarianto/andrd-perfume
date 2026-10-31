@@ -1,10 +1,10 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Checkout Pemesanan via WhatsApp — ANDRD Extrait de Parfum</title>
-  <meta name="description" content="Lengkapi data pengiriman untuk memesan parfum ANDRD. Pesanan Anda akan disusun otomatis dan diarahkan langsung ke WhatsApp Admin resmi.">
+  <title>Checkout Pemesanan — ANDRD</title>
+  <meta name="description" content="Lengkapi data pengiriman untuk memesan parfum ANDRD. Pesanan diarahkan langsung ke WhatsApp Admin resmi.">
   <meta name="robots" content="noindex, follow">
 
   <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
@@ -19,81 +19,95 @@
   <header class="site-header" id="siteHeader"></header>
 
   <main>
-    <div class="non-cod-banner js-non-cod-banner"></div>
-
-    <section class="section" style="padding-top:40px;">
+    <section class="section" style="padding-top:32px;">
       <div class="container">
-        <div style="margin-bottom:32px;">
-          <span class="section-eyebrow">Direct Concierge Checkout</span>
-          <h1 class="section-title" style="margin-bottom:6px;">Formulir Data Pengiriman</h1>
+        <div style="margin-bottom:24px;">
+          <span class="section-eyebrow">Direct Checkout</span>
+          <h1 class="section-title" style="margin-bottom:4px;">Data Pengiriman</h1>
           <p class="section-desc">
-            Isi data penerima dengan lengkap. Saat Anda menekan tombol <strong>"Pesan via WhatsApp"</strong>, format pesanan beserta nomor order unik akan langsung dikirimkan ke Admin untuk konfirmasi ongkir dan nomor rekening pembayaran.
+            Lengkapi alamat pengiriman Anda di bawah ini untuk meneruskan pesanan ke WhatsApp Admin.
           </p>
         </div>
 
         <div class="checkout-grid">
           <!-- Kolom Kiri: Form Data Pelanggan -->
           <div class="checkout-card">
-            <h2 style="font-size:24px;margin-bottom:20px;padding-bottom:12px;border-bottom:1px solid var(--color-border);">Data Penerima &amp; Alamat</h2>
+            <h2 style="font-size:20px;margin-bottom:18px;padding-bottom:12px;border-bottom:1px solid var(--color-border);">Identitas &amp; Alamat Penerima</h2>
 
             <form id="whatsappCheckoutForm" novalidate>
               <div class="form-grid">
-                <div class="form-group">
-                  <label for="custNama">Nama Lengkap Penerima <span class="req-star">*</span></label>
-                  <input type="text" id="custNama" class="form-control" placeholder="Contoh: Nadira Prameswari" required autocomplete="name">
-                  <span class="error-msg">Nama lengkap wajib diisi.</span>
+                <div class="form-grid form-grid-2">
+                  <div class="form-group">
+                    <label for="custNama">Nama Lengkap Penerima <span class="req-star">*</span></label>
+                    <input type="text" id="custNama" class="form-control" placeholder="Contoh: Nadira Prameswari" required autocomplete="name">
+                    <span class="error-msg">Nama lengkap wajib diisi.</span>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="custTglLahir">Tanggal Lahir <span class="req-star">*</span></label>
+                    <input type="date" id="custTglLahir" class="form-control" required autocomplete="bday">
+                    <span class="error-msg">Tanggal lahir wajib dipilih.</span>
+                  </div>
                 </div>
 
                 <div class="form-grid form-grid-2">
                   <div class="form-group">
                     <label for="custWa">Nomor WhatsApp Aktif <span class="req-star">*</span></label>
-                    <input type="tel" id="custWa" class="form-control" placeholder="0812xxxxxxxx atau 62812xxxxxxxx" required autocomplete="tel">
-                    <span class="error-msg">Format nomor WhatsApp Indonesia tidak valid (08xx / 628xx, min 10 digit).</span>
+                    <input type="tel" id="custWa" class="form-control" placeholder="0812xxxxxxxx / 62812xxxxxxxx" required autocomplete="tel">
+                    <span class="error-msg">Nomor WhatsApp tidak valid (08xx / 628xx, min 10 digit).</span>
                   </div>
 
                   <div class="form-group">
-                    <label for="custEmail">Alamat Email <span style="color:var(--color-text-muted);font-weight:400;">(Opsional)</span></label>
+                    <label for="custEmail">Email <span style="color:var(--color-text-muted);font-weight:400;">(Opsional)</span></label>
                     <input type="email" id="custEmail" class="form-control" placeholder="nama@email.com" autocomplete="email">
-                    <span class="error-msg">Format alamat email tidak valid.</span>
+                    <span class="error-msg">Format email tidak valid.</span>
                   </div>
                 </div>
 
-                <div class="form-group">
-                  <label for="custAlamat">Alamat Lengkap (Jalan, No. Rumah, RT/RW, Patokan) <span class="req-star">*</span></label>
-                  <textarea id="custAlamat" rows="3" class="form-control" placeholder="Jl. Melawai Raya No. 12, RT 04 / RW 02 (Rumah pagar hitam sebelah klinik)" required></textarea>
-                  <span class="error-msg">Alamat lengkap wajib diisi minimal 10 karakter.</span>
+                <!-- Pilihan Wilayah Otomatis (Provinsi -> Kota/Kabupaten -> Kecamatan) -->
+                <div class="form-grid form-grid-2">
+                  <div class="form-group">
+                    <label for="custProvinsi">Provinsi <span class="req-star">*</span></label>
+                    <select id="custProvinsi" class="select-control" required>
+                      <option value="">-- Pilih Provinsi --</option>
+                    </select>
+                    <span class="error-msg">Silakan pilih provinsi.</span>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="custKota">Kota / Kabupaten <span class="req-star">*</span></label>
+                    <select id="custKota" class="select-control" required disabled>
+                      <option value="">-- Pilih Provinsi Dahulu --</option>
+                    </select>
+                    <span class="error-msg">Silakan pilih kota / kabupaten.</span>
+                  </div>
                 </div>
 
                 <div class="form-grid form-grid-2">
                   <div class="form-group">
                     <label for="custKecamatan">Kecamatan <span class="req-star">*</span></label>
-                    <input type="text" id="custKecamatan" class="form-control" placeholder="Contoh: Kebayoran Baru" required>
-                    <span class="error-msg">Kecamatan wajib diisi.</span>
-                  </div>
-
-                  <div class="form-group">
-                    <label for="custKota">Kota / Kabupaten <span class="req-star">*</span></label>
-                    <input type="text" id="custKota" class="form-control" placeholder="Contoh: Jakarta Selatan" required>
-                    <span class="error-msg">Kota / Kabupaten wajib diisi.</span>
-                  </div>
-                </div>
-
-                <div class="form-grid form-grid-2">
-                  <div class="form-group">
-                    <label for="custProvinsi">Provinsi <span class="req-star">*</span></label>
-                    <input type="text" id="custProvinsi" class="form-control" placeholder="Contoh: DKI Jakarta" required>
-                    <span class="error-msg">Provinsi wajib diisi.</span>
+                    <select id="custKecamatan" class="select-control" required disabled>
+                      <option value="">-- Pilih Kota/Kabupaten Dahulu --</option>
+                    </select>
+                    <input type="text" id="custKecamatanManual" class="form-control" placeholder="Ketik nama kecamatan Anda" style="display:none;margin-top:8px;">
+                    <span class="error-msg">Silakan pilih kecamatan.</span>
                   </div>
 
                   <div class="form-group">
                     <label for="custKodepos">Kode Pos (5 Digit) <span class="req-star">*</span></label>
-                    <input type="text" id="custKodepos" class="form-control" placeholder="12160" maxlength="5" inputmode="numeric" required>
-                    <span class="error-msg">Kode pos wajib berupa 5 digit angka.</span>
+                    <input type="text" id="custKodepos" class="form-control" placeholder="Contoh: 12160" maxlength="5" inputmode="numeric" required>
+                    <span class="error-msg">Kode pos wajib 5 digit angka.</span>
                   </div>
                 </div>
 
                 <div class="form-group">
-                  <label for="custKurir">Kurir Pilihan <span class="req-star">*</span></label>
+                  <label for="custAlamat">Alamat Lengkap (Jalan, No. Rumah, RT/RW, Patokan) <span class="req-star">*</span></label>
+                  <textarea id="custAlamat" rows="3" class="form-control" placeholder="Jl. Melawai Raya No. 12, RT 04 / RW 02 (Rumah pagar hitam)" required></textarea>
+                  <span class="error-msg">Alamat lengkap wajib diisi minimal 10 karakter.</span>
+                </div>
+
+                <div class="form-group">
+                  <label for="custKurir">Kurir Pengiriman <span class="req-star">*</span></label>
                   <select id="custKurir" class="select-control" required>
                     <!-- Diisi otomatis dari config.js -->
                   </select>
@@ -102,21 +116,18 @@
 
                 <div class="form-group">
                   <label for="custCatatan">Catatan Pesanan / Request Vial <span style="color:var(--color-text-muted);font-weight:400;">(Opsional)</span></label>
-                  <textarea id="custCatatan" rows="2" class="form-control" placeholder="Contoh: Request free vial aroma 03 Malam Melati, tolong tulis kartu ucapan ulang tahun."></textarea>
+                  <textarea id="custCatatan" rows="2" class="form-control" placeholder="Contoh: Request free vial 03 Malam Melati"></textarea>
                 </div>
 
-                <div class="form-group" style="background:var(--color-bg);padding:14px;border-radius:var(--radius-sm);border:1px solid var(--color-border);">
+                <div class="form-group" style="background:#FFFFFF;padding:14px;border-radius:var(--radius-sm);">
                   <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;margin-bottom:0;font-weight:500;">
                     <input type="checkbox" id="custTerms" style="margin-top:4px;accent-color:var(--color-primary);" required>
-                    <span>Saya setuju dengan <a href="policies.html#syarat" target="_blank" style="color:var(--color-accent);text-decoration:underline;font-weight:700;">Syarat &amp; Ketentuan</a> serta memahami bahwa pembayaran dilakukan via transfer setelah konfirmasi WhatsApp (Tanpa COD). <span class="req-star">*</span></span>
+                    <span>Saya menyetujui <a href="policies.html#syarat" target="_blank" style="text-decoration:underline;font-weight:600;">Syarat &amp; Ketentuan</a> pemesanan (pembayaran via transfer setelah konfirmasi WhatsApp, Tanpa COD). <span class="req-star">*</span></span>
                   </label>
-                  <span class="error-msg">Anda wajib menyetujui Syarat &amp; Ketentuan untuk melanjutkan.</span>
+                  <span class="error-msg">Wajib menyetujui Syarat &amp; Ketentuan.</span>
                 </div>
 
-                <button type="submit" id="submitCheckoutBtn" class="btn btn-whatsapp btn-block" style="padding:16px 24px;font-size:14px;">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
-                  </svg>
+                <button type="submit" id="submitCheckoutBtn" class="btn btn-whatsapp btn-block" style="padding:14px 22px;font-size:14.5px;">
                   Pesan via WhatsApp
                 </button>
               </div>
@@ -125,17 +136,17 @@
 
           <!-- Kolom Kanan: Ringkasan Pesanan (Read-Only) -->
           <aside class="checkout-card" aria-label="Ringkasan Pesanan">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--color-border);">
-              <h2 style="font-size:22px;">Ringkasan Pesanan</h2>
-              <a href="cart.html" style="font-size:12px;color:var(--color-accent);font-weight:600;text-decoration:underline;">Ubah Keranjang</a>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--color-border);">
+              <h2 style="font-size:20px;">Ringkasan Pesanan</h2>
+              <a href="cart.html" style="font-size:13px;font-weight:600;text-decoration:underline;">Ubah</a>
             </div>
 
-            <div id="checkoutSummaryItems" style="margin-bottom:16px;"></div>
+            <div id="checkoutSummaryItems" style="margin-bottom:14px;"></div>
 
-            <div style="font-size:13.5px;display:flex;flex-direction:column;gap:8px;padding-bottom:16px;margin-bottom:16px;border-bottom:1px solid var(--color-border);">
+            <div style="font-size:14px;display:flex;flex-direction:column;gap:8px;padding-bottom:14px;margin-bottom:14px;border-bottom:1px solid var(--color-border);">
               <div style="display:flex;justify-content:space-between;">
-                <span style="color:var(--color-text-muted);">Bonus Pembelian</span>
-                <strong style="color:var(--color-success);">Free 2ml Discovery Vial</strong>
+                <span style="color:var(--color-text-muted);">Bonus</span>
+                <strong>Free Vial 2ml</strong>
               </div>
               <div style="display:flex;justify-content:space-between;">
                 <span style="color:var(--color-text-muted);">Ongkos Kirim</span>
@@ -144,8 +155,8 @@
             </div>
 
             <div style="display:flex;justify-content:space-between;align-items:baseline;">
-              <span style="font-weight:700;text-transform:uppercase;font-size:13px;">Subtotal Produk</span>
-              <strong id="checkoutSubtotalAmount" style="font-size:24px;color:var(--color-primary);">Rp 0</strong>
+              <span style="font-weight:600;font-size:14px;">Subtotal</span>
+              <strong id="checkoutSubtotalAmount" style="font-size:22px;color:var(--color-primary);">Rp 0</strong>
             </div>
           </aside>
         </div>
@@ -153,35 +164,29 @@
     </section>
   </main>
 
-  <!-- Modal "Terima Kasih" setelah klik Pesan via WhatsApp -->
+  <!-- Modal "Terima Kasih" -->
   <div class="modal-backdrop" id="thankYouModal" role="dialog" aria-modal="true" aria-labelledby="thankYouTitle">
     <div class="modal-box">
-      <div style="width:56px;height:56px;border-radius:50%;background:var(--color-accent-light);color:var(--color-whatsapp);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-          <polyline points="20 6 9 17 4 12"></polyline>
-        </svg>
-      </div>
-      <span class="section-eyebrow">Pesanan Berhasil Dibuat</span>
-      <h2 id="thankYouTitle" style="font-size:30px;margin-bottom:8px;">Terima Kasih!</h2>
+      <span class="section-eyebrow">Pesanan Dibuat</span>
+      <h2 id="thankYouTitle" style="font-size:26px;margin:6px 0 8px;">Terima Kasih!</h2>
       <p style="font-size:14px;color:var(--color-text-muted);margin-bottom:14px;">
-        Nomor Order Anda: <strong id="modalOrderNumber" style="color:var(--color-primary);font-size:16px;">#ANDRD-0000</strong>
+        No. Order: <strong id="modalOrderNumber" style="color:var(--color-primary);">#ANDRD-0000</strong>
       </p>
-      <div style="background:var(--color-bg);padding:14px;border-radius:var(--radius-sm);border:1px solid var(--color-border);font-size:13.5px;margin-bottom:20px;text-align:left;">
-        <strong>Instruksi Selanjutnya:</strong>
+      <div style="background:var(--color-bg-alt);padding:14px;border-radius:var(--radius-sm);font-size:13.5px;margin-bottom:18px;text-align:left;">
+        <strong>Langkah Selanjutnya:</strong>
         <ol style="padding-left:18px;margin-top:6px;color:var(--color-text-muted);">
-          <li>Halaman WhatsApp telah dibuka di tab baru dengan format pesanan Anda.</li>
-          <li>Tekan tombol <strong>Kirim (Send)</strong> pada aplikasi WhatsApp Anda.</li>
-          <li>Admin kami akan segera menginformasikan ongkos kirim dan nomor rekening pembayaran resmi.</li>
+          <li>Kirim pesan otomatis yang sudah terbuka di WhatsApp Anda.</li>
+          <li>Admin akan menginformasikan total ongkir &amp; nomor rekening pembayaran.</li>
         </ol>
       </div>
-      <div style="display:flex;flex-direction:column;gap:10px;">
+      <div style="display:flex;flex-direction:column;gap:8px;">
         <a href="#" id="modalFallbackWaBtn" target="_blank" rel="noopener noreferrer" class="btn btn-whatsapp btn-block">
-          Buka WhatsApp Sekarang (Jika Belum Terbuka)
+          Buka WhatsApp Sekarang
         </a>
         <button type="button" id="modalCopyOrderBtn" class="btn btn-outline btn-block">
           Salin Teks Pesanan
         </button>
-        <a href="index.html" style="font-size:13px;color:var(--color-text-muted);margin-top:6px;text-decoration:underline;">Kembali ke Halaman Utama</a>
+        <a href="index.html" style="font-size:13px;color:var(--color-text-muted);margin-top:6px;text-decoration:underline;">Kembali ke Beranda</a>
       </div>
     </div>
   </div>
@@ -193,5 +198,3 @@
   <script src="app.js"></script>
 </body>
 </html>
-
-

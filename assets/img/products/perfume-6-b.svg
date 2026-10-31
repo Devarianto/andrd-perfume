@@ -1,12 +1,10 @@
 ﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" width="800" height="800">
-  <rect width="800" height="800" fill="#F0F0F0"/>
-  <rect x="80" y="80" width="640" height="640" fill="#FFFFFF" stroke="#000000" stroke-width="2"/>
-  <text x="400" y="220" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="18" font-weight="700" letter-spacing="6" fill="#000000">ANDRD</text>
-  <line x1="350" y1="245" x2="450" y2="245" stroke="#000000" stroke-width="1.5"/>
-  <text x="400" y="340" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" font-weight="700" letter-spacing="3" fill="#000000">06 KOPI & TONKA</text>
-  <text x="400" y="380" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" font-weight="500" letter-spacing="4" fill="#666666">OLFACTORY NOTES</text>
-  <line x1="240" y1="425" x2="560" y2="425" stroke="#E0E0E0" stroke-width="1"/>
-  <text x="400" y="480" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="15" font-weight="600" letter-spacing="1.5" fill="#111111">ESPRESSO  /  DARK CACAO  /  TONKA BEAN</text>
-  <line x1="240" y1="525" x2="560" y2="525" stroke="#E0E0E0" stroke-width="1"/>
-  <text x="400" y="610" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11" font-weight="500" letter-spacing="3" fill="#666666">SMALL BATCH  •  INDONESIA</text>
+  <rect width="800" height="800" fill="#F2F2F2"/>
+  <rect x="90" y="90" width="620" height="620" rx="32" fill="#FFFFFF"/>
+  <text x="400" y="240" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="16" font-weight="700" letter-spacing="5" fill="#111111">ANDRD</text>
+  <text x="400" y="345" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="24" font-weight="600" letter-spacing="2" fill="#111111">06 KOPI &amp; TONKA</text>
+  <text x="400" y="382" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11" font-weight="500" letter-spacing="3" fill="#888888">KEY NOTES</text>
+  <text x="400" y="465" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="15" font-weight="500" letter-spacing="0.5" fill="#222222">Espresso  •  Dark Cacao  •  Tonka Bean</text>
+  <text x="400" y="585" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="10.5" font-weight="500" letter-spacing="2.5" fill="#888888">EXTRAIT DE PARFUM</text>
 </svg>
+

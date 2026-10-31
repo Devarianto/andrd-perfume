@@ -438,10 +438,7 @@
 
           <div class="footer-bottom">
             <span>&copy; ${new Date().getFullYear()} ${STORE_CONFIG.brandName}.</span>
-            <div style="display:flex;gap:14px;align-items:center;">
-              <span>${STORE_CONFIG.instagram}</span>
-              <a href="admin.html" style="color:var(--color-primary);font-weight:600;">CMS Admin</a>
-            </div>
+            <span>${STORE_CONFIG.instagram}</span>
           </div>
         </div>
       `;
@@ -1360,6 +1357,115 @@
   /* ==========================================================================
      10. CHECKOUT DIRECT KE WHATSAPP CONTROLLER (checkout.html)
      ========================================================================== */
+  const WILAYAH_INDONESIA = {
+    "DKI Jakarta": {
+      "Jakarta Selatan": ["Kebayoran Baru", "Kebayoran Lama", "Cilandak", "Tebet", "Setiabudi", "Mampang Prapatan", "Pancoran", "Pasar Minggu", "Jagakarsa", "Pesanggrahan"],
+      "Jakarta Pusat": ["Menteng", "Tanah Abang", "Gambir", "Sawah Besar", "Kemayoran", "Senen", "Cempaka Putih", "Johar Baru"],
+      "Jakarta Barat": ["Kebon Jeruk", "Kembangan", "Palmerah", "Grogol Petamburan", "Cengkareng", "Kalideres", "Taman Sari", "Tambora"],
+      "Jakarta Timur": ["Duren Sawit", "Jatinegara", "Kramat Jati", "Matraman", "Pulo Gadung", "Cakung", "Cipayung", "Ciracas", "Makasar", "Pasar Rebo"],
+      "Jakarta Utara": ["Kelapa Gading", "Penjaringan", "Pademangan", "Tanjung Priok", "Koja", "Cilincing"],
+      "Kepulauan Seribu": ["Kepulauan Seribu Selatan", "Kepulauan Seribu Utara"]
+    },
+    "Banten": {
+      "Kota Tangerang Selatan": ["Bintaro / Pondok Aren", "BSD / Serpong", "Serpong Utara", "Ciputat", "Ciputat Timur", "Pamulang", "Setu"],
+      "Kota Tangerang": ["Ciledug", "Karawaci", "Cipondoh", "Tangerang", "Batuceper", "Benda", "Cibodas", "Jatiuwung", "Karangtengah", "Larangan", "Neglasari", "Periuk", "Pinang"],
+      "Kab. Tangerang": ["Kelapa Dua", "Pagedangan", "Cisauk", "Curug", "Cikupa", "Balaraja", "Pasar Kemis", "Tigaraksa", "Kosambi", "Sepatan"],
+      "Kota Serang": ["Serang", "Cipocok Jaya", "Curug", "Kasemen", "Taktakan", "Walantaka"],
+      "Kota Cilegon": ["Cilegon", "Cibeber", "Citangkil", "Ciwandan", "Gerogol", "Jombang", "Pulomerak", "Purwakarta"],
+      "Kab. Lebak": ["Rangkasbitung", "Cibadak", "Maja", "Malingping", "Bayah"],
+      "Kab. Pandeglang": ["Pandeglang", "Majasari", "Karangtanjung", "Labuan", "Carita"]
+    },
+    "Jawa Barat": {
+      "Kota Bandung": ["Coblong", "Bandung Wetan", "Sumur Bandung", "Sukajadi", "Cidadap", "Cicendo", "Andir", "Antapani", "Arcamanik", "Buahbatu", "Lengkong", "Regol", "Ujungberung"],
+      "Kota Bekasi": ["Bekasi Selatan", "Bekasi Barat", "Bekasi Timur", "Bekasi Utara", "Medan Satria", "Rawalumbu", "Pondok Gede", "Jatiasih", "Jatisampurna", "Mustika Jaya", "Bantargebang", "Pondok Melati"],
+      "Kota Depok": ["Margonda / Beji", "Cinere", "Cimanggis", "Pancoran Mas", "Sukmajaya", "Sawangan", "Limo", "Cilodong", "Cipayung", "Tapos", "Bojongsari"],
+      "Kota Bogor": ["Bogor Tengah", "Bogor Selatan", "Bogor Timur", "Bogor Utara", "Bogor Barat", "Tanah Sareal"],
+      "Kab. Bogor": ["Cibinong", "Sentul / Babakan Madang", "Cileungsi", "Gunung Putri", "Ciawi", "Megamendung", "Cisarua", "Bojong Gede", "Parung", "Ciomas"],
+      "Kab. Bekasi": ["Cikarang Barat", "Cikarang Pusat", "Cikarang Selatan", "Cikarang Utara", "Cikarang Timur", "Tambun Selatan", "Tambun Utara", "Babelan", "Cibitung"],
+      "Kab. Bandung": ["Margahayu", "Margaasih", "Dayeuhkolot", "Bojongsoang", "Cileunyi", "Rancaekek", "Soreang", "Ciwidey", "Pangalengan", "Lembang (KBB)"],
+      "Kota Cirebon": ["Kejaksan", "Kesambi", "Lemahwungkuk", "Harjamukti", "Pekalipan"],
+      "Kota Tasikmalaya": ["Cihideung", "Tawang", "Cipedes", "Indihiang", "Kawalu"],
+      "Kab. Garut": ["Garut Kota", "Tarogong Kidul", "Tarogong Kaler", "karangpawitan", "Leles"],
+      "Kab. Karawang": ["Karawang Barat", "Karawang Timur", "Telukjambe Timur", "Telukjambe Barat", "Klari", "Cikampek"]
+    },
+    "Jawa Tengah": {
+      "Kota Semarang": ["Semarang Tengah", "Semarang Selatan", "Semarang Barat", "Semarang Timur", "Semarang Utara", "Banyumanik", "Candisari", "Gajahmungkur", "Gayamsari", "Genuk", "Gunungpati", "Mijen", "Ngaliyan", "Pedurungan", "Tembalang", "Tugu"],
+      "Kota Surakarta (Solo)": ["Laweyan", "Serengan", "Pasar Kliwon", "Jebres", "Banjarsari"],
+      "Kota Magelang": ["Magelang Tengah", "Magelang Utara", "Magelang Selatan"],
+      "Kota Pekalongan": ["Pekalongan Barat", "Pekalongan Timur", "Pekalongan Utara", "Pekalongan Selatan"],
+      "Kota Tegal": ["Tegal Barat", "Tegal Timur", "Tegal Selatan", "Margadana"],
+      "Kab. Banyumas (Purwokerto)": ["Purwokerto Timur", "Purwokerto Barat", "Purwokerto Utara", "Purwokerto Selatan", "Sokaraja", "Baturaden"],
+      "Kab. Kudus": ["Kota Kudus", "Jati", "Bae", "Kaliwungu", "Gebog"],
+      "Kab. Jepara": ["Jepara", "Tahunan", "Batealit", "Mayong", "Pecangaan"],
+      "Kab. Klaten": ["Klaten Tengah", "Klaten Utara", "Klaten Selatan", "Prambanan", "Delanggu"]
+    },
+    "DI Yogyakarta": {
+      "Kota Yogyakarta": ["Gondokusuman", "Jetis", "Danurejan", "Gedongtengen", "Gondomanan", "Kotagede", "Kraton", "Mantrijeron", "Mergangsan", "Ngampilan", "Pakualaman", "Tegalrejo", "Umbulharjo", "Wirobrajan"],
+      "Kab. Sleman": ["Depok", "Mlati", "Gamping", "Ngaglik", "Godean", "Kalasan", "Sleman", "Pakem", "Prambanan"],
+      "Kab. Bantul": ["Banguntapan", "Kasihan", "Sewon", "Bantul", "Jetis", "Piyungan", "Sedayu"],
+      "Kab. Kulon Progo": ["Wates", "Temon", "Pengasih", "Sentolo"],
+      "Kab. Gunungkidul": ["Wonosari", "Playen", "Karangmojo", "Semanu"]
+    },
+    "Jawa Timur": {
+      "Kota Surabaya": ["Gubeng", "Wonokromo", "Tegalsari", "Genteng", "Sukolilo", "Rungkut", "Sawahan", "Dukuh Pakis", "Wiyung", "Gayungan", "Jambangan", "Tenggilis Mejoyo", "Mulyorejo", "Tambaksari", "Kenjeran"],
+      "Kota Malang": ["Klojen", "Lowokwaru", "Blimbing", "Sukun", "Kedungkandang"],
+      "Kab. Sidoarjo": ["Sidoarjo", "Waru", "Taman", "Gedangan", "Buduran", "Candi", "Krian", "Sedati"],
+      "Kab. Gresik": ["Gresik", "Kebomas", "Manyar", "Menganti", "Driyorejo"],
+      "Kota Batu": ["Batu", "Bumiaji", "Junrejo"],
+      "Kota Kediri": ["Kota Kediri", "Mojoroto", "Pesantren"],
+      "Kab. Jember": ["Sumbersari", "Kaliwates", "Patrang", "Ambulu", "Tanggul"],
+      "Kab. Banyuwangi": ["Banyuwangi", "Giri", "Glagah", "Kabat", "Genteng", "Rogojampi"]
+    },
+    "Bali": {
+      "Kota Denpasar": ["Denpasar Selatan", "Denpasar Barat", "Denpasar Timur", "Denpasar Utara"],
+      "Kab. Badung": ["Kuta", "Kuta Selatan (Jimbaran/Uluwatu)", "Kuta Utara (Canggu/Kerobokan)", "Mengwi", "Abiansemal", "Petang"],
+      "Kab. Gianyar": ["Ubud", "Sukawati", "Gianyar", "Blahbatuh", "Tampaksiring", "Tegallalang", "Payangan"],
+      "Kab. Tabanan": ["Tabanan", "Kediri", "Kerambitan", "Baturiti"],
+      "Kab. Buleleng": ["Singaraja / Buleleng", "Sukasada", "Seririt", "Banjar"]
+    },
+    "Sumatera Utara": {
+      "Kota Medan": ["Medan Baru", "Medan Petisah", "Medan Polonia", "Medan Kota", "Medan Sunggal", "Medan Selayang", "Medan Johor", "Medan Helvetia", "Medan Area", "Medan Barat", "Medan Timur"],
+      "Kota Binjai": ["Binjai Kota", "Binjai Barat", "Binjai Timur", "Binjai Selatan", "Binjai Utara"],
+      "Kab. Deli Serdang": ["Percut Sei Tuan", "Tanjung Morawa", "Lubuk Pakam", "Sunggal", "Pancur Batu"]
+    },
+    "Sumatera Barat": {
+      "Kota Padang": ["Padang Barat", "Padang Timur", "Padang Utara", "Padang Selatan", "Kuranji", "Koto Tangah", "Nanggalo", "Lubuk Begalung"],
+      "Kota Bukittinggi": ["Guguk Panjang", "Mandiangin Koto Selayan", "Aur Birugo Tigo Baleh"]
+    },
+    "Riau & Kepulauan Riau": {
+      "Kota Pekanbaru": ["Sukajadi", "Marpoyan Damai", "Tampan / Tuah Madani", "Bukit Raya", "Payung Sekaki", "Senapelan", "Lima Puluh", "Sail", "Tenayan Raya"],
+      "Kota Batam": ["Batam Kota", "Lubuk Baja", "Nagoya", "Batu Ampar", "Bengkong", "Sekupang", "Sagulung", "Sei Beduk", "Nongsa"],
+      "Kota Tanjungpinang": ["Tanjungpinang Kota", "Tanjungpinang Barat", "Tanjungpinang Timur", "Bukit Bestari"]
+    },
+    "Sumatera Selatan & Lampung": {
+      "Kota Palembang": ["Ilir Barat I", "Ilir Timur I", "Ilir Timur II", "Sukarami", "Kemuning", "Sako", "Seberang Ulu I", "Kalidoni", "Bukit Kecil"],
+      "Kota Bandar Lampung": ["Tanjung Karang Pusat", "Enggal", "Kedaton", "Rajabasa", "Sukarame", "Way Halim", "Teluk Betung Selatan", "Teluk Betung Utara"]
+    },
+    "Kalimantan Timur": {
+      "Kota Balikpapan": ["Balikpapan Selatan", "Balikpapan Kota", "Balikpapan Tengah", "Balikpapan Utara", "Balikpapan Barat", "Balikpapan Timur"],
+      "Kota Samarinda": ["Samarinda Kota", "Samarinda Ulu", "Samarinda Ilir", "Samarinda Utara", "Sungai Kunjang", "Sungai Pinang"],
+      "Kota Bontang": ["Bontang Utara", "Bontang Selatan", "Bontang Barat"]
+    },
+    "Kalimantan Selatan, Barat & Tengah": {
+      "Kota Banjarmasin": ["Banjarmasin Tengah", "Banjarmasin Utara", "Banjarmasin Selatan", "Banjarmasin Timur", "Banjarmasin Barat"],
+      "Kota Banjarbaru": ["Banjarbaru Utara", "Banjarbaru Selatan", "Landasan Ulin", "Liang Anggang", "Cempaka"],
+      "Kota Pontianak": ["Pontianak Kota", "Pontianak Selatan", "Pontianak Tenggara", "Pontianak Barat", "Pontianak Timur", "Pontianak Utara"],
+      "Kota Palangka Raya": ["Pahandut", "Jekan Raya", "Sabangau", "Bukit Batu"]
+    },
+    "Sulawesi Selatan & Utara": {
+      "Kota Makassar": ["Panakkukang", "Rappocini", "Tamalate", "Ujung Pandang", "Mamajang", "Mariso", "Biringkanaya", "Tamalanrea", "Manggala", "Wajo"],
+      "Kota Manado": ["Wenang", "Sario", "Malalayang", "Wanea", "Tikala", "Mapanget", "Paal Dua"],
+      "Kota Kendari": ["Mandonga", "Kadia", "Wua-Wua", "Poasia", "Baruga"],
+      "Kota Palu": ["Palu Selatan", "Palu Timur", "Palu Barat", "Palu Utara", "Mantikulore"]
+    },
+    "NTB, NTT, Maluku & Papua": {
+      "Kota Mataram": ["Mataram", "Ampenan", "Cakranegara", "Selaparang", "Sekarbela", "Sandubaya"],
+      "Kota Kupang": ["Oebobo", "Kelapa Lima", "Kota Raja", "Kota Lama", "Alak", "Maulafa"],
+      "Kota Ambon": ["Sirimau", "Nusaniwe", "Baguala", "Teluk Ambon"],
+      "Kota Jayapura": ["Jayapura Utara", "Jayapura Selatan", "Abepura", "Heram", "Muara Tami"]
+    }
+  };
+
   function initCheckoutPage() {
     const form = document.getElementById("whatsappCheckoutForm");
     const summaryEl = document.getElementById("checkoutSummaryItems");
@@ -1375,13 +1481,71 @@
           .join("");
     }
 
+    // Populate Cascading Wilayah Dropdowns (Provinsi -> Kota/Kabupaten -> Kecamatan)
+    const provSelect = document.getElementById("custProvinsi");
+    const kotaSelect = document.getElementById("custKota");
+    const kecSelect = document.getElementById("custKecamatan");
+    const kecManual = document.getElementById("custKecamatanManual");
+
+    if (provSelect && kotaSelect && kecSelect) {
+      const provList = Object.keys(WILAYAH_INDONESIA);
+      provSelect.innerHTML =
+        `<option value="">-- Pilih Provinsi --</option>` +
+        provList.map((p) => `<option value="${p}">${p}</option>`).join("");
+
+      provSelect.addEventListener("change", () => {
+        const selectedProv = provSelect.value;
+        kecSelect.innerHTML = `<option value="">-- Pilih Kota/Kabupaten Dahulu --</option>`;
+        kecSelect.disabled = true;
+        if (kecManual) kecManual.style.display = "none";
+
+        if (!selectedProv || !WILAYAH_INDONESIA[selectedProv]) {
+          kotaSelect.innerHTML = `<option value="">-- Pilih Provinsi Dahulu --</option>`;
+          kotaSelect.disabled = true;
+          return;
+        }
+
+        const kotaList = Object.keys(WILAYAH_INDONESIA[selectedProv]);
+        kotaSelect.innerHTML =
+          `<option value="">-- Pilih Kota / Kabupaten --</option>` +
+          kotaList.map((k) => `<option value="${k}">${k}</option>`).join("");
+        kotaSelect.disabled = false;
+      });
+
+      kotaSelect.addEventListener("change", () => {
+        const selectedProv = provSelect.value;
+        const selectedKota = kotaSelect.value;
+        if (kecManual) kecManual.style.display = "none";
+
+        if (!selectedProv || !selectedKota || !WILAYAH_INDONESIA[selectedProv][selectedKota]) {
+          kecSelect.innerHTML = `<option value="">-- Pilih Kota/Kabupaten Dahulu --</option>`;
+          kecSelect.disabled = true;
+          return;
+        }
+
+        const kecList = WILAYAH_INDONESIA[selectedProv][selectedKota];
+        kecSelect.innerHTML =
+          `<option value="">-- Pilih Kecamatan --</option>` +
+          kecList.map((kc) => `<option value="${kc}">${kc}</option>`).join("") +
+          `<option value="LAINNYA">Lainnya (Ketik Manual)</option>`;
+        kecSelect.disabled = false;
+      });
+
+      kecSelect.addEventListener("change", () => {
+        if (kecManual) {
+          kecManual.style.display = kecSelect.value === "LAINNYA" ? "block" : "none";
+          if (kecSelect.value === "LAINNYA") kecManual.focus();
+        }
+      });
+    }
+
     const cart = getCart();
     const subtotal = getCartSubtotal();
 
     if (cart.length === 0) {
       summaryEl.innerHTML = `
         <div style="padding:18px;background:#FFFFFF;border-radius:var(--radius-sm);text-align:center;">
-          <p style="margin-bottom:10px;font-size:13px;">Keranjang kosong.</p>
+          <p style="margin-bottom:10px;font-size:14px;">Keranjang kosong.</p>
           <a href="products.html" class="btn btn-primary">Pilih Produk</a>
         </div>
       `;
@@ -1393,12 +1557,12 @@
     summaryEl.innerHTML = cart
       .map(
         (item, idx) => `
-        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--color-border);font-size:13px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--color-border);font-size:14px;">
           <div style="display:flex;align-items:center;gap:10px;">
-            <img src="${item.image}" alt="${item.name}" style="width:42px;height:42px;border-radius:8px;">
+            <img src="${item.image}" alt="${item.name}" style="width:46px;height:46px;border-radius:8px;">
             <div>
               <div style="font-weight:600;">${idx + 1}. ${item.name}</div>
-              <div style="font-size:11.5px;color:var(--color-text-muted);">${item.size} × ${item.qty}</div>
+              <div style="font-size:12.5px;color:var(--color-text-muted);">${item.size} × ${item.qty}</div>
             </div>
           </div>
           <strong>${formatRupiah(item.price * item.qty)}</strong>
@@ -1417,6 +1581,11 @@
         validate: (v) => v.length >= 3,
         msg: "Nama wajib diisi."
       },
+      tglLahir: {
+        el: document.getElementById("custTglLahir"),
+        validate: (v) => v.length >= 6,
+        msg: "Tanggal lahir wajib dipilih."
+      },
       wa: {
         el: document.getElementById("custWa"),
         validate: (v) => isValidIndonesianPhone(v),
@@ -1427,30 +1596,35 @@
         validate: (v) => !v || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v),
         msg: "Format email tidak valid."
       },
-      alamat: {
-        el: document.getElementById("custAlamat"),
-        validate: (v) => v.length >= 10,
-        msg: "Alamat lengkap wajib diisi."
-      },
-      kecamatan: {
-        el: document.getElementById("custKecamatan"),
+      provinsi: {
+        el: document.getElementById("custProvinsi"),
         validate: (v) => v.length >= 2,
-        msg: "Kecamatan wajib diisi."
+        msg: "Silakan pilih provinsi."
       },
       kota: {
         el: document.getElementById("custKota"),
         validate: (v) => v.length >= 2,
-        msg: "Kota/Kabupaten wajib diisi."
+        msg: "Silakan pilih kota / kabupaten."
       },
-      provinsi: {
-        el: document.getElementById("custProvinsi"),
-        validate: (v) => v.length >= 2,
-        msg: "Provinsi wajib diisi."
+      kecamatan: {
+        el: document.getElementById("custKecamatan"),
+        validate: (v) => {
+          if (v === "LAINNYA") {
+            return (kecManual ? kecManual.value.trim().length : 0) >= 2;
+          }
+          return v.length >= 2;
+        },
+        msg: "Silakan pilih kecamatan."
       },
       kodepos: {
         el: document.getElementById("custKodepos"),
         validate: (v) => /^\d{5}$/.test(v),
         msg: "Kode pos wajib 5 digit angka."
+      },
+      alamat: {
+        el: document.getElementById("custAlamat"),
+        validate: (v) => v.length >= 10,
+        msg: "Alamat lengkap wajib diisi."
       },
       kurir: {
         el: document.getElementById("custKurir"),
@@ -1524,14 +1698,20 @@
         submitBtn.textContent = "Mengarahkan ke WhatsApp...";
       }
 
+      const selectedKec =
+        fields.kecamatan.el.value === "LAINNYA" && kecManual
+          ? sanitizeInput(kecManual.value)
+          : sanitizeInput(fields.kecamatan.el.value);
+
       const orderNumber = generateOrderNumber();
       const orderPayload = {
         orderNumber: orderNumber,
         nama: sanitizeInput(fields.nama.el.value),
+        tglLahir: sanitizeInput(fields.tglLahir.el.value),
         wa: normalizeIndonesianPhone(sanitizeInput(fields.wa.el.value)),
         email: sanitizeInput(fields.email.el.value) || "-",
         alamat: sanitizeInput(fields.alamat.el.value),
-        kecamatan: sanitizeInput(fields.kecamatan.el.value),
+        kecamatan: selectedKec,
         kota: sanitizeInput(fields.kota.el.value),
         provinsi: sanitizeInput(fields.provinsi.el.value),
         kodepos: sanitizeInput(fields.kodepos.el.value),
@@ -1557,6 +1737,7 @@
           createdAt: new Date().toISOString(),
           status: "Pending",
           nama: orderPayload.nama,
+          tglLahir: orderPayload.tglLahir,
           wa: orderPayload.wa,
           email: orderPayload.email,
           alamat: `${orderPayload.alamat}, ${orderPayload.kecamatan}, ${orderPayload.kota}, ${orderPayload.provinsi} ${orderPayload.kodepos}`,

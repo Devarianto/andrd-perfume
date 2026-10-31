@@ -133,6 +133,7 @@ const STORE_CONFIG = Object.assign({}, DEFAULT_STORE_CONFIG, savedCmsConfig, {
       ``,
       `*DATA PELANGGAN*`,
       `Nama: ${orderData.nama}`,
+      `Tanggal Lahir: ${orderData.tglLahir || "-"}`,
       `No. WhatsApp: ${orderData.wa}`,
       `Email: ${orderData.email || "-"}`,
       `Alamat: ${orderData.alamat}, ${orderData.kecamatan}, ${orderData.kota}, ${orderData.provinsi} ${orderData.kodepos}`,

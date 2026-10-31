@@ -2,8 +2,6 @@
  * ============================================================================
  * CORE APPLICATION SCRIPT "ANDRD" (assets/js/app.js)
  * ============================================================================
- * Mengelola: Keranjang (localStorage), Render Produk, Header/Drawer,
- * Live Search, Detail Produk, Filter Katalog, dan Checkout ke WhatsApp.
  */
 
 (function () {
@@ -107,7 +105,7 @@
     }
 
     saveCart(cart);
-    showToast(`${product.name} (${variant.size}) ditambahkan ke keranjang.`);
+    showToast(`${product.name} (${variant.size}) ditambahkan`);
     if (openDrawer) {
       toggleCartDrawer(true);
     }
@@ -131,7 +129,7 @@
   function removeFromCart(cartItemKey) {
     const cart = getCart().filter((item) => item.key !== cartItemKey);
     saveCart(cart);
-    showToast("Item dihapus dari keranjang.");
+    showToast("Item dihapus");
   }
 
   function clearCart() {
@@ -163,7 +161,7 @@
     toast.className = "toast";
     toast.innerHTML = `
       <span>${sanitizeInput(message)}</span>
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <polyline points="20 6 9 17 4 12"></polyline>
       </svg>
     `;
@@ -171,13 +169,13 @@
 
     setTimeout(() => {
       toast.style.opacity = "0";
-      toast.style.transition = "opacity 0.25s ease";
-      setTimeout(() => toast.remove(), 260);
-    }, 2800);
+      toast.style.transition = "opacity 0.2s ease";
+      setTimeout(() => toast.remove(), 220);
+    }, 2400);
   }
 
   /* ==========================================================================
-     4. RENDER KARTU PRODUK (REUSABLE)
+     4. RENDER KARTU PRODUK (CLEAN & SIMPLE)
      ========================================================================== */
   function renderProductCard(product) {
     const minVariant = product.variants.reduce(
@@ -191,8 +189,7 @@
       badgesHtml.push(`<span class="badge badge-soldout">Sold Out</span>`);
     } else if (product.status === "pre-order") {
       badgesHtml.push(`<span class="badge badge-preorder">Pre-Order</span>`);
-    }
-    if (product.badge) {
+    } else if (product.badge) {
       const badgeClass =
         product.badge === "Best Seller"
           ? "badge-bestseller"
@@ -208,7 +205,7 @@
 
     const primaryImg = product.images[0];
     const secondaryImg = product.images[1] || product.images[0];
-    const allTopNotes = product.notes && product.notes.top ? product.notes.top.join(" • ") : "";
+    const allTopNotes = product.notes && product.notes.top ? product.notes.top.slice(0, 2).join(" • ") : "";
 
     let actionButtonHtml = "";
     if (product.status === "sold-out") {
@@ -216,36 +213,32 @@
       const waUrl = buildWhatsAppUrl(STORE_CONFIG.whatsappAdmin, restockText);
       actionButtonHtml = `
         <a href="${waUrl}" target="_blank" rel="noopener noreferrer" class="btn btn-restock" aria-label="Kabari saya saat ${product.name} restock">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
-          </svg>
           Kabari Saya
         </a>
       `;
     } else {
-      const btnLabel = product.status === "pre-order" ? "+ Pre-Order" : "+ Keranjang";
+      const btnLabel = product.status === "pre-order" ? "Pre-Order" : "+ Keranjang";
       actionButtonHtml = `
         <button type="button" class="btn btn-primary js-quick-add" data-product-id="${product.id}" data-size="${defaultPerfumeSize}">
-          ${btnLabel} (${defaultPerfumeSize})
+          ${btnLabel}
         </button>
       `;
     }
 
     return `
       <article class="product-card" data-product-id="${product.id}">
-        <a href="product.html?id=${encodeURIComponent(product.id)}" class="product-media" aria-label="Lihat detail ${product.name}">
+        <a href="product.html?id=${encodeURIComponent(product.id)}" class="product-media" aria-label="${product.name}">
           <div class="product-badges">${badgesHtml.join("")}</div>
-          <img src="${primaryImg}" alt="${product.name} - ${product.scentCategory} Extrait de Parfum" class="product-img-primary" loading="lazy" width="400" height="400">
-          <img src="${secondaryImg}" alt="Komposisi notes aroma ${product.name}" class="product-img-secondary" loading="lazy" width="400" height="400">
+          <img src="${primaryImg}" alt="${product.name}" class="product-img-primary" loading="lazy" width="400" height="400">
+          <img src="${secondaryImg}" alt="${product.name} Notes" class="product-img-secondary" loading="lazy" width="400" height="400">
         </a>
         <div class="product-body">
-          <div class="product-meta">${product.gender} • ${product.scentCategory}</div>
+          <div class="product-meta">${product.scentCategory}</div>
           <h3 class="product-title">
             <a href="product.html?id=${encodeURIComponent(product.id)}">${product.name}</a>
           </h3>
           <p class="product-notes-preview">${allTopNotes}</p>
           <div class="product-price-wrap">
-            <span class="price-from-label">Mulai dari</span>
             <span class="price-current">${formatRupiah(minVariant.price)}</span>
             ${compareHtml}
           </div>
@@ -267,16 +260,7 @@
       announcementEl.textContent = STORE_CONFIG.announcementText;
     }
 
-    // 2. Non-COD Banner
-    document.querySelectorAll(".js-non-cod-banner").forEach((el) => {
-      el.innerHTML = `
-        <div class="container">
-          <strong>INFO PEMBAYARAN RESMI:</strong> ${STORE_CONFIG.nonCodNotice}
-        </div>
-      `;
-    });
-
-    // 3. Header
+    // 2. Header
     const headerEl = document.getElementById("siteHeader");
     const currentPath = window.location.pathname.split("/").pop() || "index.html";
     const isCatalogue = window.location.search.includes("view=catalogue");
@@ -284,15 +268,15 @@
     if (headerEl) {
       headerEl.innerHTML = `
         <div class="container header-inner">
-          <button type="button" class="mobile-menu-btn" id="openMobileMenuBtn" aria-label="Buka Menu Navigasi">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-              <line x1="3" y1="6" x2="21" y2="6"></line>
-              <line x1="3" y1="12" x2="21" y2="12"></line>
-              <line x1="3" y1="18" x2="15" y2="18"></line>
+          <button type="button" class="mobile-menu-btn" id="openMobileMenuBtn" aria-label="Menu">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <line x1="3" y1="7" x2="21" y2="7"></line>
+              <line x1="3" y1="12" x2="17" y2="12"></line>
+              <line x1="3" y1="17" x2="21" y2="17"></line>
             </svg>
           </button>
 
-          <a href="index.html" class="brand-logo" aria-label="${STORE_CONFIG.brandName} Beranda">${STORE_CONFIG.brandName}</a>
+          <a href="index.html" class="brand-logo" aria-label="${STORE_CONFIG.brandName}">${STORE_CONFIG.brandName}</a>
 
           <nav class="main-nav" aria-label="Menu Utama">
             <a href="index.html" class="nav-link ${currentPath === "index.html" ? "active" : ""}">Home</a>
@@ -303,14 +287,14 @@
           </nav>
 
           <div class="header-actions">
-            <button type="button" class="icon-btn" id="toggleSearchBtn" aria-label="Cari Parfum">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <button type="button" class="icon-btn" id="toggleSearchBtn" aria-label="Cari">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
                 <circle cx="11" cy="11" r="8"></circle>
                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
               </svg>
             </button>
-            <button type="button" class="icon-btn" id="openCartDrawerBtn" aria-label="Buka Keranjang Belanja">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <button type="button" class="icon-btn" id="openCartDrawerBtn" aria-label="Keranjang">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
                 <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
                 <line x1="3" y1="6" x2="21" y2="6"></line>
                 <path d="M16 10a4 4 0 0 1-8 0"></path>
@@ -324,12 +308,12 @@
         <div class="search-overlay" id="searchOverlay" aria-hidden="true">
           <div class="container">
             <div class="search-input-wrap">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
                 <circle cx="11" cy="11" r="8"></circle>
                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
               </svg>
-              <input type="search" id="liveSearchInput" placeholder="Cari nama parfum, aroma (mis. vanilla, citrus, melati, kopi)..." autocomplete="off">
-              <button type="button" id="closeSearchBtn" aria-label="Tutup Pencarian" style="font-size:12px;text-transform:uppercase;letter-spacing:0.1em;font-weight:600;">Tutup ✕</button>
+              <input type="search" id="liveSearchInput" placeholder="Cari parfum atau notes aroma..." autocomplete="off">
+              <button type="button" id="closeSearchBtn" aria-label="Tutup" style="font-size:12px;font-weight:600;">✕</button>
             </div>
             <div class="live-search-results" id="liveSearchResults"></div>
           </div>
@@ -337,7 +321,7 @@
       `;
     }
 
-    // 4. Mobile Menu & Cart Drawer Injection
+    // 3. Mobile Menu & Cart Drawer
     const drawersWrapper = document.createElement("div");
     drawersWrapper.innerHTML = `
       <!-- Mobile Nav Drawer -->
@@ -345,21 +329,17 @@
         <div class="drawer-backdrop" id="closeMobileNavBackdrop"></div>
         <div class="mobile-nav-panel">
           <div style="display:flex;align-items:center;justify-content:space-between;">
-            <span class="brand-logo" style="font-size:24px;">${STORE_CONFIG.brandName}</span>
-            <button type="button" id="closeMobileMenuBtn" aria-label="Tutup Menu" style="padding:8px;font-size:18px;">✕</button>
+            <span class="brand-logo" style="font-size:18px;">${STORE_CONFIG.brandName}</span>
+            <button type="button" id="closeMobileMenuBtn" aria-label="Tutup" style="padding:6px;font-size:16px;">✕</button>
           </div>
           <nav class="mobile-nav-links" aria-label="Menu Mobile">
-            <a href="index.html">Home</a>
-            <a href="products.html">All Products</a>
-            <a href="products.html?view=catalogue">Scent Catalogue</a>
-            <a href="about.html">Our Story</a>
-            <a href="contact.html">Contact & Studio</a>
-            <a href="policies.html"> Kebijakan & Pengiriman</a>
+            <a href="index.html" class="${currentPath === "index.html" ? "active" : ""}">Home</a>
+            <a href="products.html" class="${(currentPath === "products.html" || currentPath === "product.html") && !isCatalogue ? "active" : ""}">Products</a>
+            <a href="products.html?view=catalogue" class="${isCatalogue ? "active" : ""}">Catalogue</a>
+            <a href="about.html" class="${currentPath === "about.html" ? "active" : ""}">About</a>
+            <a href="contact.html" class="${currentPath === "contact.html" ? "active" : ""}">Contact</a>
+            <a href="policies.html" class="${currentPath === "policies.html" ? "active" : ""}">Policies</a>
           </nav>
-          <div style="margin-top:auto;padding-top:24px;font-size:12.5px;color:var(--color-text-muted);">
-            <p style="font-weight:600;color:var(--color-primary);margin-bottom:4px;">Butuh Bantuan Aroma?</p>
-            <p>${STORE_CONFIG.operationalHours}</p>
-          </div>
         </div>
       </div>
 
@@ -368,19 +348,18 @@
         <div class="drawer-backdrop" id="closeCartBackdrop"></div>
         <div class="cart-drawer-panel">
           <div class="cart-drawer-header">
-            <h2 style="font-size:22px;">Keranjang (<span class="js-cart-badge">0</span>)</h2>
-            <button type="button" id="closeCartDrawerBtn" aria-label="Tutup Keranjang" style="font-size:18px;padding:6px;">✕</button>
+            <h2 style="font-size:17px;">Keranjang (<span class="js-cart-badge">0</span>)</h2>
+            <button type="button" id="closeCartDrawerBtn" aria-label="Tutup" style="font-size:16px;padding:6px;">✕</button>
           </div>
           <div class="cart-drawer-body" id="cartDrawerItems"></div>
           <div class="cart-drawer-footer" id="cartDrawerFooter">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-              <span style="font-size:13px;color:var(--color-text-muted);text-transform:uppercase;letter-spacing:0.08em;">Subtotal</span>
-              <strong style="font-size:18px;" id="cartDrawerSubtotal">Rp 0</strong>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+              <span style="font-size:12.5px;color:var(--color-text-muted);">Subtotal</span>
+              <strong style="font-size:16px;" id="cartDrawerSubtotal">Rp 0</strong>
             </div>
-            <p style="font-size:11.5px;color:var(--color-text-muted);margin-bottom:14px;">Ongkos kirim dihitung oleh Admin via WhatsApp setelah checkout.</p>
-            <div style="display:grid;grid-template-columns:1fr 1.3fr;gap:10px;">
-              <a href="cart.html" class="btn btn-outline" style="padding:12px 10px;">Lihat Keranjang</a>
-              <a href="checkout.html" class="btn btn-primary" id="drawerCheckoutBtn" style="padding:12px 10px;">Lanjut Checkout</a>
+            <div style="display:grid;grid-template-columns:1fr 1.2fr;gap:8px;">
+              <a href="cart.html" class="btn btn-outline">Keranjang</a>
+              <a href="checkout.html" class="btn btn-primary" id="drawerCheckoutBtn">Checkout</a>
             </div>
           </div>
         </div>
@@ -388,7 +367,7 @@
     `;
     document.body.appendChild(drawersWrapper);
 
-    // 5. Floating WhatsApp Button (General Inquiry)
+    // 4. Floating WhatsApp Button
     const floatingWa = document.createElement("a");
     floatingWa.href = buildWhatsAppUrl(
       STORE_CONFIG.whatsappAdmin,
@@ -397,16 +376,16 @@
     floatingWa.target = "_blank";
     floatingWa.rel = "noopener noreferrer";
     floatingWa.className = "floating-wa";
-    floatingWa.setAttribute("aria-label", "Konsultasi Aroma via WhatsApp");
+    floatingWa.setAttribute("aria-label", "Chat WhatsApp");
     floatingWa.innerHTML = `
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
       </svg>
-      <span>Tanya Fragrance Concierge</span>
+      <span>Chat Admin</span>
     `;
     document.body.appendChild(floatingWa);
 
-    // 6. Footer Injection
+    // 5. Footer Injection (Clean Minimalist)
     const footerEl = document.getElementById("siteFooter");
     if (footerEl) {
       const waConsultUrl = buildWhatsAppUrl(
@@ -418,12 +397,11 @@
           <div class="footer-grid">
             <div>
               <a href="index.html" class="footer-brand">${STORE_CONFIG.brandName}</a>
-              <p style="font-size:13.5px;color:#C2BBB2;margin-bottom:16px;max-width:340px;">
-                ${STORE_CONFIG.tagline}. ${STORE_CONFIG.subTagline}
+              <p style="font-size:13px;margin-bottom:10px;max-width:280px;">
+                ${STORE_CONFIG.tagline} — ${STORE_CONFIG.subTagline}
               </p>
-              <p style="font-size:12.5px;color:#9E978F;">
-                ${STORE_CONFIG.address}<br>
-                WhatsApp: <a href="${waConsultUrl}" target="_blank" rel="noopener" style="color:#FAF7F2;text-decoration:underline;">${STORE_CONFIG.whatsappDisplay}</a>
+              <p style="font-size:12px;">
+                WA: <a href="${waConsultUrl}" target="_blank" rel="noopener" style="color:var(--color-primary);font-weight:500;">${STORE_CONFIG.whatsappDisplay}</a>
               </p>
             </div>
 
@@ -434,40 +412,33 @@
                 <li><a href="products.html?gender=For+Her">For Her</a></li>
                 <li><a href="products.html?gender=For+Him">For Him</a></li>
                 <li><a href="products.html?gender=Unisex">Unisex</a></li>
-                <li><a href="products.html?view=catalogue">Katalog Aroma</a></li>
               </ul>
             </div>
 
             <div>
-              <h3 class="footer-heading">Informasi & Kebijakan</h3>
+              <h3 class="footer-heading">Informasi</h3>
               <ul class="footer-links">
-                <li><a href="about.html">Tentang ${STORE_CONFIG.brandName}</a></li>
-                <li><a href="contact.html">Hubungi Kami</a></li>
-                <li><a href="policies.html#pengiriman">Kebijakan Pengiriman</a></li>
-                <li><a href="policies.html#pengembalian">Garansi & Retur (${STORE_CONFIG.returnPolicyDays} Hari)</a></li>
-                <li><a href="policies.html#syarat">Syarat & Ketentuan</a></li>
-                <li><a href="policies.html#privasi">Kebijakan Privasi</a></li>
+                <li><a href="about.html">Tentang Kami</a></li>
+                <li><a href="contact.html">Kontak</a></li>
+                <li><a href="policies.html#pengiriman">Pengiriman</a></li>
+                <li><a href="policies.html#pengembalian">Retur 7 Hari</a></li>
+                <li><a href="policies.html#syarat">Syarat &amp; Ketentuan</a></li>
               </ul>
             </div>
 
             <div>
-              <h3 class="footer-heading">Jurnal Olfaktori</h3>
-              <p style="font-size:13px;color:#C2BBB2;">Dapatkan undangan rilis batch terbatas dan panduan layering aroma.</p>
+              <h3 class="footer-heading">Newsletter</h3>
+              <p style="font-size:12.5px;">Info rilis batch terbatas.</p>
               <form class="newsletter-form" id="newsletterForm">
-                <input type="email" placeholder="Alamat email Anda" required aria-label="Alamat email newsletter">
-                <button type="submit" class="btn btn-primary" style="background:var(--color-accent);border-color:var(--color-accent);padding:10px 16px;">Daftar</button>
+                <input type="email" placeholder="Email Anda" required aria-label="Email">
+                <button type="submit" class="btn btn-primary" style="padding:9px 14px;">Ikuti</button>
               </form>
-              <div style="margin-top:18px;display:flex;gap:14px;font-size:12.5px;color:#C2BBB2;">
-                <a href="https://instagram.com" target="_blank" rel="noopener">Instagram (${STORE_CONFIG.instagram})</a>
-                <span>•</span>
-                <a href="https://tiktok.com" target="_blank" rel="noopener">TikTok</a>
-              </div>
             </div>
           </div>
 
           <div class="footer-bottom">
-            <span>&copy; ${new Date().getFullYear()} ${STORE_CONFIG.brandLegalName}. Seluruh hak cipta dilindungi.</span>
-            <span> Pembayaran Resmi via Konfirmasi WhatsApp • Tanpa COD</span>
+            <span>&copy; ${new Date().getFullYear()} ${STORE_CONFIG.brandName}.</span>
+            <span>${STORE_CONFIG.instagram}</span>
           </div>
         </div>
       `;
@@ -477,7 +448,7 @@
         newsForm.addEventListener("submit", function (e) {
           e.preventDefault();
           newsForm.reset();
-          showToast("Terima kasih telah bergabung di Jurnal Olfaktori ANDRD.");
+          showToast("Terima kasih telah bergabung.");
         });
       }
     }
@@ -518,15 +489,15 @@
     if (drawerItemsEl) {
       if (cart.length === 0) {
         drawerItemsEl.innerHTML = `
-          <div style="text-align:center;padding:48px 16px;">
-            <p style="font-family:var(--font-heading);font-size:22px;margin-bottom:8px;">Keranjang Anda Kosong</p>
-            <p style="font-size:13.5px;color:var(--color-text-muted);margin-bottom:20px;">Temukan aroma signature yang dirancang untuk karakter Anda.</p>
-            <a href="products.html" class="btn btn-primary">Jelajahi Parfum</a>
+          <div style="text-align:center;padding:44px 16px;">
+            <p style="font-weight:600;font-size:15px;margin-bottom:6px;">Keranjang Kosong</p>
+            <p style="font-size:12.5px;color:var(--color-text-muted);margin-bottom:18px;">Belum ada produk yang dipilih.</p>
+            <a href="products.html" class="btn btn-primary">Lihat Produk</a>
           </div>
         `;
         if (drawerCheckoutBtn) {
           drawerCheckoutBtn.style.pointerEvents = "none";
-          drawerCheckoutBtn.style.opacity = "0.5";
+          drawerCheckoutBtn.style.opacity = "0.4";
         }
       } else {
         if (drawerCheckoutBtn) {
@@ -542,17 +513,17 @@
               </a>
               <div>
                 <div style="display:flex;justify-content:space-between;gap:8px;">
-                  <a href="product.html?id=${encodeURIComponent(item.productId)}" style="font-weight:600;font-size:14px;">${item.name}</a>
-                  <button type="button" class="js-remove-item" data-key="${item.key}" aria-label="Hapus ${item.name}" style="color:var(--color-text-muted);font-size:13px;">✕</button>
+                  <a href="product.html?id=${encodeURIComponent(item.productId)}" style="font-weight:600;font-size:13.5px;">${item.name}</a>
+                  <button type="button" class="js-remove-item" data-key="${item.key}" aria-label="Hapus" style="color:var(--color-text-muted);font-size:12px;">✕</button>
                 </div>
-                <div style="font-size:12px;color:var(--color-text-muted);margin:2px 0 8px;">Ukuran: ${item.size} ${item.status === "pre-order" ? "• Pre-Order" : ""}</div>
+                <div style="font-size:11.5px;color:var(--color-text-muted);margin:2px 0 8px;">${item.size}</div>
                 <div style="display:flex;align-items:center;justify-content:space-between;">
-                  <div class="qty-control" style="height:30px;">
-                    <button type="button" class="qty-btn js-qty-dec" data-key="${item.key}" data-qty="${item.qty - 1}" style="width:28px;height:28px;">−</button>
-                    <span style="padding:0 8px;font-size:13px;font-weight:600;">${item.qty}</span>
-                    <button type="button" class="qty-btn js-qty-inc" data-key="${item.key}" data-qty="${item.qty + 1}" style="width:28px;height:28px;">+</button>
+                  <div class="qty-control" style="height:28px;">
+                    <button type="button" class="qty-btn js-qty-dec" data-key="${item.key}" data-qty="${item.qty - 1}" style="width:26px;height:28px;">−</button>
+                    <span style="padding:0 6px;font-size:12px;font-weight:600;">${item.qty}</span>
+                    <button type="button" class="qty-btn js-qty-inc" data-key="${item.key}" data-qty="${item.qty + 1}" style="width:26px;height:28px;">+</button>
                   </div>
-                  <strong style="font-size:13.5px;">${formatRupiah(item.price * item.qty)}</strong>
+                  <strong style="font-size:13px;">${formatRupiah(item.price * item.qty)}</strong>
                 </div>
               </div>
             </div>
@@ -562,21 +533,12 @@
       }
     }
 
-    // Jika sedang di halaman cart.html, perbarui juga tabelnya
     if (document.getElementById("cartPageContainer")) {
       renderCartPage();
     }
   }
 
   function bindShellEvents() {
-    // Scroll shadow
-    window.addEventListener("scroll", () => {
-      const header = document.getElementById("siteHeader");
-      if (header) {
-        header.classList.toggle("scrolled", window.scrollY > 10);
-      }
-    });
-
     // Mobile Nav
     const mobileNav = document.getElementById("mobileNavDrawer");
     const openMobileBtn = document.getElementById("openMobileMenuBtn");
@@ -638,13 +600,12 @@
             p.name.toLowerCase().includes(q) ||
             p.scentCategory.toLowerCase().includes(q) ||
             p.gender.toLowerCase().includes(q) ||
-            p.shortDescription.toLowerCase().includes(q) ||
             allNotes.toLowerCase().includes(q)
           );
         });
 
         if (matched.length === 0) {
-          searchResults.innerHTML = `<p style="font-size:13.5px;color:var(--color-text-muted);padding:8px 0;">Tidak ditemukan parfum untuk kata kunci "${sanitizeInput(q)}".</p>`;
+          searchResults.innerHTML = `<p style="font-size:12.5px;color:var(--color-text-muted);padding:6px 0;">Tidak ditemukan untuk "${sanitizeInput(q)}".</p>`;
         } else {
           searchResults.innerHTML = matched
             .slice(0, 6)
@@ -653,9 +614,8 @@
               <a href="product.html?id=${encodeURIComponent(p.id)}" class="search-result-item">
                 <img src="${p.images[0]}" alt="${p.name}">
                 <div>
-                  <div style="font-weight:700;font-size:14.5px;">${p.name}</div>
-                  <div style="font-size:12px;color:var(--color-text-muted);">${p.gender} • ${p.scentCategory}</div>
-                  <div style="font-size:12.5px;font-weight:600;color:var(--color-accent);">Mulai ${formatRupiah(p.variants[0].price)}</div>
+                  <div style="font-weight:600;font-size:13.5px;">${p.name}</div>
+                  <div style="font-size:11.5px;color:var(--color-text-muted);">${p.scentCategory} • ${formatRupiah(p.variants[0].price)}</div>
                 </div>
               </a>
             `
@@ -700,8 +660,61 @@
      6. HOME PAGE CONTROLLER (index.html)
      ========================================================================== */
   function initHomePage() {
-    // A. Hero Slider (3 slides, autoplay, dots, touch swipe)
     const track = document.getElementById("heroTrack");
+
+    // Render Hero Slides dinamis dari STORE_CONFIG.heroSlides (CMS)
+    if (track && Array.isArray(STORE_CONFIG.heroSlides) && STORE_CONFIG.heroSlides.length > 0) {
+      track.innerHTML = STORE_CONFIG.heroSlides
+        .map((slide, idx) => {
+          const fallbackProduct = PRODUCTS[idx] || PRODUCTS[0];
+          const imgSrc = slide.image || (fallbackProduct ? fallbackProduct.images[0] : "");
+          const titleTag = idx === 0 ? "h1" : "h2";
+          return `
+            <div class="hero-slide">
+              <div class="hero-content">
+                <span class="hero-eyebrow">${slide.eyebrow || ""}</span>
+                <${titleTag} class="hero-title">${slide.title || ""}</${titleTag}>
+                <p class="hero-desc">${slide.desc || ""}</p>
+                <div class="hero-actions">
+                  <a href="${slide.btnPrimaryLink || "products.html"}" class="btn btn-primary">${slide.btnPrimaryText || "Belanja"}</a>
+                  ${
+                    slide.btnSecondaryText
+                      ? `<a href="${slide.btnSecondaryLink || "products.html"}" class="btn btn-outline">${slide.btnSecondaryText}</a>`
+                      : ""
+                  }
+                </div>
+              </div>
+              <div class="hero-visual">
+                <img src="${imgSrc}" alt="${slide.title || "ANDRD"}" width="340" height="340">
+              </div>
+            </div>
+          `;
+        })
+        .join("");
+    }
+
+    // Render Kartu Segmentasi dinamis dari STORE_CONFIG.segments (CMS)
+    const segmentGrid = document.querySelector(".segment-grid");
+    if (segmentGrid && Array.isArray(STORE_CONFIG.segments) && STORE_CONFIG.segments.length > 0 && document.getElementById("featuredProductsGrid")) {
+      const fallbackIndices = [2, 3, 0];
+      segmentGrid.innerHTML = STORE_CONFIG.segments
+        .map((seg, idx) => {
+          const fbProd = PRODUCTS[fallbackIndices[idx]] || PRODUCTS[0];
+          const segImg = seg.image || (fbProd ? fbProd.images[0] : "");
+          return `
+            <a href="${seg.link || `products.html?gender=${encodeURIComponent(seg.gender)}`}" class="segment-card">
+              <img src="${segImg}" alt="${seg.title}" class="segment-bg" loading="lazy">
+              <div class="segment-overlay">
+                <h3 class="segment-title">${seg.title}</h3>
+                <p class="segment-desc">${seg.desc}</p>
+                <span class="segment-link">Eksplor →</span>
+              </div>
+            </a>
+          `;
+        })
+        .join("");
+    }
+
     const dots = document.querySelectorAll(".hero-dot");
     if (track && dots.length > 0) {
       let currentSlide = 0;
@@ -716,7 +729,7 @@
 
       function startAutoPlay() {
         stopAutoPlay();
-        autoPlayTimer = setInterval(() => goToSlide(currentSlide + 1), 5500);
+        autoPlayTimer = setInterval(() => goToSlide(currentSlide + 1), 5000);
       }
 
       function stopAutoPlay() {
@@ -730,7 +743,6 @@
         });
       });
 
-      // Touch swipe support on mobile
       let touchStartX = 0;
       track.addEventListener(
         "touchstart",
@@ -744,7 +756,7 @@
         "touchend",
         (e) => {
           const diff = e.changedTouches[0].screenX - touchStartX;
-          if (Math.abs(diff) > 45) {
+          if (Math.abs(diff) > 40) {
             if (diff < 0) goToSlide(currentSlide + 1);
             else goToSlide(currentSlide - 1);
           }
@@ -756,14 +768,12 @@
       startAutoPlay();
     }
 
-    // B. Best Seller / Featured Grid
     const featuredGrid = document.getElementById("featuredProductsGrid");
     if (featuredGrid) {
       const featuredProducts = PRODUCTS.filter((p) => p.featured).slice(0, 4);
       featuredGrid.innerHTML = featuredProducts.map(renderProductCard).join("");
     }
 
-    // C. Fresh Picks / Seasonal Carousel
     const seasonalTrack = document.getElementById("seasonalCarouselTrack");
     if (seasonalTrack) {
       const seasonalProducts = PRODUCTS.filter((p) => p.seasonal);
@@ -773,25 +783,24 @@
       const nextBtn = document.getElementById("carouselNextBtn");
       if (prevBtn && nextBtn) {
         prevBtn.addEventListener("click", () => {
-          seasonalTrack.scrollBy({ left: -300, behavior: "smooth" });
+          seasonalTrack.scrollBy({ left: -280, behavior: "smooth" });
         });
         nextBtn.addEventListener("click", () => {
-          seasonalTrack.scrollBy({ left: 300, behavior: "smooth" });
+          seasonalTrack.scrollBy({ left: 280, behavior: "smooth" });
         });
       }
     }
 
-    // D. Explore by Scent (Automatic Product Count from PRODUCTS)
     const scentGrid = document.getElementById("exploreScentGrid");
     if (scentGrid && STORE_CONFIG.scentCategories) {
       scentGrid.innerHTML = STORE_CONFIG.scentCategories
         .map((cat) => {
           const count = PRODUCTS.filter((p) => p.scentCategory === cat.id).length;
           return `
-            <a href="products.html?scent=${encodeURIComponent(cat.id)}" class="scent-card" style="--scent-accent:${cat.accent}">
+            <a href="products.html?scent=${encodeURIComponent(cat.id)}" class="scent-card">
               <div class="scent-top">
                 <h3 class="scent-name">${cat.name}</h3>
-                <span class="scent-count">${count} Produk</span>
+                <span class="scent-count">${count}</span>
               </div>
               <p class="scent-desc">${cat.subtitle}</p>
             </a>
@@ -815,9 +824,21 @@
     const resetBtn = document.getElementById("resetFiltersBtn");
     const countLabel = document.getElementById("catalogCountLabel");
     const pageTitle = document.getElementById("catalogPageTitle");
+    const mobileFilterBtn = document.getElementById("mobileFilterToggleBtn");
+    const mobileFilterText = document.getElementById("mobileFilterBtnText");
+    const filterPanel = document.getElementById("catalogFilterPanel");
+
     const scentCheckboxes = document.querySelectorAll('input[name="filterScent"]');
     const genderCheckboxes = document.querySelectorAll('input[name="filterGender"]');
     const sizeCheckboxes = document.querySelectorAll('input[name="filterSize"]');
+
+    // Toggle Filter on Mobile
+    if (mobileFilterBtn && filterPanel) {
+      mobileFilterBtn.addEventListener("click", () => {
+        const isOpen = filterPanel.classList.toggle("open");
+        mobileFilterBtn.setAttribute("aria-expanded", String(isOpen));
+      });
+    }
 
     // Read URL Query Parameters
     const params = new URLSearchParams(window.location.search);
@@ -827,7 +848,7 @@
     const isCatalogueView = params.get("view") === "catalogue";
 
     if (isCatalogueView && pageTitle) {
-      pageTitle.textContent = "Olfactory Scent Catalogue";
+      pageTitle.textContent = "Katalog Aroma";
     }
     if (paramGender) {
       genderCheckboxes.forEach((cb) => {
@@ -864,8 +885,20 @@
         .filter((cb) => cb.checked)
         .map((cb) => cb.value);
 
+      // Update mobile filter badge count
+      const activeFilterCount =
+        selectedScents.length +
+        selectedGenders.length +
+        selectedSizes.length +
+        (q ? 1 : 0) +
+        (maxPrice < 700000 ? 1 : 0);
+
+      if (mobileFilterText) {
+        mobileFilterText.textContent =
+          activeFilterCount > 0 ? `Filter (${activeFilterCount})` : "Filter";
+      }
+
       let filtered = PRODUCTS.filter((p) => {
-        // Search query
         if (q) {
           const notesStr = [
             ...(p.notes.top || []),
@@ -877,22 +910,18 @@
           const matchText =
             p.name.toLowerCase().includes(q) ||
             p.scentCategory.toLowerCase().includes(q) ||
-            p.shortDescription.toLowerCase().includes(q) ||
             notesStr.includes(q);
           if (!matchText) return false;
         }
 
-        // Scent Category
         if (selectedScents.length > 0 && !selectedScents.includes(p.scentCategory)) {
           return false;
         }
 
-        // Gender
         if (selectedGenders.length > 0 && !selectedGenders.includes(p.gender)) {
           return false;
         }
 
-        // Size & Price
         const matchingVariants = p.variants.filter((v) => {
           const sizeMatch = selectedSizes.length === 0 || selectedSizes.includes(v.size);
           const priceMatch = v.price <= maxPrice;
@@ -902,27 +931,24 @@
         return matchingVariants.length > 0;
       });
 
-      // Sorting
       filtered.sort((a, b) => {
         const minA = a.variants[0].price;
         const minB = b.variants[0].price;
         if (sortBy === "price-asc") return minA - minB;
         if (sortBy === "price-desc") return minB - minA;
         if (sortBy === "name-asc") return a.name.localeCompare(b.name);
-        // Default: featured first
         return Number(b.featured) - Number(a.featured);
       });
 
       if (countLabel) {
-        countLabel.textContent = `Menampilkan ${filtered.length} dari ${PRODUCTS.length} parfum`;
+        countLabel.textContent = `${filtered.length} produk`;
       }
 
       if (filtered.length === 0) {
         gridEl.innerHTML = `
-          <div style="grid-column:1/-1;text-align:center;padding:56px 20px;background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-md);">
-            <h3 style="font-size:24px;margin-bottom:8px;">Tidak Ada Parfum yang Sesuai Filter</h3>
-            <p style="color:var(--color-text-muted);margin-bottom:18px;">Coba ubah rentang harga atau hapus beberapa filter kategori aroma.</p>
-            <button type="button" class="btn btn-outline" id="emptyResetBtn">Reset Semua Filter</button>
+          <div style="grid-column:1/-1;text-align:center;padding:44px 16px;background:var(--color-bg-alt);border-radius:var(--radius-md);">
+            <p style="font-weight:600;margin-bottom:6px;">Produk tidak ditemukan</p>
+            <button type="button" class="btn btn-outline" id="emptyResetBtn" style="margin-top:8px;">Reset Filter</button>
           </div>
         `;
         const emptyReset = document.getElementById("emptyResetBtn");
@@ -967,22 +993,16 @@
     const product =
       PRODUCTS.find((p) => p.id === idParam || p.slug === slugParam) || PRODUCTS[0];
 
-    // Update Document Title & Meta Description dynamically
-    document.title = `${product.name} (${product.scentCategory}) — ${STORE_CONFIG.brandName} Extrait de Parfum`;
-    const metaDesc = document.querySelector('meta[name="description"]');
-    if (metaDesc) {
-      metaDesc.setAttribute("content", `${product.name}: ${product.shortDescription}`);
-    }
+    document.title = `${product.name} — ${STORE_CONFIG.brandName}`;
 
-    // Default selected variant: 50ml (index 1) or first variant
     let selectedVariant = product.variants[1] || product.variants[0];
 
     const statusBadgeHtml =
       product.status === "sold-out"
         ? `<span class="badge badge-soldout">Sold Out</span>`
         : product.status === "pre-order"
-        ? `<span class="badge badge-preorder">Pre-Order (Dikirim 5-7 Hari Kerja)</span>`
-        : `<span class="badge" style="background:var(--color-success);color:#fff;">Ready Stock</span>`;
+        ? `<span class="badge badge-preorder">Pre-Order</span>`
+        : `<span class="badge badge-bestseller">Ready</span>`;
 
     container.innerHTML = `
       <nav class="breadcrumb" aria-label="Breadcrumb">
@@ -990,13 +1010,10 @@
         <span>/</span>
         <a href="products.html">Products</a>
         <span>/</span>
-        <a href="products.html?scent=${encodeURIComponent(product.scentCategory)}">${product.scentCategory}</a>
-        <span>/</span>
         <strong style="color:var(--color-primary);">${product.name}</strong>
       </nav>
 
       <div class="product-detail-grid">
-        <!-- Galeri Gambar -->
         <div>
           <div class="gallery-main">
             <img src="${product.images[0]}" alt="${product.name}" id="detailMainImage" width="600" height="600">
@@ -1006,7 +1023,7 @@
               .map(
                 (img, idx) => `
               <button type="button" class="gallery-thumb ${idx === 0 ? "active" : ""}" data-img="${img}" aria-label="Gambar ${idx + 1}">
-                <img src="${img}" alt="Thumbnail ${idx + 1} ${product.name}">
+                <img src="${img}" alt="${product.name}">
               </button>
             `
               )
@@ -1014,18 +1031,16 @@
           </div>
         </div>
 
-        <!-- Informasi & Form Pembelian -->
         <div>
           <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-            <span style="font-size:12px;text-transform:uppercase;letter-spacing:0.12em;color:var(--color-accent);font-weight:700;">
+            <span style="font-size:11.5px;color:var(--color-text-muted);font-weight:500;">
               ${product.gender} • ${product.scentCategory}
             </span>
             ${statusBadgeHtml}
-            ${product.badge ? `<span class="badge badge-bestseller">${product.badge}</span>` : ""}
           </div>
 
           <h1 class="detail-title">${product.name}</h1>
-          <p style="color:var(--color-text-muted);margin-bottom:18px;">${product.shortDescription}</p>
+          <p style="color:var(--color-text-muted);font-size:13.5px;margin-bottom:16px;">${product.shortDescription}</p>
 
           <div class="detail-price-box">
             <span class="detail-price" id="detailDynamicPrice">${formatRupiah(selectedVariant.price)}</span>
@@ -1034,10 +1049,9 @@
             </span>
           </div>
 
-          <!-- Pilihan Varian Ukuran -->
           <div>
-            <label style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;">
-              Pilih Ukuran Botol: <span id="selectedSizeLabel" style="color:var(--color-accent);">${selectedVariant.size}</span>
+            <label style="font-size:12px;font-weight:600;">
+              Ukuran: <span id="selectedSizeLabel">${selectedVariant.size}</span>
             </label>
             <div class="variant-selector" id="variantSelector">
               ${product.variants
@@ -1052,54 +1066,41 @@
             </div>
           </div>
 
-          <!-- Jumlah & Tombol Aksi -->
           <div id="detailActionArea"></div>
 
-          <!-- Spesifikasi Singkat -->
-          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:14px;background:var(--color-bg-alt);border-radius:var(--radius-sm);margin-bottom:20px;font-size:12px;">
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:12px;background:var(--color-bg-alt);border-radius:var(--radius-sm);margin-bottom:16px;font-size:11.5px;">
             <div>
-              <span style="color:var(--color-text-muted);display:block;">Konsentrasi</span>
-              <strong>${product.concentration}</strong>
+              <span style="color:var(--color-text-muted);display:block;">Tipe</span>
+              <strong>Extrait</strong>
             </div>
             <div>
               <span style="color:var(--color-text-muted);display:block;">Ketahanan</span>
               <strong>${product.longevity}</strong>
             </div>
             <div>
-              <span style="color:var(--color-text-muted);display:block;">Jejak Aroma</span>
+              <span style="color:var(--color-text-muted);display:block;">Sillage</span>
               <strong>${product.sillage}</strong>
             </div>
           </div>
 
-          <!-- Accordion Informasi Lengkap -->
           <div class="accordion" id="detailAccordion">
             <div class="accordion-item open">
               <button type="button" class="accordion-trigger">
-                <span>Deskripsi Karakter Aroma</span>
-                <span>−</span>
-              </button>
-              <div class="accordion-content">
-                <p>${product.description}</p>
-              </div>
-            </div>
-
-            <div class="accordion-item open">
-              <button type="button" class="accordion-trigger">
-                <span>Piramida Notes Aroma</span>
+                <span>Notes Aroma</span>
                 <span>−</span>
               </button>
               <div class="accordion-content">
                 <div class="notes-pyramid">
                   <div class="note-tier">
-                    <strong style="color:var(--color-primary);display:block;font-size:12px;text-transform:uppercase;">Top Notes ( kesan pertama 0-15 menit )</strong>
+                    <strong style="color:var(--color-primary);display:block;font-size:11px;">Top Notes</strong>
                     <span>${product.notes.top.join(", ")}</span>
                   </div>
                   <div class="note-tier">
-                    <strong style="color:var(--color-primary);display:block;font-size:12px;text-transform:uppercase;">Middle / Heart Notes ( karakter inti 15 menit - 4 jam )</strong>
+                    <strong style="color:var(--color-primary);display:block;font-size:11px;">Middle Notes</strong>
                     <span>${product.notes.middle.join(", ")}</span>
                   </div>
                   <div class="note-tier">
-                    <strong style="color:var(--color-primary);display:block;font-size:12px;text-transform:uppercase;">Base Notes ( jejak akhir hingga 12 jam )</strong>
+                    <strong style="color:var(--color-primary);display:block;font-size:11px;">Base Notes</strong>
                     <span>${product.notes.base.join(", ")}</span>
                   </div>
                 </div>
@@ -1108,21 +1109,21 @@
 
             <div class="accordion-item">
               <button type="button" class="accordion-trigger">
-                <span>Cara Pemakaian & Penyimpanan</span>
+                <span>Deskripsi</span>
                 <span>+</span>
               </button>
               <div class="accordion-content">
-                <p>Semprotkan dengan jarak 15–20 cm pada titik nadi (pergelangan tangan, leher, belakang telinga, atau lipatan siku) setelah menggunakan pelembap/lotion tanpa aroma. Jangan menggosok pergelangan tangan setelah disemprot agar molekul top notes tidak pecah. Simpan di tempat sejuk dan terhindar dari sinar matahari langsung.</p>
+                <p>${product.description}</p>
               </div>
             </div>
 
             <div class="accordion-item">
               <button type="button" class="accordion-trigger">
-                <span>Pengiriman, Free Vial & Garansi Retur</span>
+                <span>Cara Pakai &amp; Pengiriman</span>
                 <span>+</span>
               </button>
               <div class="accordion-content">
-                <p>Setiap pembelian botol ukuran apa pun mendapatkan <strong>Free 2ml Discovery Vial</strong>. Dikemas aman dengan honeycomb wrap tebal. Garansi penggantian baru ${STORE_CONFIG.returnPolicyDays} hari jika botol pecah atau sprayer macet saat diterima (wajib menyertakan video unboxing tanpa jeda).</p>
+                <p>Semprotkan pada titik nadi dengan jarak 15 cm. Setiap pembelian mendapat gratis 2ml vial dan garansi retur ${STORE_CONFIG.returnPolicyDays} hari.</p>
               </div>
             </div>
           </div>
@@ -1138,27 +1139,22 @@
         const waMsg = STORE_CONFIG.buildRestockMessage(product.name, selectedVariant.size);
         const waHref = buildWhatsAppUrl(STORE_CONFIG.whatsappAdmin, waMsg);
         actionEl.innerHTML = `
-          <div style="padding:16px;border:1px dashed var(--color-accent);background:var(--color-surface);border-radius:var(--radius-sm);margin-bottom:20px;">
-            <p style="font-size:13.5px;margin-bottom:12px;color:var(--color-text-muted);">
-              Mohon maaf, <strong>${product.name} (${selectedVariant.size})</strong> sedang habis terjual. Klik tombol di bawah untuk mendapatkan notifikasi prioritas via WhatsApp saat batch baru tersedia.
-            </p>
-            <div style="display:flex;gap:10px;flex-wrap:wrap;">
-              <button type="button" class="btn btn-primary" disabled style="flex:1;">Sold Out</button>
-              <a href="${waHref}" target="_blank" rel="noopener noreferrer" class="btn btn-whatsapp" style="flex:1.4;">
-                Kabari Saya via WhatsApp
-              </a>
-            </div>
+          <div style="margin-bottom:18px;display:flex;gap:8px;">
+            <button type="button" class="btn btn-outline" disabled style="flex:1;">Sold Out</button>
+            <a href="${waHref}" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="flex:1.4;">
+              Kabari Saya via WA
+            </a>
           </div>
         `;
       } else {
         const ctaLabel =
-          product.status === "pre-order" ? "Ikut Pre-Order — Tambah ke Keranjang" : "Tambah ke Keranjang";
+          product.status === "pre-order" ? "Pre-Order" : "Tambah ke Keranjang";
         actionEl.innerHTML = `
           <div class="qty-action-row">
             <div class="qty-control">
-              <button type="button" class="qty-btn" id="detailQtyMinus" aria-label="Kurangi jumlah">−</button>
-              <input type="number" id="detailQtyInput" class="qty-input" value="1" min="1" max="50" aria-label="Jumlah botol">
-              <button type="button" class="qty-btn" id="detailQtyPlus" aria-label="Tambah jumlah">+</button>
+              <button type="button" class="qty-btn" id="detailQtyMinus" aria-label="Kurangi">−</button>
+              <input type="number" id="detailQtyInput" class="qty-input" value="1" min="1" max="50" aria-label="Jumlah">
+              <button type="button" class="qty-btn" id="detailQtyPlus" aria-label="Tambah">+</button>
             </div>
             <button type="button" class="btn btn-primary" id="detailAddToCartBtn" style="flex:1;">
               ${ctaLabel}
@@ -1182,7 +1178,6 @@
 
     renderActionArea();
 
-    // Thumbnail switching
     container.querySelectorAll(".gallery-thumb").forEach((btn) => {
       btn.addEventListener("click", () => {
         container.querySelectorAll(".gallery-thumb").forEach((b) => b.classList.remove("active"));
@@ -1191,7 +1186,6 @@
       });
     });
 
-    // Variant size switching (dynamic price)
     container.querySelectorAll(".variant-btn").forEach((btn) => {
       btn.addEventListener("click", () => {
         const size = btn.getAttribute("data-size");
@@ -1210,7 +1204,6 @@
       });
     });
 
-    // Accordion toggle
     container.querySelectorAll(".accordion-trigger").forEach((trigger) => {
       trigger.addEventListener("click", () => {
         const item = trigger.parentElement;
@@ -1219,7 +1212,6 @@
       });
     });
 
-    // Related Products
     const relatedGrid = document.getElementById("relatedProductsGrid");
     if (relatedGrid) {
       const related = PRODUCTS.filter(
@@ -1230,7 +1222,6 @@
       relatedGrid.innerHTML = related.map(renderProductCard).join("");
     }
 
-    // Inject Schema.org Product JSON-LD
     injectProductSchema(product);
   }
 
@@ -1284,9 +1275,9 @@
 
     if (cart.length === 0) {
       container.innerHTML = `
-        <div style="text-align:center;padding:64px 20px;background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-md);">
-          <h2 style="font-size:32px;margin-bottom:10px;">Keranjang Belanja Anda Kosong</h2>
-          <p style="color:var(--color-text-muted);margin-bottom:24px;">Belum ada parfum yang dipilih. Mari temukan wangi yang mewakili cerita Anda.</p>
+        <div style="text-align:center;padding:56px 20px;background:var(--color-bg-alt);border-radius:var(--radius-lg);">
+          <h2 style="font-size:22px;margin-bottom:6px;">Keranjang Kosong</h2>
+          <p style="color:var(--color-text-muted);margin-bottom:20px;">Belum ada produk di keranjang Anda.</p>
           <a href="products.html" class="btn btn-primary">Mulai Belanja</a>
         </div>
       `;
@@ -1296,33 +1287,33 @@
     container.innerHTML = `
       <div class="checkout-grid">
         <div class="checkout-card">
-          <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:16px;margin-bottom:16px;border-bottom:1px solid var(--color-border);">
-            <h2 style="font-size:24px;">Daftar Item (${getCartCount()})</h2>
-            <button type="button" id="clearCartPageBtn" style="font-size:12.5px;color:var(--color-danger);text-decoration:underline;">Kosongkan Keranjang</button>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:14px;margin-bottom:14px;border-bottom:1px solid var(--color-border);">
+            <h2 style="font-size:18px;">Item (${getCartCount()})</h2>
+            <button type="button" id="clearCartPageBtn" style="font-size:12px;color:var(--color-text-muted);text-decoration:underline;">Kosongkan</button>
           </div>
           <div>
             ${cart
               .map(
                 (item) => `
-              <div class="cart-item" style="grid-template-columns:88px 1fr;align-items:center;">
+              <div class="cart-item" style="grid-template-columns:76px 1fr;align-items:center;">
                 <a href="product.html?id=${encodeURIComponent(item.productId)}">
-                  <img src="${item.image}" alt="${item.name}" style="width:88px;height:88px;">
+                  <img src="${item.image}" alt="${item.name}" style="width:76px;height:76px;">
                 </a>
                 <div>
-                  <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+                  <div style="display:flex;justify-content:space-between;gap:8px;">
                     <div>
-                      <a href="product.html?id=${encodeURIComponent(item.productId)}" style="font-family:var(--font-heading);font-size:20px;font-weight:700;">${item.name}</a>
-                      <div style="font-size:13px;color:var(--color-text-muted);">Ukuran Botol: <strong>${item.size}</strong> • Harga satuan: ${formatRupiah(item.price)}</div>
+                      <a href="product.html?id=${encodeURIComponent(item.productId)}" style="font-size:15px;font-weight:600;">${item.name}</a>
+                      <div style="font-size:12px;color:var(--color-text-muted);">${item.size} • ${formatRupiah(item.price)}</div>
                     </div>
-                    <button type="button" class="js-remove-item" data-key="${item.key}" style="font-size:12.5px;color:var(--color-danger);">Hapus</button>
+                    <button type="button" class="js-remove-item" data-key="${item.key}" style="font-size:12px;color:var(--color-text-muted);">✕</button>
                   </div>
-                  <div style="display:flex;align-items:center;justify-content:space-between;margin-top:12px;">
-                    <div class="qty-control">
+                  <div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px;">
+                    <div class="qty-control" style="background:#FFFFFF;">
                       <button type="button" class="qty-btn js-qty-dec" data-key="${item.key}" data-qty="${item.qty - 1}">−</button>
-                      <span style="padding:0 12px;font-weight:600;">${item.qty}</span>
+                      <span style="padding:0 10px;font-weight:600;">${item.qty}</span>
                       <button type="button" class="qty-btn js-qty-inc" data-key="${item.key}" data-qty="${item.qty + 1}">+</button>
                     </div>
-                    <strong style="font-size:16px;">${formatRupiah(item.price * item.qty)}</strong>
+                    <strong style="font-size:14.5px;">${formatRupiah(item.price * item.qty)}</strong>
                   </div>
                 </div>
               </div>
@@ -1333,25 +1324,24 @@
         </div>
 
         <div class="checkout-card">
-          <h2 style="font-size:24px;margin-bottom:16px;">Ringkasan Pesanan</h2>
-          <div style="display:flex;justify-content:space-between;margin-bottom:10px;font-size:14.5px;">
-            <span>Subtotal Produk</span>
+          <h2 style="font-size:18px;margin-bottom:14px;">Ringkasan</h2>
+          <div style="display:flex;justify-content:space-between;margin-bottom:8px;font-size:13.5px;">
+            <span>Subtotal</span>
             <strong>${formatRupiah(subtotal)}</strong>
           </div>
-          <div style="display:flex;justify-content:space-between;margin-bottom:10px;font-size:14px;color:var(--color-text-muted);">
-            <span>Free Discovery Vial (2ml)</span>
-            <span style="color:var(--color-success);font-weight:600;">GRATIS</span>
+          <div style="display:flex;justify-content:space-between;margin-bottom:8px;font-size:13px;color:var(--color-text-muted);">
+            <span>Free Vial 2ml</span>
+            <span>Gratis</span>
           </div>
-          <div style="display:flex;justify-content:space-between;padding-bottom:16px;margin-bottom:16px;border-bottom:1px solid var(--color-border);font-size:14px;color:var(--color-text-muted);">
-            <span>Estimasi Ongkos Kirim</span>
-            <span>Dikonfirmasi via WhatsApp</span>
+          <div style="display:flex;justify-content:space-between;padding-bottom:14px;margin-bottom:14px;border-bottom:1px solid var(--color-border);font-size:13px;color:var(--color-text-muted);">
+            <span>Ongkir</span>
+            <span>Info via WhatsApp</span>
           </div>
-          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:20px;">
-            <span style="font-weight:700;text-transform:uppercase;font-size:13px;">Total Sementara</span>
-            <strong style="font-size:22px;color:var(--color-primary);">${formatRupiah(subtotal)}</strong>
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:18px;">
+            <span style="font-weight:600;font-size:13px;">Total</span>
+            <strong style="font-size:19px;">${formatRupiah(subtotal)}</strong>
           </div>
           <a href="checkout.html" class="btn btn-primary btn-block">Lanjut ke Checkout</a>
-          <a href="products.html" class="btn btn-outline btn-block" style="margin-top:10px;">Tambah Parfum Lain</a>
         </div>
       </div>
     `;
@@ -1367,6 +1357,115 @@
   /* ==========================================================================
      10. CHECKOUT DIRECT KE WHATSAPP CONTROLLER (checkout.html)
      ========================================================================== */
+  const WILAYAH_INDONESIA = {
+    "DKI Jakarta": {
+      "Jakarta Selatan": ["Kebayoran Baru", "Kebayoran Lama", "Cilandak", "Tebet", "Setiabudi", "Mampang Prapatan", "Pancoran", "Pasar Minggu", "Jagakarsa", "Pesanggrahan"],
+      "Jakarta Pusat": ["Menteng", "Tanah Abang", "Gambir", "Sawah Besar", "Kemayoran", "Senen", "Cempaka Putih", "Johar Baru"],
+      "Jakarta Barat": ["Kebon Jeruk", "Kembangan", "Palmerah", "Grogol Petamburan", "Cengkareng", "Kalideres", "Taman Sari", "Tambora"],
+      "Jakarta Timur": ["Duren Sawit", "Jatinegara", "Kramat Jati", "Matraman", "Pulo Gadung", "Cakung", "Cipayung", "Ciracas", "Makasar", "Pasar Rebo"],
+      "Jakarta Utara": ["Kelapa Gading", "Penjaringan", "Pademangan", "Tanjung Priok", "Koja", "Cilincing"],
+      "Kepulauan Seribu": ["Kepulauan Seribu Selatan", "Kepulauan Seribu Utara"]
+    },
+    "Banten": {
+      "Kota Tangerang Selatan": ["Bintaro / Pondok Aren", "BSD / Serpong", "Serpong Utara", "Ciputat", "Ciputat Timur", "Pamulang", "Setu"],
+      "Kota Tangerang": ["Ciledug", "Karawaci", "Cipondoh", "Tangerang", "Batuceper", "Benda", "Cibodas", "Jatiuwung", "Karangtengah", "Larangan", "Neglasari", "Periuk", "Pinang"],
+      "Kab. Tangerang": ["Kelapa Dua", "Pagedangan", "Cisauk", "Curug", "Cikupa", "Balaraja", "Pasar Kemis", "Tigaraksa", "Kosambi", "Sepatan"],
+      "Kota Serang": ["Serang", "Cipocok Jaya", "Curug", "Kasemen", "Taktakan", "Walantaka"],
+      "Kota Cilegon": ["Cilegon", "Cibeber", "Citangkil", "Ciwandan", "Gerogol", "Jombang", "Pulomerak", "Purwakarta"],
+      "Kab. Lebak": ["Rangkasbitung", "Cibadak", "Maja", "Malingping", "Bayah"],
+      "Kab. Pandeglang": ["Pandeglang", "Majasari", "Karangtanjung", "Labuan", "Carita"]
+    },
+    "Jawa Barat": {
+      "Kota Bandung": ["Coblong", "Bandung Wetan", "Sumur Bandung", "Sukajadi", "Cidadap", "Cicendo", "Andir", "Antapani", "Arcamanik", "Buahbatu", "Lengkong", "Regol", "Ujungberung"],
+      "Kota Bekasi": ["Bekasi Selatan", "Bekasi Barat", "Bekasi Timur", "Bekasi Utara", "Medan Satria", "Rawalumbu", "Pondok Gede", "Jatiasih", "Jatisampurna", "Mustika Jaya", "Bantargebang", "Pondok Melati"],
+      "Kota Depok": ["Margonda / Beji", "Cinere", "Cimanggis", "Pancoran Mas", "Sukmajaya", "Sawangan", "Limo", "Cilodong", "Cipayung", "Tapos", "Bojongsari"],
+      "Kota Bogor": ["Bogor Tengah", "Bogor Selatan", "Bogor Timur", "Bogor Utara", "Bogor Barat", "Tanah Sareal"],
+      "Kab. Bogor": ["Cibinong", "Sentul / Babakan Madang", "Cileungsi", "Gunung Putri", "Ciawi", "Megamendung", "Cisarua", "Bojong Gede", "Parung", "Ciomas"],
+      "Kab. Bekasi": ["Cikarang Barat", "Cikarang Pusat", "Cikarang Selatan", "Cikarang Utara", "Cikarang Timur", "Tambun Selatan", "Tambun Utara", "Babelan", "Cibitung"],
+      "Kab. Bandung": ["Margahayu", "Margaasih", "Dayeuhkolot", "Bojongsoang", "Cileunyi", "Rancaekek", "Soreang", "Ciwidey", "Pangalengan", "Lembang (KBB)"],
+      "Kota Cirebon": ["Kejaksan", "Kesambi", "Lemahwungkuk", "Harjamukti", "Pekalipan"],
+      "Kota Tasikmalaya": ["Cihideung", "Tawang", "Cipedes", "Indihiang", "Kawalu"],
+      "Kab. Garut": ["Garut Kota", "Tarogong Kidul", "Tarogong Kaler", "karangpawitan", "Leles"],
+      "Kab. Karawang": ["Karawang Barat", "Karawang Timur", "Telukjambe Timur", "Telukjambe Barat", "Klari", "Cikampek"]
+    },
+    "Jawa Tengah": {
+      "Kota Semarang": ["Semarang Tengah", "Semarang Selatan", "Semarang Barat", "Semarang Timur", "Semarang Utara", "Banyumanik", "Candisari", "Gajahmungkur", "Gayamsari", "Genuk", "Gunungpati", "Mijen", "Ngaliyan", "Pedurungan", "Tembalang", "Tugu"],
+      "Kota Surakarta (Solo)": ["Laweyan", "Serengan", "Pasar Kliwon", "Jebres", "Banjarsari"],
+      "Kota Magelang": ["Magelang Tengah", "Magelang Utara", "Magelang Selatan"],
+      "Kota Pekalongan": ["Pekalongan Barat", "Pekalongan Timur", "Pekalongan Utara", "Pekalongan Selatan"],
+      "Kota Tegal": ["Tegal Barat", "Tegal Timur", "Tegal Selatan", "Margadana"],
+      "Kab. Banyumas (Purwokerto)": ["Purwokerto Timur", "Purwokerto Barat", "Purwokerto Utara", "Purwokerto Selatan", "Sokaraja", "Baturaden"],
+      "Kab. Kudus": ["Kota Kudus", "Jati", "Bae", "Kaliwungu", "Gebog"],
+      "Kab. Jepara": ["Jepara", "Tahunan", "Batealit", "Mayong", "Pecangaan"],
+      "Kab. Klaten": ["Klaten Tengah", "Klaten Utara", "Klaten Selatan", "Prambanan", "Delanggu"]
+    },
+    "DI Yogyakarta": {
+      "Kota Yogyakarta": ["Gondokusuman", "Jetis", "Danurejan", "Gedongtengen", "Gondomanan", "Kotagede", "Kraton", "Mantrijeron", "Mergangsan", "Ngampilan", "Pakualaman", "Tegalrejo", "Umbulharjo", "Wirobrajan"],
+      "Kab. Sleman": ["Depok", "Mlati", "Gamping", "Ngaglik", "Godean", "Kalasan", "Sleman", "Pakem", "Prambanan"],
+      "Kab. Bantul": ["Banguntapan", "Kasihan", "Sewon", "Bantul", "Jetis", "Piyungan", "Sedayu"],
+      "Kab. Kulon Progo": ["Wates", "Temon", "Pengasih", "Sentolo"],
+      "Kab. Gunungkidul": ["Wonosari", "Playen", "Karangmojo", "Semanu"]
+    },
+    "Jawa Timur": {
+      "Kota Surabaya": ["Gubeng", "Wonokromo", "Tegalsari", "Genteng", "Sukolilo", "Rungkut", "Sawahan", "Dukuh Pakis", "Wiyung", "Gayungan", "Jambangan", "Tenggilis Mejoyo", "Mulyorejo", "Tambaksari", "Kenjeran"],
+      "Kota Malang": ["Klojen", "Lowokwaru", "Blimbing", "Sukun", "Kedungkandang"],
+      "Kab. Sidoarjo": ["Sidoarjo", "Waru", "Taman", "Gedangan", "Buduran", "Candi", "Krian", "Sedati"],
+      "Kab. Gresik": ["Gresik", "Kebomas", "Manyar", "Menganti", "Driyorejo"],
+      "Kota Batu": ["Batu", "Bumiaji", "Junrejo"],
+      "Kota Kediri": ["Kota Kediri", "Mojoroto", "Pesantren"],
+      "Kab. Jember": ["Sumbersari", "Kaliwates", "Patrang", "Ambulu", "Tanggul"],
+      "Kab. Banyuwangi": ["Banyuwangi", "Giri", "Glagah", "Kabat", "Genteng", "Rogojampi"]
+    },
+    "Bali": {
+      "Kota Denpasar": ["Denpasar Selatan", "Denpasar Barat", "Denpasar Timur", "Denpasar Utara"],
+      "Kab. Badung": ["Kuta", "Kuta Selatan (Jimbaran/Uluwatu)", "Kuta Utara (Canggu/Kerobokan)", "Mengwi", "Abiansemal", "Petang"],
+      "Kab. Gianyar": ["Ubud", "Sukawati", "Gianyar", "Blahbatuh", "Tampaksiring", "Tegallalang", "Payangan"],
+      "Kab. Tabanan": ["Tabanan", "Kediri", "Kerambitan", "Baturiti"],
+      "Kab. Buleleng": ["Singaraja / Buleleng", "Sukasada", "Seririt", "Banjar"]
+    },
+    "Sumatera Utara": {
+      "Kota Medan": ["Medan Baru", "Medan Petisah", "Medan Polonia", "Medan Kota", "Medan Sunggal", "Medan Selayang", "Medan Johor", "Medan Helvetia", "Medan Area", "Medan Barat", "Medan Timur"],
+      "Kota Binjai": ["Binjai Kota", "Binjai Barat", "Binjai Timur", "Binjai Selatan", "Binjai Utara"],
+      "Kab. Deli Serdang": ["Percut Sei Tuan", "Tanjung Morawa", "Lubuk Pakam", "Sunggal", "Pancur Batu"]
+    },
+    "Sumatera Barat": {
+      "Kota Padang": ["Padang Barat", "Padang Timur", "Padang Utara", "Padang Selatan", "Kuranji", "Koto Tangah", "Nanggalo", "Lubuk Begalung"],
+      "Kota Bukittinggi": ["Guguk Panjang", "Mandiangin Koto Selayan", "Aur Birugo Tigo Baleh"]
+    },
+    "Riau & Kepulauan Riau": {
+      "Kota Pekanbaru": ["Sukajadi", "Marpoyan Damai", "Tampan / Tuah Madani", "Bukit Raya", "Payung Sekaki", "Senapelan", "Lima Puluh", "Sail", "Tenayan Raya"],
+      "Kota Batam": ["Batam Kota", "Lubuk Baja", "Nagoya", "Batu Ampar", "Bengkong", "Sekupang", "Sagulung", "Sei Beduk", "Nongsa"],
+      "Kota Tanjungpinang": ["Tanjungpinang Kota", "Tanjungpinang Barat", "Tanjungpinang Timur", "Bukit Bestari"]
+    },
+    "Sumatera Selatan & Lampung": {
+      "Kota Palembang": ["Ilir Barat I", "Ilir Timur I", "Ilir Timur II", "Sukarami", "Kemuning", "Sako", "Seberang Ulu I", "Kalidoni", "Bukit Kecil"],
+      "Kota Bandar Lampung": ["Tanjung Karang Pusat", "Enggal", "Kedaton", "Rajabasa", "Sukarame", "Way Halim", "Teluk Betung Selatan", "Teluk Betung Utara"]
+    },
+    "Kalimantan Timur": {
+      "Kota Balikpapan": ["Balikpapan Selatan", "Balikpapan Kota", "Balikpapan Tengah", "Balikpapan Utara", "Balikpapan Barat", "Balikpapan Timur"],
+      "Kota Samarinda": ["Samarinda Kota", "Samarinda Ulu", "Samarinda Ilir", "Samarinda Utara", "Sungai Kunjang", "Sungai Pinang"],
+      "Kota Bontang": ["Bontang Utara", "Bontang Selatan", "Bontang Barat"]
+    },
+    "Kalimantan Selatan, Barat & Tengah": {
+      "Kota Banjarmasin": ["Banjarmasin Tengah", "Banjarmasin Utara", "Banjarmasin Selatan", "Banjarmasin Timur", "Banjarmasin Barat"],
+      "Kota Banjarbaru": ["Banjarbaru Utara", "Banjarbaru Selatan", "Landasan Ulin", "Liang Anggang", "Cempaka"],
+      "Kota Pontianak": ["Pontianak Kota", "Pontianak Selatan", "Pontianak Tenggara", "Pontianak Barat", "Pontianak Timur", "Pontianak Utara"],
+      "Kota Palangka Raya": ["Pahandut", "Jekan Raya", "Sabangau", "Bukit Batu"]
+    },
+    "Sulawesi Selatan & Utara": {
+      "Kota Makassar": ["Panakkukang", "Rappocini", "Tamalate", "Ujung Pandang", "Mamajang", "Mariso", "Biringkanaya", "Tamalanrea", "Manggala", "Wajo"],
+      "Kota Manado": ["Wenang", "Sario", "Malalayang", "Wanea", "Tikala", "Mapanget", "Paal Dua"],
+      "Kota Kendari": ["Mandonga", "Kadia", "Wua-Wua", "Poasia", "Baruga"],
+      "Kota Palu": ["Palu Selatan", "Palu Timur", "Palu Barat", "Palu Utara", "Mantikulore"]
+    },
+    "NTB, NTT, Maluku & Papua": {
+      "Kota Mataram": ["Mataram", "Ampenan", "Cakranegara", "Selaparang", "Sekarbela", "Sandubaya"],
+      "Kota Kupang": ["Oebobo", "Kelapa Lima", "Kota Raja", "Kota Lama", "Alak", "Maulafa"],
+      "Kota Ambon": ["Sirimau", "Nusaniwe", "Baguala", "Teluk Ambon"],
+      "Kota Jayapura": ["Jayapura Utara", "Jayapura Selatan", "Abepura", "Heram", "Muara Tami"]
+    }
+  };
+
   function initCheckoutPage() {
     const form = document.getElementById("whatsappCheckoutForm");
     const summaryEl = document.getElementById("checkoutSummaryItems");
@@ -1374,13 +1473,70 @@
     const courierSelect = document.getElementById("custKurir");
     if (!form || !summaryEl) return;
 
-    // Populate Couriers from config.js
     if (courierSelect && STORE_CONFIG.couriers) {
       courierSelect.innerHTML =
-        `<option value="">-- Pilih Ekspedisi Pengiriman --</option>` +
+        `<option value="">Pilih Kurir Pengiriman</option>` +
         STORE_CONFIG.couriers
           .map((c) => `<option value="${c.id}">${c.label}</option>`)
           .join("");
+    }
+
+    // Populate Cascading Wilayah Dropdowns (Provinsi -> Kota/Kabupaten -> Kecamatan)
+    const provSelect = document.getElementById("custProvinsi");
+    const kotaSelect = document.getElementById("custKota");
+    const kecSelect = document.getElementById("custKecamatan");
+    const kecManual = document.getElementById("custKecamatanManual");
+
+    if (provSelect && kotaSelect && kecSelect) {
+      const provList = Object.keys(WILAYAH_INDONESIA);
+      provSelect.innerHTML =
+        `<option value="">-- Pilih Provinsi --</option>` +
+        provList.map((p) => `<option value="${p}">${p}</option>`).join("");
+
+      provSelect.addEventListener("change", () => {
+        const selectedProv = provSelect.value;
+        kecSelect.innerHTML = `<option value="">-- Pilih Kota/Kabupaten Dahulu --</option>`;
+        kecSelect.disabled = true;
+        if (kecManual) kecManual.style.display = "none";
+
+        if (!selectedProv || !WILAYAH_INDONESIA[selectedProv]) {
+          kotaSelect.innerHTML = `<option value="">-- Pilih Provinsi Dahulu --</option>`;
+          kotaSelect.disabled = true;
+          return;
+        }
+
+        const kotaList = Object.keys(WILAYAH_INDONESIA[selectedProv]);
+        kotaSelect.innerHTML =
+          `<option value="">-- Pilih Kota / Kabupaten --</option>` +
+          kotaList.map((k) => `<option value="${k}">${k}</option>`).join("");
+        kotaSelect.disabled = false;
+      });
+
+      kotaSelect.addEventListener("change", () => {
+        const selectedProv = provSelect.value;
+        const selectedKota = kotaSelect.value;
+        if (kecManual) kecManual.style.display = "none";
+
+        if (!selectedProv || !selectedKota || !WILAYAH_INDONESIA[selectedProv][selectedKota]) {
+          kecSelect.innerHTML = `<option value="">-- Pilih Kota/Kabupaten Dahulu --</option>`;
+          kecSelect.disabled = true;
+          return;
+        }
+
+        const kecList = WILAYAH_INDONESIA[selectedProv][selectedKota];
+        kecSelect.innerHTML =
+          `<option value="">-- Pilih Kecamatan --</option>` +
+          kecList.map((kc) => `<option value="${kc}">${kc}</option>`).join("") +
+          `<option value="LAINNYA">Lainnya (Ketik Manual)</option>`;
+        kecSelect.disabled = false;
+      });
+
+      kecSelect.addEventListener("change", () => {
+        if (kecManual) {
+          kecManual.style.display = kecSelect.value === "LAINNYA" ? "block" : "none";
+          if (kecSelect.value === "LAINNYA") kecManual.focus();
+        }
+      });
     }
 
     const cart = getCart();
@@ -1388,9 +1544,9 @@
 
     if (cart.length === 0) {
       summaryEl.innerHTML = `
-        <div style="padding:20px;background:var(--color-bg);border-radius:var(--radius-sm);text-align:center;">
-          <p style="margin-bottom:12px;">Keranjang Anda masih kosong.</p>
-          <a href="products.html" class="btn btn-primary">Pilih Parfum Terlebih Dahulu</a>
+        <div style="padding:18px;background:#FFFFFF;border-radius:var(--radius-sm);text-align:center;">
+          <p style="margin-bottom:10px;font-size:14px;">Keranjang kosong.</p>
+          <a href="products.html" class="btn btn-primary">Pilih Produk</a>
         </div>
       `;
       const submitBtn = document.getElementById("submitCheckoutBtn");
@@ -1398,16 +1554,15 @@
       return;
     }
 
-    // Render Read-only Order Summary
     summaryEl.innerHTML = cart
       .map(
         (item, idx) => `
-        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--color-border);font-size:13.5px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--color-border);font-size:14px;">
           <div style="display:flex;align-items:center;gap:10px;">
-            <img src="${item.image}" alt="${item.name}" style="width:48px;height:48px;border-radius:4px;border:1px solid var(--color-border);">
+            <img src="${item.image}" alt="${item.name}" style="width:46px;height:46px;border-radius:8px;">
             <div>
-              <div style="font-weight:700;">${idx + 1}. ${item.name}</div>
-              <div style="font-size:12px;color:var(--color-text-muted);">Ukuran ${item.size} × ${item.qty}</div>
+              <div style="font-weight:600;">${idx + 1}. ${item.name}</div>
+              <div style="font-size:12.5px;color:var(--color-text-muted);">${item.size} × ${item.qty}</div>
             </div>
           </div>
           <strong>${formatRupiah(item.price * item.qty)}</strong>
@@ -1420,57 +1575,66 @@
       subtotalEl.textContent = formatRupiah(subtotal);
     }
 
-    // Validation Logic (Realtime & Submit)
     const fields = {
       nama: {
         el: document.getElementById("custNama"),
         validate: (v) => v.length >= 3,
-        msg: "Nama lengkap wajib diisi (minimal 3 karakter)."
+        msg: "Nama wajib diisi."
+      },
+      tglLahir: {
+        el: document.getElementById("custTglLahir"),
+        validate: (v) => v.length >= 6,
+        msg: "Tanggal lahir wajib dipilih."
       },
       wa: {
         el: document.getElementById("custWa"),
         validate: (v) => isValidIndonesianPhone(v),
-        msg: "Masukkan nomor WhatsApp Indonesia yang valid (awalan 08xx atau 628xx, min. 10 digit)."
+        msg: "Nomor WA tidak valid (08xx / 628xx, min. 10 digit)."
       },
       email: {
         el: document.getElementById("custEmail"),
         validate: (v) => !v || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v),
-        msg: "Format alamat email tidak valid."
-      },
-      alamat: {
-        el: document.getElementById("custAlamat"),
-        validate: (v) => v.length >= 10,
-        msg: "Alamat lengkap wajib diisi (nama jalan, nomor rumah, RT/RW)."
-      },
-      kecamatan: {
-        el: document.getElementById("custKecamatan"),
-        validate: (v) => v.length >= 2,
-        msg: "Kecamatan wajib diisi."
-      },
-      kota: {
-        el: document.getElementById("custKota"),
-        validate: (v) => v.length >= 2,
-        msg: "Kota / Kabupaten wajib diisi."
+        msg: "Format email tidak valid."
       },
       provinsi: {
         el: document.getElementById("custProvinsi"),
         validate: (v) => v.length >= 2,
-        msg: "Provinsi wajib diisi."
+        msg: "Silakan pilih provinsi."
+      },
+      kota: {
+        el: document.getElementById("custKota"),
+        validate: (v) => v.length >= 2,
+        msg: "Silakan pilih kota / kabupaten."
+      },
+      kecamatan: {
+        el: document.getElementById("custKecamatan"),
+        validate: (v) => {
+          if (v === "LAINNYA") {
+            return (kecManual ? kecManual.value.trim().length : 0) >= 2;
+          }
+          return v.length >= 2;
+        },
+        msg: "Silakan pilih kecamatan."
       },
       kodepos: {
         el: document.getElementById("custKodepos"),
         validate: (v) => /^\d{5}$/.test(v),
-        msg: "Kode pos wajib berupa 5 digit angka."
+        msg: "Kode pos wajib 5 digit angka."
+      },
+      alamat: {
+        el: document.getElementById("custAlamat"),
+        validate: (v) => v.length >= 10,
+        msg: "Alamat lengkap wajib diisi."
       },
       kurir: {
         el: document.getElementById("custKurir"),
         validate: (v) => v.length > 0,
-        msg: "Silakan pilih salah satu kurir pengiriman."
+        msg: "Pilih kurir pengiriman."
       },
       terms: {
         el: document.getElementById("custTerms"),
         validate: () => document.getElementById("custTerms").checked,
-        msg: "Anda wajib menyetujui Syarat & Ketentuan pemesanan."
+        msg: "Wajib menyetujui S&K."
       }
     };
 
@@ -1493,7 +1657,6 @@
       return valid;
     }
 
-    // Bind realtime validation
     Object.keys(fields).forEach((key) => {
       const el = fields[key].el;
       if (!el) return;
@@ -1520,33 +1683,35 @@
       });
 
       if (!allValid) {
-        showToast("Mohon lengkapi data yang bertanda merah.");
+        showToast("Mohon lengkapi data pengiriman.");
         if (firstInvalidEl) firstInvalidEl.focus();
         return;
       }
 
       const currentCart = getCart();
-      if (currentCart.length === 0) {
-        showToast("Keranjang Anda kosong.");
-        return;
-      }
+      if (currentCart.length === 0) return;
 
-      // Lock submit button to prevent double submission
       isSubmitting = true;
       const submitBtn = document.getElementById("submitCheckoutBtn");
       if (submitBtn) {
         submitBtn.disabled = true;
-        submitBtn.textContent = "Menyiapkan Pesanan ke WhatsApp...";
+        submitBtn.textContent = "Mengarahkan ke WhatsApp...";
       }
+
+      const selectedKec =
+        fields.kecamatan.el.value === "LAINNYA" && kecManual
+          ? sanitizeInput(kecManual.value)
+          : sanitizeInput(fields.kecamatan.el.value);
 
       const orderNumber = generateOrderNumber();
       const orderPayload = {
         orderNumber: orderNumber,
         nama: sanitizeInput(fields.nama.el.value),
+        tglLahir: sanitizeInput(fields.tglLahir.el.value),
         wa: normalizeIndonesianPhone(sanitizeInput(fields.wa.el.value)),
         email: sanitizeInput(fields.email.el.value) || "-",
         alamat: sanitizeInput(fields.alamat.el.value),
-        kecamatan: sanitizeInput(fields.kecamatan.el.value),
+        kecamatan: selectedKec,
         kota: sanitizeInput(fields.kota.el.value),
         provinsi: sanitizeInput(fields.provinsi.el.value),
         kodepos: sanitizeInput(fields.kodepos.el.value),
@@ -1560,18 +1725,32 @@
       const messageText = STORE_CONFIG.buildOrderMessage(orderPayload);
       const whatsappUrl = buildWhatsAppUrl(STORE_CONFIG.whatsappAdmin, messageText);
 
-      // Save last order for reference
       try {
         localStorage.setItem(
           LAST_ORDER_KEY,
           JSON.stringify({ orderNumber, whatsappUrl, messageText, timestamp: Date.now() })
         );
+        const rawOrders = localStorage.getItem("andrd_cms_orders_v1");
+        const cmsOrders = rawOrders ? JSON.parse(rawOrders) : [];
+        cmsOrders.unshift({
+          orderNumber: orderPayload.orderNumber,
+          createdAt: new Date().toISOString(),
+          status: "Pending",
+          nama: orderPayload.nama,
+          tglLahir: orderPayload.tglLahir,
+          wa: orderPayload.wa,
+          email: orderPayload.email,
+          alamat: `${orderPayload.alamat}, ${orderPayload.kecamatan}, ${orderPayload.kota}, ${orderPayload.provinsi} ${orderPayload.kodepos}`,
+          kurir: orderPayload.kurir,
+          catatan: orderPayload.catatan,
+          items: orderPayload.items,
+          total: orderPayload.total
+        });
+        localStorage.setItem("andrd_cms_orders_v1", JSON.stringify(cmsOrders));
       } catch (err) {}
 
-      // Open WhatsApp in a new tab
       window.open(whatsappUrl, "_blank", "noopener,noreferrer");
 
-      // Show Thank You Modal with fallback button
       const modal = document.getElementById("thankYouModal");
       const modalOrderNo = document.getElementById("modalOrderNumber");
       const modalFallbackLink = document.getElementById("modalFallbackWaBtn");
@@ -1582,7 +1761,7 @@
       if (copyOrderBtn) {
         copyOrderBtn.onclick = () => {
           navigator.clipboard.writeText(messageText).then(() => {
-            showToast("Format pesanan berhasil disalin!");
+            showToast("Pesanan disalin!");
           });
         };
       }
@@ -1590,7 +1769,6 @@
         modal.classList.add("open");
       }
 
-      // Clear shopping cart after successful order creation
       clearCart();
     });
   }
@@ -1613,14 +1791,11 @@
           }
         });
       },
-      { threshold: 0.12 }
+      { threshold: 0.1 }
     );
     els.forEach((el) => observer.observe(el));
   }
 
-  /* ==========================================================================
-     INITIALIZE ON DOM READY
-     ========================================================================== */
   document.addEventListener("DOMContentLoaded", () => {
     injectGlobalShell();
     initHomePage();
