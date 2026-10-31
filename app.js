@@ -177,6 +177,34 @@
   /* ==========================================================================
      4. RENDER KARTU PRODUK (CLEAN & SIMPLE)
      ========================================================================== */
+  function renderSocialIconsHtml(extraClass) {
+    const igUrl = STORE_CONFIG.instagramUrl || "https://instagram.com";
+    const ttUrl = STORE_CONFIG.tiktokUrl || "https://tiktok.com";
+    const ytUrl = STORE_CONFIG.youtubeUrl || "https://youtube.com";
+    return `
+      <div class="social-icon-group ${extraClass || ""}">
+        <a href="${igUrl}" target="_blank" rel="noopener noreferrer" class="social-icon-btn" aria-label="Instagram" title="Instagram">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+          </svg>
+        </a>
+        <a href="${ttUrl}" target="_blank" rel="noopener noreferrer" class="social-icon-btn" aria-label="TikTok" title="TikTok">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"></path>
+          </svg>
+        </a>
+        <a href="${ytUrl}" target="_blank" rel="noopener noreferrer" class="social-icon-btn" aria-label="YouTube" title="YouTube">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"></path>
+            <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"></polygon>
+          </svg>
+        </a>
+      </div>
+    `;
+  }
+
   function renderProductCard(product) {
     const minVariant = product.variants.reduce(
       (min, v) => (v.price < min.price ? v : min),
@@ -186,9 +214,9 @@
 
     const badgesHtml = [];
     if (product.status === "sold-out") {
-      badgesHtml.push(`<span class="badge badge-soldout">Sold Out</span>`);
+      badgesHtml.push(`<span class="badge badge-soldout">SOLD OUT</span>`);
     } else if (product.status === "pre-order") {
-      badgesHtml.push(`<span class="badge badge-preorder">Pre-Order</span>`);
+      badgesHtml.push(`<span class="badge badge-preorder">PRE ORDER</span>`);
     } else if (product.badge) {
       const badgeClass =
         product.badge === "Best Seller"
@@ -205,45 +233,55 @@
 
     const primaryImg = product.images[0];
     const secondaryImg = product.images[1] || product.images[0];
-    const allTopNotes = product.notes && product.notes.top ? product.notes.top.slice(0, 2).join(" • ") : "";
 
-    let actionButtonHtml = "";
+    const basketSvg = `
+      <svg class="cart-overlay-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M6 10l2-6h8l2 6"></path>
+        <path d="M3 10h18l-1.5 9.5a2 2 0 0 1-2 1.5H6.5a2 2 0 0 1-2-1.5L3 10z"></path>
+        <line x1="9" y1="14" x2="9" y2="17"></line>
+        <line x1="12" y1="14" x2="12" y2="17"></line>
+        <line x1="15" y1="14" x2="15" y2="17"></line>
+      </svg>
+    `;
+
+    let overlayCartButtonHtml = "";
     if (product.status === "sold-out") {
       const restockText = STORE_CONFIG.buildRestockMessage(product.name, "");
       const waUrl = buildWhatsAppUrl(STORE_CONFIG.whatsappAdmin, restockText);
-      actionButtonHtml = `
-        <a href="${waUrl}" target="_blank" rel="noopener noreferrer" class="btn btn-restock" aria-label="Kabari saya saat ${product.name} restock">
-          Kabari Saya
+      overlayCartButtonHtml = `
+        <a href="${waUrl}" target="_blank" rel="noopener noreferrer" class="product-cart-overlay-btn" aria-label="Kabari saya saat ${product.name} restock">
+          ${basketSvg}
+          <span>Kabari Saya</span>
         </a>
       `;
     } else {
-      const btnLabel = product.status === "pre-order" ? "Pre-Order" : "+ Keranjang";
-      actionButtonHtml = `
-        <button type="button" class="btn btn-primary js-quick-add" data-product-id="${product.id}" data-size="${defaultPerfumeSize}">
-          ${btnLabel}
+      const btnLabel = product.status === "pre-order" ? "Pre-Order" : "Add to cart";
+      overlayCartButtonHtml = `
+        <button type="button" class="product-cart-overlay-btn js-quick-add" data-product-id="${product.id}" data-size="${defaultPerfumeSize}" aria-label="Add to cart ${product.name}">
+          ${basketSvg}
+          <span>${btnLabel}</span>
         </button>
       `;
     }
 
     return `
       <article class="product-card" data-product-id="${product.id}">
-        <a href="product.html?id=${encodeURIComponent(product.id)}" class="product-media" aria-label="${product.name}">
-          <div class="product-badges">${badgesHtml.join("")}</div>
-          <img src="${primaryImg}" alt="${product.name}" class="product-img-primary" loading="lazy" width="400" height="400">
-          <img src="${secondaryImg}" alt="${product.name} Notes" class="product-img-secondary" loading="lazy" width="400" height="400">
-        </a>
+        <div class="product-media">
+          <a href="product.html?id=${encodeURIComponent(product.id)}" class="product-media-link" aria-label="${product.name}">
+            <div class="product-badges">${badgesHtml.join("")}</div>
+            <img src="${primaryImg}" alt="${product.name}" class="product-img-primary" loading="lazy" width="400" height="400">
+            <img src="${secondaryImg}" alt="${product.name} Notes" class="product-img-secondary" loading="lazy" width="400" height="400">
+          </a>
+          ${overlayCartButtonHtml}
+        </div>
         <div class="product-body">
-          <div class="product-meta">${product.scentCategory}</div>
+          <div class="product-meta">Extrait de Parfum</div>
           <h3 class="product-title">
             <a href="product.html?id=${encodeURIComponent(product.id)}">${product.name}</a>
           </h3>
-          <p class="product-notes-preview">${allTopNotes}</p>
           <div class="product-price-wrap">
             <span class="price-current">${formatRupiah(minVariant.price)}</span>
             ${compareHtml}
-          </div>
-          <div class="product-card-actions">
-            ${actionButtonHtml}
           </div>
         </div>
       </article>
@@ -280,10 +318,11 @@
 
           <nav class="main-nav" aria-label="Menu Utama">
             <a href="index.html" class="nav-link ${currentPath === "index.html" ? "active" : ""}">Home</a>
-            <a href="products.html" class="nav-link ${currentPath === "products.html" && !isCatalogue ? "active" : ""}">Products</a>
+            <a href="products.html" class="nav-link ${(currentPath === "products.html" || currentPath === "product.html") && !isCatalogue ? "active" : ""}">Product</a>
             <a href="products.html?view=catalogue" class="nav-link ${isCatalogue ? "active" : ""}">Catalogue</a>
-            <a href="about.html" class="nav-link ${currentPath === "about.html" ? "active" : ""}">About</a>
+            <a href="about.html" class="nav-link nav-hidden" hidden style="display:none !important;">About</a>
             <a href="contact.html" class="nav-link ${currentPath === "contact.html" ? "active" : ""}">Contact</a>
+            <a href="policies.html" class="nav-link nav-hidden" hidden style="display:none !important;">Policies</a>
           </nav>
 
           <div class="header-actions">
@@ -334,12 +373,17 @@
           </div>
           <nav class="mobile-nav-links" aria-label="Menu Mobile">
             <a href="index.html" class="${currentPath === "index.html" ? "active" : ""}">Home</a>
-            <a href="products.html" class="${(currentPath === "products.html" || currentPath === "product.html") && !isCatalogue ? "active" : ""}">Products</a>
+            <a href="products.html" class="${(currentPath === "products.html" || currentPath === "product.html") && !isCatalogue ? "active" : ""}">Product</a>
             <a href="products.html?view=catalogue" class="${isCatalogue ? "active" : ""}">Catalogue</a>
-            <a href="about.html" class="${currentPath === "about.html" ? "active" : ""}">About</a>
+            <a href="about.html" class="nav-hidden" hidden style="display:none !important;">About</a>
             <a href="contact.html" class="${currentPath === "contact.html" ? "active" : ""}">Contact</a>
-            <a href="policies.html" class="${currentPath === "policies.html" ? "active" : ""}">Policies</a>
+            <a href="policies.html" class="nav-hidden" hidden style="display:none !important;">Policies</a>
           </nav>
+
+          <div class="mobile-nav-footer">
+            <div style="font-size:12px;color:var(--color-text-muted);margin-bottom:10px;">Ikuti Kami</div>
+            ${renderSocialIconsHtml("mobile-social-icons")}
+          </div>
         </div>
       </div>
 
@@ -385,7 +429,7 @@
     `;
     document.body.appendChild(floatingWa);
 
-    // 5. Footer Injection (Clean Minimalist)
+    // 5. Footer Injection (Mobile Dropdown + Social Icons)
     const footerEl = document.getElementById("siteFooter");
     if (footerEl) {
       const waConsultUrl = buildWhatsAppUrl(
@@ -395,50 +439,66 @@
       footerEl.innerHTML = `
         <div class="container">
           <div class="footer-grid">
-            <div>
+            <div class="footer-brand-col">
               <a href="index.html" class="footer-brand">${STORE_CONFIG.brandName}</a>
-              <p style="font-size:13px;margin-bottom:10px;max-width:280px;">
+              <p style="font-size:13.5px;margin-bottom:10px;max-width:280px;">
                 ${STORE_CONFIG.tagline} — ${STORE_CONFIG.subTagline}
               </p>
-              <p style="font-size:12px;">
+              <p style="font-size:13px;margin-bottom:14px;">
                 WA: <a href="${waConsultUrl}" target="_blank" rel="noopener" style="color:var(--color-primary);font-weight:500;">${STORE_CONFIG.whatsappDisplay}</a>
               </p>
+              ${renderSocialIconsHtml("footer-social-icons")}
             </div>
 
-            <div>
-              <h3 class="footer-heading">Koleksi</h3>
-              <ul class="footer-links">
-                <li><a href="products.html">Semua Parfum</a></li>
-                <li><a href="products.html?gender=For+Her">For Her</a></li>
-                <li><a href="products.html?gender=For+Him">For Him</a></li>
-                <li><a href="products.html?gender=Unisex">Unisex</a></li>
-              </ul>
+            <div class="footer-accordion">
+              <button type="button" class="footer-heading footer-accordion-btn js-footer-accordion-btn" aria-expanded="false">
+                <span>Koleksi</span>
+                <span class="footer-plus-icon" aria-hidden="true">+</span>
+              </button>
+              <div class="footer-accordion-panel">
+                <ul class="footer-links">
+                  <li><a href="products.html">Semua Parfum</a></li>
+                  <li><a href="products.html?gender=For+Her">For Her</a></li>
+                  <li><a href="products.html?gender=For+Him">For Him</a></li>
+                  <li><a href="products.html?gender=Unisex">Unisex</a></li>
+                </ul>
+              </div>
             </div>
 
-            <div>
-              <h3 class="footer-heading">Informasi</h3>
-              <ul class="footer-links">
-                <li><a href="about.html">Tentang Kami</a></li>
-                <li><a href="contact.html">Kontak</a></li>
-                <li><a href="policies.html#pengiriman">Pengiriman</a></li>
-                <li><a href="policies.html#pengembalian">Retur 7 Hari</a></li>
-                <li><a href="policies.html#syarat">Syarat &amp; Ketentuan</a></li>
-              </ul>
+            <div class="footer-accordion">
+              <button type="button" class="footer-heading footer-accordion-btn js-footer-accordion-btn" aria-expanded="false">
+                <span>Informasi</span>
+                <span class="footer-plus-icon" aria-hidden="true">+</span>
+              </button>
+              <div class="footer-accordion-panel">
+                <ul class="footer-links">
+                  <li><a href="about.html">Tentang Kami</a></li>
+                  <li><a href="contact.html">Kontak</a></li>
+                  <li><a href="policies.html#pengiriman">Pengiriman</a></li>
+                  <li><a href="policies.html#pengembalian">Retur 7 Hari</a></li>
+                  <li><a href="policies.html#syarat">Syarat &amp; Ketentuan</a></li>
+                </ul>
+              </div>
             </div>
 
-            <div>
-              <h3 class="footer-heading">Newsletter</h3>
-              <p style="font-size:12.5px;">Info rilis batch terbatas.</p>
-              <form class="newsletter-form" id="newsletterForm">
-                <input type="email" placeholder="Email Anda" required aria-label="Email">
-                <button type="submit" class="btn btn-primary" style="padding:9px 14px;">Ikuti</button>
-              </form>
+            <div class="footer-accordion">
+              <button type="button" class="footer-heading footer-accordion-btn js-footer-accordion-btn" aria-expanded="false">
+                <span>Newsletter</span>
+                <span class="footer-plus-icon" aria-hidden="true">+</span>
+              </button>
+              <div class="footer-accordion-panel">
+                <p style="font-size:13px;margin-bottom:8px;">Info rilis batch terbatas.</p>
+                <form class="newsletter-form" id="newsletterForm">
+                  <input type="email" placeholder="Email Anda" required aria-label="Email">
+                  <button type="submit" class="btn btn-primary" style="padding:9px 14px;">Ikuti</button>
+                </form>
+              </div>
             </div>
           </div>
 
           <div class="footer-bottom">
             <span>&copy; ${new Date().getFullYear()} ${STORE_CONFIG.brandName}.</span>
-            <span>${STORE_CONFIG.instagram}</span>
+            ${renderSocialIconsHtml("footer-bottom-icons")}
           </div>
         </div>
       `;
@@ -625,11 +685,46 @@
       });
     }
 
-    // Delegated Events for Quick Add & Cart Item Controls
+    // Delegated Events for Quick Add, Footer Accordion & Cart Item Controls
+    document.body.addEventListener(
+      "touchstart",
+      (e) => {
+        const card = e.target.closest(".product-card");
+        if (card) {
+          document.querySelectorAll(".product-card.is-active").forEach((el) => {
+            if (el !== card) el.classList.remove("is-active");
+          });
+          card.classList.add("is-active");
+        } else {
+          document.querySelectorAll(".product-card.is-active").forEach((el) => {
+            el.classList.remove("is-active");
+          });
+        }
+      },
+      { passive: true }
+    );
+
     document.body.addEventListener("click", (e) => {
+      const footerAccBtn = e.target.closest(".js-footer-accordion-btn");
+      if (footerAccBtn) {
+        if (window.innerWidth < 768) {
+          const accItem = footerAccBtn.closest(".footer-accordion");
+          if (accItem) {
+            const isOpen = accItem.classList.toggle("open");
+            footerAccBtn.setAttribute("aria-expanded", String(isOpen));
+          }
+        }
+        return;
+      }
+
       const quickAddBtn = e.target.closest(".js-quick-add");
       if (quickAddBtn) {
         e.preventDefault();
+        e.stopPropagation();
+        document.querySelectorAll(".product-cart-overlay-btn.is-selected").forEach((el) => {
+          if (el !== quickAddBtn) el.classList.remove("is-selected");
+        });
+        quickAddBtn.classList.add("is-selected");
         const pid = quickAddBtn.getAttribute("data-product-id");
         const size = quickAddBtn.getAttribute("data-size");
         addToCart(pid, size, 1, true);

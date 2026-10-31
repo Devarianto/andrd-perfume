@@ -20,6 +20,10 @@ const DEFAULT_STORE_CONFIG = {
   email: "hello@andrdperfume.com",
   instagram: "@andrd.olfactory",
   tiktok: "@andrd.olfactory",
+  youtube: "@andrd.olfactory",
+  instagramUrl: "https://instagram.com",
+  tiktokUrl: "https://tiktok.com",
+  youtubeUrl: "https://youtube.com",
   address: "Kemang Timur Raya No. 48, Jakarta Selatan",
   operationalHours: "Senin – Sabtu, 09.00 – 18.00 WIB",
 
