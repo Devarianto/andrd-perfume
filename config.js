@@ -11,11 +11,11 @@ const DEFAULT_STORE_CONFIG = {
   brandName: "ANDRD",
   brandLegalName: "ANDRD Studio Indonesia",
   tagline: "Scent as Memory",
-  subTagline: "Extrait de Parfum — Diracik untuk iklim tropis.",
+  subTagline: "Extrait de Parfum, Diracik untuk iklim tropis.",
   domain: "https://andrd-perfume.vercel.app",
 
   // 2. KONTAK & WHATSAPP ADMIN (Gunakan awalan 628xxx tanpa + atau spasi)
-  whatsappAdmin: "6281234567890",
+  whatsappAdmin: "6281336756838",
   whatsappDisplay: "+62 812-3456-7890",
   email: "hello@andrdperfume.com",
   instagram: "@andrd.olfactory",
