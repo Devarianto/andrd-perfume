@@ -116,28 +116,34 @@ const DEFAULT_STORE_CONFIG = {
   // 8. TESTIMONIAL PELANGGAN
   testimonials: [
     {
+      id: "rev-1",
       name: "Nadia Kusuma",
       city: "Jakarta Selatan",
       rating: 5,
       productId: "andrd-01",
       productName: "01 Senja di Bali (50ml)",
-      quote: "Wanginya beneran tahan seharian dari pagi ngantor sampai malam. Dry-down sandalwood dan vanillanya halus banget, gak bikin pusing sama sekali."
+      quote: "Wanginya beneran tahan seharian dari pagi ngantor sampai malam. Dry-down sandalwood dan vanillanya halus banget, gak bikin pusing sama sekali.",
+      date: "2026-10-25"
     },
     {
+      id: "rev-2",
       name: "Raka Pradana",
       city: "Bandung",
       rating: 5,
       productId: "andrd-04",
       productName: "04 Kayu & Rupa (50ml)",
-      quote: "Karakter woody smokey-nya berkelas, mirip parfum niche harga jutaan. Dapat free vial 2ml juga jadi bisa coba varian lain sebelum beli full size."
+      quote: "Karakter woody smokey-nya berkelas, mirip parfum niche harga jutaan. Dapat free vial 2ml juga jadi bisa coba varian lain sebelum beli full size.",
+      date: "2026-10-28"
     },
     {
+      id: "rev-3",
       name: "Clara Wijaya",
       city: "Surabaya",
       rating: 5,
       productId: "andrd-02",
       productName: "02 Embun Pagi (100ml)",
-      quote: "Seger banget buat cuaca panas! Perpaduan yuzu dan white tea-nya clean, sering banget ditanyain teman kantor pakai parfum apa."
+      quote: "Seger banget buat cuaca panas! Perpaduan yuzu dan white tea-nya clean, sering banget ditanyain teman kantor pakai parfum apa.",
+      date: "2026-10-30"
     }
   ]
 };

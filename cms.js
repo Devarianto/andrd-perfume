@@ -17,6 +17,7 @@
   const KEYS = {
     PRODUCTS: "andrd_cms_products_v1",
     CONFIG: "andrd_cms_config_v1",
+    REVIEWS: "andrd_cms_reviews_v1",
     USERS: "andrd_cms_users_v1",
     SESSION: "andrd_cms_session_v1",
     ORDERS: "andrd_cms_orders_v1",
@@ -167,6 +168,32 @@
   function saveConfig(cfg, logMessage) {
     localStorage.setItem(KEYS.CONFIG, JSON.stringify(cfg));
     Object.assign(window.STORE_CONFIG, cfg);
+    if (logMessage) addActivityLog(logMessage);
+  }
+
+  function getReviews() {
+    try {
+      const raw = localStorage.getItem(KEYS.REVIEWS);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) return parsed;
+      }
+    } catch (e) {}
+    const cfg = getConfig();
+    if (Array.isArray(cfg.testimonials)) {
+      return JSON.parse(JSON.stringify(cfg.testimonials));
+    }
+    return [];
+  }
+
+  function saveReviews(list, logMessage) {
+    localStorage.setItem(KEYS.REVIEWS, JSON.stringify(list));
+    const cfg = getConfig();
+    cfg.testimonials = list;
+    localStorage.setItem(KEYS.CONFIG, JSON.stringify(cfg));
+    if (window.STORE_CONFIG) {
+      window.STORE_CONFIG.testimonials = list;
+    }
     if (logMessage) addActivityLog(logMessage);
   }
 
@@ -468,6 +495,7 @@
     if (tabId === "products") renderProductsTab();
     if (tabId === "content") renderContentTab();
     if (tabId === "orders") renderOrdersTab();
+    if (tabId === "reviews") renderReviewsTab();
     if (tabId === "users") renderUsersTab();
     if (tabId === "settings") renderSettingsTab();
   }
@@ -1010,6 +1038,180 @@
   }
 
   /* ==========================================================================
+     TAB D2: MANAJEMEN ULASAN & RATING PELANGGAN (CRUD REVIEWS)
+     ========================================================================== */
+  function renderReviewsTab() {
+    const reviews = getReviews();
+    const tbody = document.getElementById("cmsReviewsTableBody");
+    const addBtn = document.getElementById("openAddReviewModalBtn");
+    const perms = getCurrentPerms();
+
+    if (addBtn) {
+      addBtn.style.display = perms.canEditContent || perms.canManageOrders ? "inline-flex" : "none";
+    }
+    if (!tbody) return;
+
+    if (reviews.length === 0) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="5" style="text-align:center;padding:32px;color:var(--color-text-muted);">
+            Belum ada ulasan pelanggan. Klik "+ Tambah Ulasan Baru" untuk menambahkan.
+          </td>
+        </tr>
+      `;
+      return;
+    }
+
+    tbody.innerHTML = reviews
+      .map((r, idx) => {
+        const revId = r.id || `rev-idx-${idx}`;
+        const starsCount = Math.min(5, Math.max(1, Number(r.rating) || 5));
+        const starsStr = "★".repeat(starsCount) + "☆".repeat(5 - starsCount);
+        const canModify = perms.canEditContent || perms.canManageOrders || perms.canEditProducts;
+        return `
+          <tr>
+            <td>
+              <div style="font-weight:600;font-size:13.5px;">${r.name || "-"}</div>
+              <div style="font-size:12px;color:var(--color-text-muted);">${r.city || "-"} ${r.date ? "• " + r.date : ""}</div>
+            </td>
+            <td style="font-size:12.5px;font-weight:500;">
+              ${r.productName || "-"}
+            </td>
+            <td>
+              <span style="font-size:13.5px;letter-spacing:0.06em;color:#111;">${starsStr}</span>
+              <div style="font-size:11px;color:var(--color-text-muted);">${starsCount} / 5</div>
+            </td>
+            <td style="font-size:13px;max-width:340px;line-height:1.5;">
+              “${r.quote || ""}”
+            </td>
+            <td style="text-align:right;white-space:nowrap;">
+              ${
+                canModify
+                  ? `
+                <button type="button" class="btn btn-outline js-cms-edit-review" data-id="${revId}" style="padding:6px 12px;font-size:11.5px;margin-right:4px;">
+                  Edit
+                </button>
+                <button type="button" class="btn btn-outline js-cms-del-review" data-id="${revId}" style="padding:6px 12px;font-size:11.5px;color:#DC2626;border-color:#FECACA;">
+                  Hapus
+                </button>
+              `
+                  : `<span style="font-size:11.5px;color:var(--color-text-muted);">Read-Only</span>`
+              }
+            </td>
+          </tr>
+        `;
+      })
+      .join("");
+
+    tbody.querySelectorAll(".js-cms-edit-review").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const targetId = btn.getAttribute("data-id");
+        const all = getReviews();
+        const found = all.find((r, i) => (r.id || `rev-idx-${i}`) === targetId);
+        if (found) openReviewModal(found, targetId);
+      });
+    });
+
+    tbody.querySelectorAll(".js-cms-del-review").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const targetId = btn.getAttribute("data-id");
+        const all = getReviews();
+        const found = all.find((r, i) => (r.id || `rev-idx-${i}`) === targetId);
+        if (!found) return;
+        if (confirm(`Hapus komentar ulasan dari "${found.name}"?`)) {
+          const updated = all.filter((r, i) => (r.id || `rev-idx-${i}`) !== targetId);
+          saveReviews(updated, `Menghapus ulasan pelanggan "${found.name}"`);
+          renderReviewsTab();
+          cmsToast("Ulasan berhasil dihapus.");
+        }
+      });
+    });
+  }
+
+  function openReviewModal(review, fallbackId) {
+    const modal = document.getElementById("cmsReviewModal");
+    const titleEl = document.getElementById("cmsReviewModalTitle");
+    const prodSelect = document.getElementById("cmsRevProduct");
+    if (!modal) return;
+
+    const products = getProducts();
+    if (prodSelect) {
+      prodSelect.innerHTML = products
+        .map((p) => `<option value="${p.id}">${p.name} (50ml)</option>`)
+        .join("");
+    }
+
+    if (review) {
+      titleEl.textContent = "Edit Komentar & Rating Ulasan";
+      document.getElementById("cmsRevEditId").value = review.id || fallbackId || "";
+      document.getElementById("cmsRevName").value = review.name || "";
+      document.getElementById("cmsRevCity").value = review.city || "";
+      if (prodSelect && review.productId) prodSelect.value = review.productId;
+      document.getElementById("cmsRevRating").value = String(review.rating || 5);
+      document.getElementById("cmsRevQuote").value = review.quote || "";
+    } else {
+      titleEl.textContent = "Tambah Ulasan Pelanggan Baru";
+      document.getElementById("cmsRevEditId").value = "";
+      document.getElementById("cmsRevName").value = "";
+      document.getElementById("cmsRevCity").value = "";
+      if (prodSelect && products[0]) prodSelect.value = products[0].id;
+      document.getElementById("cmsRevRating").value = "5";
+      document.getElementById("cmsRevQuote").value = "";
+    }
+
+    modal.classList.add("open");
+  }
+
+  function handleSaveReviewForm(e) {
+    e.preventDefault();
+    const editId = document.getElementById("cmsRevEditId").value.trim();
+    const name = document.getElementById("cmsRevName").value.trim();
+    const city = document.getElementById("cmsRevCity").value.trim();
+    const productId = document.getElementById("cmsRevProduct").value;
+    const products = getProducts();
+    const selectedProd = products.find((p) => p.id === productId) || products[0];
+    const productName = selectedProd ? `${selectedProd.name} (50ml)` : "ANDRD Extrait";
+    const rating = Math.min(5, Math.max(1, Number(document.getElementById("cmsRevRating").value) || 5));
+    const quote = document.getElementById("cmsRevQuote").value.trim();
+
+    if (!name || !city || !quote) return;
+
+    const all = getReviews();
+    if (editId) {
+      const idx = all.findIndex((r, i) => (r.id || `rev-idx-${i}`) === editId);
+      if (idx !== -1) {
+        all[idx] = Object.assign({}, all[idx], {
+          id: editId.startsWith("rev-idx-") ? "rev-" + Date.now() : editId,
+          name,
+          city,
+          productId,
+          productName,
+          rating,
+          quote
+        });
+        saveReviews(all, `Mengedit ulasan pelanggan "${name}"`);
+        cmsToast("Komentar ulasan berhasil diperbarui!");
+      }
+    } else {
+      all.unshift({
+        id: "rev-" + Date.now(),
+        name,
+        city,
+        productId,
+        productName,
+        rating,
+        quote,
+        date: new Date().toISOString().slice(0, 10)
+      });
+      saveReviews(all, `Menambahkan ulasan pelanggan baru "${name}"`);
+      cmsToast("Ulasan baru berhasil ditambahkan!");
+    }
+
+    document.getElementById("cmsReviewModal").classList.remove("open");
+    renderReviewsTab();
+  }
+
+  /* ==========================================================================
      TAB E: MANAJEMEN USER & ROLE (RBAC)
      ========================================================================== */
   function renderUsersTab() {
@@ -1313,6 +1515,22 @@ window.STORE_CONFIG = STORE_CONFIG;
       prodForm.addEventListener("submit", handleSaveProductForm);
     }
 
+    // Add / Edit Review Modal & Form
+    const openAddRevBtn = document.getElementById("openAddReviewModalBtn");
+    if (openAddRevBtn) {
+      openAddRevBtn.addEventListener("click", () => openReviewModal(null));
+    }
+    const closeRevModalBtn = document.getElementById("closeCmsReviewModalBtn");
+    if (closeRevModalBtn) {
+      closeRevModalBtn.addEventListener("click", () => {
+        document.getElementById("cmsReviewModal").classList.remove("open");
+      });
+    }
+    const revForm = document.getElementById("cmsReviewForm");
+    if (revForm) {
+      revForm.addEventListener("submit", handleSaveReviewForm);
+    }
+
     // Add New Staff User Form
     const addUserForm = document.getElementById("cmsAddUserForm");
     if (addUserForm) {
@@ -1421,6 +1639,7 @@ window.STORE_CONFIG = STORE_CONFIG;
         if (confirm("Kembalikan seluruh produk & konten ke bawaan awal?")) {
           localStorage.removeItem(KEYS.PRODUCTS);
           localStorage.removeItem(KEYS.CONFIG);
+          localStorage.removeItem(KEYS.REVIEWS);
           addActivityLog("Reset data produk & konfigurasi ke default");
           cmsToast("Data dikembalikan ke bawaan awal.");
           location.reload();

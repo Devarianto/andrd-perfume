@@ -321,6 +321,9 @@
         <button type="button" class="cms-nav-btn" data-tab="orders">
           <span>Pesanan WA</span>
         </button>
+        <button type="button" class="cms-nav-btn" data-tab="reviews">
+          <span>Ulasan &amp; Rating</span>
+        </button>
         <button type="button" class="cms-nav-btn" data-tab="users">
           <span>User &amp; Role</span>
         </button>
@@ -465,6 +468,38 @@
                   </tr>
                 </thead>
                 <tbody id="cmsOrdersTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==================================================================
+             PANEL 4B: MANAJEMEN ULASAN & RATING PELANGGAN
+             ================================================================== -->
+        <section class="cms-tab-panel" id="tab-reviews">
+          <div class="cms-surface">
+            <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px;">
+              <div>
+                <h2 style="font-size:18px;">Kelola Ulasan &amp; Rating Pelanggan</h2>
+                <p style="font-size:12.5px;color:var(--color-text-muted);">Edit komentar ulasan, ubah rating bintang, tambah testimoni baru, atau hapus komentar.</p>
+              </div>
+              <button type="button" class="btn btn-primary" id="openAddReviewModalBtn">
+                + Tambah Ulasan Baru
+              </button>
+            </div>
+
+            <div class="cms-table-wrap">
+              <table class="cms-table">
+                <thead>
+                  <tr>
+                    <th>Pelanggan &amp; Kota</th>
+                    <th>Produk</th>
+                    <th>Rating</th>
+                    <th>Komentar Ulasan</th>
+                    <th style="text-align:right;">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="cmsReviewsTableBody"></tbody>
               </table>
             </div>
           </div>
@@ -774,6 +809,61 @@
           <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:8px;">
             <button type="button" class="btn btn-outline" onclick="document.getElementById('cmsProductModal').classList.remove('open')">Batal</button>
             <button type="submit" class="btn btn-primary">Simpan Produk</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       4. MODAL TAMBAH / EDIT ULASAN PELANGGAN
+       ======================================================================== -->
+  <div class="cms-modal-backdrop" id="cmsReviewModal">
+    <div class="cms-modal-box" style="max-width:500px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+        <h2 id="cmsReviewModalTitle" style="font-size:18px;">Edit Ulasan Pelanggan</h2>
+        <button type="button" id="closeCmsReviewModalBtn" style="font-size:18px;padding:4px 8px;">✕</button>
+      </div>
+
+      <form id="cmsReviewForm">
+        <input type="hidden" id="cmsRevEditId">
+        <div class="form-grid">
+          <div class="form-grid form-grid-2">
+            <div class="form-group">
+              <label for="cmsRevName">Nama Pelanggan <span class="req-star">*</span></label>
+              <input type="text" id="cmsRevName" class="form-control" placeholder="Nadia Kusuma" required>
+            </div>
+            <div class="form-group">
+              <label for="cmsRevCity">Kota / Domisili <span class="req-star">*</span></label>
+              <input type="text" id="cmsRevCity" class="form-control" placeholder="Jakarta Selatan" required>
+            </div>
+          </div>
+
+          <div class="form-grid form-grid-2">
+            <div class="form-group">
+              <label for="cmsRevProduct">Produk yang Diulas</label>
+              <select id="cmsRevProduct" class="select-control"></select>
+            </div>
+            <div class="form-group">
+              <label for="cmsRevRating">Rating Bintang</label>
+              <select id="cmsRevRating" class="select-control">
+                <option value="5">★★★★★ (5 Bintang)</option>
+                <option value="4">★★★★☆ (4 Bintang)</option>
+                <option value="3">★★★☆☆ (3 Bintang)</option>
+                <option value="2">★★☆☆☆ (2 Bintang)</option>
+                <option value="1">★☆☆☆☆ (1 Bintang)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="cmsRevQuote">Komentar / Isi Ulasan <span class="req-star">*</span></label>
+            <textarea id="cmsRevQuote" rows="4" class="form-control" placeholder="Isi komentar ulasan pelanggan..." required></textarea>
+          </div>
+
+          <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:8px;">
+            <button type="button" class="btn btn-outline" onclick="document.getElementById('cmsReviewModal').classList.remove('open')">Batal</button>
+            <button type="submit" class="btn btn-primary">Simpan Ulasan</button>
           </div>
         </div>
       </form>

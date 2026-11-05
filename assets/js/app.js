@@ -319,7 +319,7 @@
           <nav class="main-nav" aria-label="Menu Utama">
             <a href="index.html" class="nav-link ${currentPath === "index.html" ? "active" : ""}">Home</a>
             <a href="products.html" class="nav-link ${(currentPath === "products.html" || currentPath === "product.html") && !isCatalogue ? "active" : ""}">Product</a>
-            <a href="products.html?view=catalogue" class="nav-link ${isCatalogue ? "active" : ""}">Catalogue</a>
+            <a href="products.html?view=catalogue" class="nav-link nav-hidden" hidden style="display:none !important;">Catalogue</a>
             <a href="about.html" class="nav-link nav-hidden" hidden style="display:none !important;">About</a>
             <a href="contact.html" class="nav-link ${currentPath === "contact.html" ? "active" : ""}">Contact</a>
             <a href="policies.html" class="nav-link nav-hidden" hidden style="display:none !important;">Policies</a>
@@ -374,7 +374,7 @@
           <nav class="mobile-nav-links" aria-label="Menu Mobile">
             <a href="index.html" class="${currentPath === "index.html" ? "active" : ""}">Home</a>
             <a href="products.html" class="${(currentPath === "products.html" || currentPath === "product.html") && !isCatalogue ? "active" : ""}">Product</a>
-            <a href="products.html?view=catalogue" class="${isCatalogue ? "active" : ""}">Catalogue</a>
+            <a href="products.html?view=catalogue" class="nav-hidden" hidden style="display:none !important;">Catalogue</a>
             <a href="about.html" class="nav-hidden" hidden style="display:none !important;">About</a>
             <a href="contact.html" class="${currentPath === "contact.html" ? "active" : ""}">Contact</a>
             <a href="policies.html" class="nav-hidden" hidden style="display:none !important;">Policies</a>
@@ -408,6 +408,59 @@
           </div>
         </div>
       </aside>
+
+      <!-- Modal Tulis Ulasan & Rating Pelanggan -->
+      <div class="modal-backdrop" id="customerReviewModal" aria-hidden="true">
+        <div class="modal-box" style="text-align:left;max-width:460px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+            <h2 style="font-size:18px;">Tulis Ulasan Anda</h2>
+            <button type="button" id="closeReviewModalBtn" aria-label="Tutup" style="font-size:18px;padding:4px 8px;">✕</button>
+          </div>
+          <form id="customerReviewForm">
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Rating Kepuasan <span class="req-star">*</span></label>
+                <div class="star-rating-picker" id="reviewStarPicker">
+                  <button type="button" class="star-pick-btn active" data-val="1" aria-label="1 Bintang">★</button>
+                  <button type="button" class="star-pick-btn active" data-val="2" aria-label="2 Bintang">★</button>
+                  <button type="button" class="star-pick-btn active" data-val="3" aria-label="3 Bintang">★</button>
+                  <button type="button" class="star-pick-btn active" data-val="4" aria-label="4 Bintang">★</button>
+                  <button type="button" class="star-pick-btn active" data-val="5" aria-label="5 Bintang">★</button>
+                  <span class="star-pick-label" id="reviewStarLabel">5 / 5 — Sangat Puas</span>
+                </div>
+                <input type="hidden" id="reviewRatingValue" value="5">
+              </div>
+
+              <div class="form-grid form-grid-2">
+                <div class="form-group">
+                  <label for="reviewUserName">Nama Anda <span class="req-star">*</span></label>
+                  <input type="text" id="reviewUserName" class="form-control" placeholder="Contoh: Nadia K." required>
+                </div>
+                <div class="form-group">
+                  <label for="reviewUserCity">Kota / Domisili <span class="req-star">*</span></label>
+                  <input type="text" id="reviewUserCity" class="form-control" placeholder="Contoh: Jakarta" required>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="reviewProductId">Produk yang Diulas <span class="req-star">*</span></label>
+                <select id="reviewProductId" class="select-control" required>
+                  ${PRODUCTS.map((p) => `<option value="${p.id}" data-name="${p.name} (50ml)">${p.name}</option>`).join("")}
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="reviewQuoteText">Komentar / Ulasan <span class="req-star">*</span></label>
+                <textarea id="reviewQuoteText" class="textarea-control" rows="3" placeholder="Ceritakan pengalaman Anda dengan aroma dan ketahanan parfum ini..." required></textarea>
+              </div>
+
+              <button type="submit" class="btn btn-primary btn-block" style="margin-top:4px;">
+                Kirim Ulasan
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
     `;
     document.body.appendChild(drawersWrapper);
 
@@ -748,7 +801,220 @@
         removeFromCart(remBtn.getAttribute("data-key"));
         return;
       }
+
+      const openReviewBtn = e.target.closest(".js-open-review-modal");
+      if (openReviewBtn) {
+        const modal = document.getElementById("customerReviewModal");
+        if (modal) {
+          const preselectProd = openReviewBtn.getAttribute("data-product-id");
+          const prodSelect = document.getElementById("reviewProductId");
+          if (preselectProd && prodSelect) {
+            prodSelect.value = preselectProd;
+          }
+          modal.classList.add("open");
+          modal.setAttribute("aria-hidden", "false");
+        }
+        return;
+      }
     });
+
+    // Review Modal Events (Star Rating Picker & Form Submit)
+    const reviewModal = document.getElementById("customerReviewModal");
+    const closeReviewBtn = document.getElementById("closeReviewModalBtn");
+    const starPicker = document.getElementById("reviewStarPicker");
+    const ratingValInput = document.getElementById("reviewRatingValue");
+    const starLabel = document.getElementById("reviewStarLabel");
+    const reviewForm = document.getElementById("customerReviewForm");
+
+    const starDescriptions = {
+      1: "1 / 5 — Kurang Sesuai",
+      2: "2 / 5 — Cukup",
+      3: "3 / 5 — Baik",
+      4: "4 / 5 — Puas",
+      5: "5 / 5 — Sangat Puas"
+    };
+
+    if (closeReviewBtn && reviewModal) {
+      closeReviewBtn.addEventListener("click", () => {
+        reviewModal.classList.remove("open");
+        reviewModal.setAttribute("aria-hidden", "true");
+      });
+    }
+    if (reviewModal) {
+      reviewModal.addEventListener("click", (e) => {
+        if (e.target === reviewModal) {
+          reviewModal.classList.remove("open");
+          reviewModal.setAttribute("aria-hidden", "true");
+        }
+      });
+    }
+
+    if (starPicker && ratingValInput) {
+      starPicker.querySelectorAll(".star-pick-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const val = Number(btn.getAttribute("data-val")) || 5;
+          ratingValInput.value = String(val);
+          starPicker.querySelectorAll(".star-pick-btn").forEach((b) => {
+            const bVal = Number(b.getAttribute("data-val"));
+            b.classList.toggle("active", bVal <= val);
+          });
+          if (starLabel) starLabel.textContent = starDescriptions[val] || `${val} / 5`;
+        });
+      });
+    }
+
+    if (reviewForm) {
+      reviewForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const name = (document.getElementById("reviewUserName").value || "").trim();
+        const city = (document.getElementById("reviewUserCity").value || "").trim();
+        const prodSelect = document.getElementById("reviewProductId");
+        const productId = prodSelect ? prodSelect.value : "andrd-01";
+        const selectedProd = PRODUCTS.find((p) => p.id === productId) || PRODUCTS[0];
+        const productName = selectedProd ? `${selectedProd.name} (50ml)` : "ANDRD Extrait";
+        const rating = Math.min(5, Math.max(1, Number(ratingValInput ? ratingValInput.value : 5) || 5));
+        const quote = (document.getElementById("reviewQuoteText").value || "").trim();
+
+        if (!name || !city || !quote) return;
+
+        const allReviews = getReviews();
+        allReviews.unshift({
+          id: "rev-" + Date.now(),
+          name,
+          city,
+          rating,
+          productId,
+          productName,
+          quote,
+          date: new Date().toISOString().slice(0, 10)
+        });
+        saveReviews(allReviews);
+
+        reviewForm.reset();
+        if (ratingValInput) ratingValInput.value = "5";
+        if (starPicker) {
+          starPicker.querySelectorAll(".star-pick-btn").forEach((b) => b.classList.add("active"));
+        }
+        if (starLabel) starLabel.textContent = starDescriptions[5];
+
+        if (reviewModal) {
+          reviewModal.classList.remove("open");
+          reviewModal.setAttribute("aria-hidden", "true");
+        }
+
+        renderHomeTestimonials();
+        renderProductDetailReviews(productId);
+        showToast("Terima kasih! Ulasan Anda berhasil ditambahkan.");
+      });
+    }
+  }
+
+  /* ==========================================================================
+     5B. CUSTOMER REVIEWS & TESTIMONIALS STORAGE HELPERS
+     ========================================================================== */
+  const REVIEWS_STORAGE_KEY = "andrd_cms_reviews_v1";
+
+  function getReviews() {
+    try {
+      const raw = localStorage.getItem(REVIEWS_STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) return parsed;
+      }
+    } catch (e) {}
+    if (Array.isArray(STORE_CONFIG.testimonials)) {
+      return JSON.parse(JSON.stringify(STORE_CONFIG.testimonials));
+    }
+    return [];
+  }
+
+  function saveReviews(list) {
+    localStorage.setItem(REVIEWS_STORAGE_KEY, JSON.stringify(list));
+    STORE_CONFIG.testimonials = list;
+    try {
+      const rawCfg = localStorage.getItem("andrd_cms_config_v1");
+      const cfg = rawCfg ? JSON.parse(rawCfg) : {};
+      cfg.testimonials = list;
+      localStorage.setItem("andrd_cms_config_v1", JSON.stringify(cfg));
+    } catch (e) {}
+  }
+
+  function renderReviewCardsHtml(reviewsList) {
+    if (!reviewsList || reviewsList.length === 0) {
+      return `
+        <div style="grid-column:1/-1;text-align:center;padding:32px 16px;background:var(--color-bg-alt);border-radius:var(--radius-md);color:var(--color-text-muted);font-size:14px;">
+          Belum ada ulasan. Jadilah yang pertama memberikan ulasan!
+        </div>
+      `;
+    }
+    return reviewsList
+      .map((item) => {
+        const starsCount = Math.min(5, Math.max(1, Number(item.rating) || 5));
+        const starsStr = "★".repeat(starsCount) + "☆".repeat(5 - starsCount);
+        const initial = (item.name || "A").trim().charAt(0).toUpperCase();
+        const productLink = item.productId
+          ? `<a href="product.html?id=${encodeURIComponent(item.productId)}">${sanitizeInput(item.productName || "")}</a>`
+          : sanitizeInput(item.productName || "");
+        return `
+          <article class="testimonial-card">
+            <div class="testimonial-top">
+              <span class="testimonial-stars" aria-label="Rating ${starsCount} dari 5">${starsStr}</span>
+              <span class="testimonial-verified">Verified Buyer</span>
+            </div>
+            <p class="testimonial-quote">“${sanitizeInput(item.quote || "")}”</p>
+            <div class="testimonial-footer">
+              <div class="testimonial-avatar" aria-hidden="true">${initial}</div>
+              <div class="testimonial-author-info">
+                <strong class="testimonial-name">${sanitizeInput(item.name || "")}</strong>
+                <span class="testimonial-meta">${sanitizeInput(item.city || "")}${item.productName ? " • " + productLink : ""}</span>
+              </div>
+            </div>
+          </article>
+        `;
+      })
+      .join("");
+  }
+
+  function renderHomeTestimonials() {
+    const testimonialsGrid = document.getElementById("testimonialsGrid");
+    if (!testimonialsGrid) return;
+
+    const reviews = getReviews();
+    testimonialsGrid.innerHTML = renderReviewCardsHtml(reviews);
+
+    const ratingTextEl = document.getElementById("testimonialRatingText");
+    if (ratingTextEl) {
+      if (reviews.length === 0) {
+        ratingTextEl.textContent = "Belum ada ulasan";
+      } else {
+        const avg = (
+          reviews.reduce((sum, r) => sum + (Number(r.rating) || 5), 0) / reviews.length
+        ).toFixed(1);
+        ratingTextEl.textContent = `${avg} / 5.0 (${reviews.length} Ulasan)`;
+      }
+    }
+  }
+
+  function renderProductDetailReviews(productId) {
+    const detailRevGrid = document.getElementById("productDetailReviewsGrid");
+    const detailRevSummary = document.getElementById("productDetailReviewsSummary");
+    if (!detailRevGrid) return;
+
+    const allReviews = getReviews();
+    const prodReviews = allReviews.filter((r) => r.productId === productId);
+    const listToShow = prodReviews.length > 0 ? prodReviews : allReviews.slice(0, 3);
+
+    detailRevGrid.innerHTML = renderReviewCardsHtml(listToShow);
+    if (detailRevSummary) {
+      if (listToShow.length > 0) {
+        const avg = (
+          listToShow.reduce((sum, r) => sum + (Number(r.rating) || 5), 0) / listToShow.length
+        ).toFixed(1);
+        detailRevSummary.textContent = `★ ${avg} / 5.0 (${prodReviews.length > 0 ? prodReviews.length + " Ulasan Produk Ini" : allReviews.length + " Ulasan Toko"})`;
+      } else {
+        detailRevSummary.textContent = "Belum ada ulasan";
+      }
+    }
   }
 
   /* ==========================================================================
@@ -904,35 +1170,7 @@
         .join("");
     }
 
-    const testimonialsGrid = document.getElementById("testimonialsGrid");
-    if (testimonialsGrid && Array.isArray(STORE_CONFIG.testimonials) && STORE_CONFIG.testimonials.length > 0) {
-      testimonialsGrid.innerHTML = STORE_CONFIG.testimonials
-        .map((item) => {
-          const starsCount = Math.min(5, Math.max(1, Number(item.rating) || 5));
-          const starsStr = "★".repeat(starsCount);
-          const initial = (item.name || "A").trim().charAt(0).toUpperCase();
-          const productLink = item.productId
-            ? `<a href="product.html?id=${encodeURIComponent(item.productId)}">${sanitizeInput(item.productName || "")}</a>`
-            : sanitizeInput(item.productName || "");
-          return `
-            <article class="testimonial-card">
-              <div class="testimonial-top">
-                <span class="testimonial-stars" aria-label="Rating ${starsCount} dari 5">${starsStr}</span>
-                <span class="testimonial-verified">Verified Buyer</span>
-              </div>
-              <p class="testimonial-quote">“${sanitizeInput(item.quote || "")}”</p>
-              <div class="testimonial-footer">
-                <div class="testimonial-avatar" aria-hidden="true">${initial}</div>
-                <div class="testimonial-author-info">
-                  <strong class="testimonial-name">${sanitizeInput(item.name || "")}</strong>
-                  <span class="testimonial-meta">${sanitizeInput(item.city || "")}${item.productName ? " • " + productLink : ""}</span>
-                </div>
-              </div>
-            </article>
-          `;
-        })
-        .join("");
-    }
+    renderHomeTestimonials();
   }
 
   /* ==========================================================================
@@ -1254,6 +1492,25 @@
           </div>
         </div>
       </div>
+
+      <!-- Ulasan & Rating Pelanggan di Halaman Produk -->
+      <div style="margin-top:48px;padding-top:36px;border-top:1px solid var(--color-border);">
+        <div class="section-header testimonial-section-header" style="margin-bottom:20px;">
+          <div>
+            <span class="section-eyebrow">Customer Reviews</span>
+            <h2 class="section-title" style="font-size:22px;">Ulasan Pelanggan</h2>
+          </div>
+          <div class="testimonial-header-actions">
+            <div class="testimonial-summary-badge">
+              <span id="productDetailReviewsSummary">★ 5.0 / 5.0</span>
+            </div>
+            <button type="button" class="btn btn-primary js-open-review-modal" data-product-id="${product.id}" style="padding:10px 18px;font-size:13px;">
+              + Tulis Ulasan
+            </button>
+          </div>
+        </div>
+        <div class="testimonial-grid" id="productDetailReviewsGrid"></div>
+      </div>
     `;
 
     function renderActionArea() {
@@ -1347,6 +1604,7 @@
       relatedGrid.innerHTML = related.map(renderProductCard).join("");
     }
 
+    renderProductDetailReviews(product.id);
     injectProductSchema(product);
   }
 
