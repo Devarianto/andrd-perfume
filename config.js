@@ -11,11 +11,11 @@ const DEFAULT_STORE_CONFIG = {
   brandName: "ANDRD",
   brandLegalName: "ANDRD Studio Indonesia",
   tagline: "Scent as Memory",
-  subTagline: "Extrait de Parfum, Diracik untuk iklim tropis.",
+  subTagline: "Extrait de Parfum — Diracik untuk iklim tropis.",
   domain: "https://andrd-perfume.vercel.app",
 
   // 2. KONTAK & WHATSAPP ADMIN (Gunakan awalan 628xxx tanpa + atau spasi)
-  whatsappAdmin: "6281336756838",
+  whatsappAdmin: "6281234567890",
   whatsappDisplay: "+62 812-3456-7890",
   email: "hello@andrdperfume.com",
   instagram: "@andrd.olfactory",
@@ -111,6 +111,34 @@ const DEFAULT_STORE_CONFIG = {
     { id: "Woody & Vanilla", name: "Woody & Vanilla", subtitle: "Hangat & memikat", accent: "#000000" },
     { id: "Gourmand", name: "Gourmand", subtitle: "Kopi, cacao & tonka", accent: "#000000" },
     { id: "Musky", name: "Musky", subtitle: "Bersih & menyatu di kulit", accent: "#000000" }
+  ],
+
+  // 8. TESTIMONIAL PELANGGAN
+  testimonials: [
+    {
+      name: "Nadia Kusuma",
+      city: "Jakarta Selatan",
+      rating: 5,
+      productId: "andrd-01",
+      productName: "01 Senja di Bali (50ml)",
+      quote: "Wanginya beneran tahan seharian dari pagi ngantor sampai malam. Dry-down sandalwood dan vanillanya halus banget, gak bikin pusing sama sekali."
+    },
+    {
+      name: "Raka Pradana",
+      city: "Bandung",
+      rating: 5,
+      productId: "andrd-04",
+      productName: "04 Kayu & Rupa (50ml)",
+      quote: "Karakter woody smokey-nya berkelas, mirip parfum niche harga jutaan. Dapat free vial 2ml juga jadi bisa coba varian lain sebelum beli full size."
+    },
+    {
+      name: "Clara Wijaya",
+      city: "Surabaya",
+      rating: 5,
+      productId: "andrd-02",
+      productName: "02 Embun Pagi (100ml)",
+      quote: "Seger banget buat cuaca panas! Perpaduan yuzu dan white tea-nya clean, sering banget ditanyain teman kantor pakai parfum apa."
+    }
   ]
 };
 

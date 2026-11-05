@@ -903,6 +903,36 @@
         })
         .join("");
     }
+
+    const testimonialsGrid = document.getElementById("testimonialsGrid");
+    if (testimonialsGrid && Array.isArray(STORE_CONFIG.testimonials) && STORE_CONFIG.testimonials.length > 0) {
+      testimonialsGrid.innerHTML = STORE_CONFIG.testimonials
+        .map((item) => {
+          const starsCount = Math.min(5, Math.max(1, Number(item.rating) || 5));
+          const starsStr = "★".repeat(starsCount);
+          const initial = (item.name || "A").trim().charAt(0).toUpperCase();
+          const productLink = item.productId
+            ? `<a href="product.html?id=${encodeURIComponent(item.productId)}">${sanitizeInput(item.productName || "")}</a>`
+            : sanitizeInput(item.productName || "");
+          return `
+            <article class="testimonial-card">
+              <div class="testimonial-top">
+                <span class="testimonial-stars" aria-label="Rating ${starsCount} dari 5">${starsStr}</span>
+                <span class="testimonial-verified">Verified Buyer</span>
+              </div>
+              <p class="testimonial-quote">“${sanitizeInput(item.quote || "")}”</p>
+              <div class="testimonial-footer">
+                <div class="testimonial-avatar" aria-hidden="true">${initial}</div>
+                <div class="testimonial-author-info">
+                  <strong class="testimonial-name">${sanitizeInput(item.name || "")}</strong>
+                  <span class="testimonial-meta">${sanitizeInput(item.city || "")}${item.productName ? " • " + productLink : ""}</span>
+                </div>
+              </div>
+            </article>
+          `;
+        })
+        .join("");
+    }
   }
 
   /* ==========================================================================
