@@ -1,94 +1,94 @@
 /**
  * ============================================================================
- * VERCEL SERVERLESS API — CEK ONGKIR OTOMATIS RAJAONGKIR (GRATIS / STARTER & V2)
+ * VERCEL SERVERLESS API — CEK ONGKIR LIVE RAJAONGKIR V2 (PRODUCTION)
  * Endpoint: POST /api/shipping
  * ============================================================================
- * Mendukung:
- * 1. RajaOngkir Komerce API v2 (https://rajaongkir.komerce.id/api/v1)
- * 2. RajaOngkir Classic Starter API (https://api.rajaongkir.com/starter)
- * Jika API Key belum diisi atau gagal, frontend otomatis memakai tabel tarif
- * domestik bawaan sehingga checkout tidak pernah error.
+ * Menggunakan RajaOngkir Shipping Cost API v2 (https://rajaongkir.komerce.id/api/v1)
+ * Mendukung level Kota/Kabupaten hingga Kecamatan seluruh Indonesia.
  */
 
-// Mapping nama Kota/Kabupaten ke ID Kota RajaOngkir Classic Starter
-const RAJAONGKIR_CITY_IDS = {
-  "Jakarta Selatan": "153",
-  "Jakarta Pusat": "152",
-  "Jakarta Barat": "151",
-  "Jakarta Timur": "154",
-  "Jakarta Utara": "155",
-  "Kepulauan Seribu": "189",
-  "Kota Tangerang Selatan": "457",
-  "Kota Tangerang": "456",
-  "Kab. Tangerang": "455",
-  "Kota Serang": "403",
-  "Kota Cilegon": "106",
-  "Kab. Lebak": "232",
-  "Kab. Pandeglang": "331",
-  "Kota Bandung": "23",
-  "Kab. Bandung": "22",
-  "Kota Bekasi": "55",
-  "Kab. Bekasi": "54",
-  "Kota Depok": "115",
-  "Kota Bogor": "79",
-  "Kab. Bogor": "78",
-  "Kota Cirebon": "108",
-  "Kota Tasikmalaya": "469",
-  "Kab. Garut": "126",
-  "Kab. Karawang": "171",
-  "Kota Semarang": "399",
-  "Kota Surakarta (Solo)": "445",
-  "Kota Magelang": "250",
-  "Kota Pekalongan": "349",
-  "Kota Tegal": "472",
-  "Kab. Banyumas (Purwokerto)": "41",
-  "Kab. Kudus": "209",
-  "Kab. Jepara": "163",
-  "Kab. Klaten": "196",
-  "Kota Yogyakarta": "501",
-  "Kab. Sleman": "419",
-  "Kab. Bantul": "39",
-  "Kab. Kulon Progo": "210",
-  "Kab. Gunungkidul": "135",
-  "Kota Surabaya": "444",
-  "Kota Malang": "256",
-  "Kab. Sidoarjo": "409",
-  "Kab. Gresik": "133",
-  "Kota Batu": "51",
-  "Kota Kediri": "179",
-  "Kab. Jember": "160",
-  "Kab. Banyuwangi": "42",
-  "Kota Denpasar": "114",
-  "Kab. Badung": "17",
-  "Kab. Gianyar": "128",
-  "Kab. Tabanan": "447",
-  "Kab. Buleleng": "94",
-  "Kota Medan": "278",
-  "Kota Binjai": "70",
-  "Kab. Deli Serdang": "112",
-  "Kota Padang": "318",
-  "Kota Bukittinggi": "93",
-  "Kota Pekanbaru": "350",
-  "Kota Batam": "48",
-  "Kota Tanjungpinang": "461",
-  "Kota Palembang": "327",
-  "Kota Bandar Lampung": "21",
-  "Kota Balikpapan": "19",
-  "Kota Samarinda": "387",
-  "Kota Bontang": "89",
-  "Kota Banjarmasin": "36",
-  "Kota Banjarbaru": "35",
-  "Kota Pontianak": "365",
-  "Kota Palangka Raya": "326",
-  "Kota Makassar": "254",
-  "Kota Manado": "267",
-  "Kota Kendari": "182",
-  "Kota Palu": "329",
-  "Kota Mataram": "276",
-  "Kota Kupang": "213",
-  "Kota Ambon": "14",
-  "Kota Jayapura": "158"
+const DEFAULT_RAJAONGKIR_SHIPPING_KEY = "e9OAevuO53232ceaff7b55fbmIKxmOOS";
+// ID Kecamatan Kebayoran Baru / Kemang, Jakarta Selatan di RajaOngkir v2
+const DEFAULT_ORIGIN_JAKARTA_SELATAN_ID = 17536;
+
+// Daftar layanan paket reguler/ekspres/ekonomis yang relevan untuk produk parfum
+// (Menyaring kargo motor/truk seperti JTR>200, T60, BIG, GOKIL, SPS, dll.)
+const ALLOWED_SERVICES_BY_COURIER = {
+  jne: ["REG", "CTC", "YES", "CTCYES", "OKE"],
+  jnt: ["EZ", "REG"],
+  sicepat: ["REG", "BEST", "HALU"],
+  anteraja: ["REG", "ND", "ECO"],
+  tiki: ["REG", "ONS", "ECO"],
+  pos: ["POS REGULER", "POS NEXTDAY", "REGULER"],
+  ninja: ["STANDARD", "REG"]
 };
+
+const COURIER_DISPLAY_NAMES = {
+  jne: "JNE",
+  jnt: "J&T",
+  sicepat: "SiCepat",
+  anteraja: "AnterAja",
+  tiki: "TIKI",
+  pos: "POS",
+  ninja: "Ninja"
+};
+
+function normalizeAreaName(str) {
+  return String(str || "")
+    .toUpperCase()
+    .replace(/\(.*?\)/g, "")
+    .replace(/^(KOTA|KAB\.|KABUPATEN)\s+/i, "")
+    .replace(/[^A-Z0-9\s]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+async function findRajaOngkirV2DestinationId(apiKey, city, district) {
+  const cleanCity = normalizeAreaName(city);
+  const cleanDistrict =
+    district && district !== "LAINNYA"
+      ? String(district).split("/")[0].replace(/\(.*?\)/g, "").trim()
+      : "";
+
+  // 1. Cari spesifik Kecamatan + Kota agar tarif presisi sampai level kecamatan
+  if (cleanDistrict && cleanCity) {
+    const q1 = encodeURIComponent(`${cleanDistrict} ${cleanCity}`);
+    const r1 = await fetch(
+      `https://rajaongkir.komerce.id/api/v1/destination/domestic-destination?search=${q1}&limit=8&offset=0`,
+      { headers: { key: apiKey } }
+    );
+    if (r1.ok) {
+      const d1 = await r1.json();
+      const list1 = Array.isArray(d1.data) ? d1.data : [];
+      const match1 = list1.find((item) => {
+        const ic = normalizeAreaName(item.city_name || "");
+        return ic === cleanCity || ic.includes(cleanCity) || cleanCity.includes(ic);
+      });
+      if (match1 && match1.id) return match1.id;
+    }
+  }
+
+  // 2. Fallback cari berdasarkan Kota / Kabupaten
+  if (cleanCity) {
+    const q2 = encodeURIComponent(cleanCity);
+    const r2 = await fetch(
+      `https://rajaongkir.komerce.id/api/v1/destination/domestic-destination?search=${q2}&limit=8&offset=0`,
+      { headers: { key: apiKey } }
+    );
+    if (r2.ok) {
+      const d2 = await r2.json();
+      const list2 = Array.isArray(d2.data) ? d2.data : [];
+      const match2 =
+        list2.find((item) => {
+          const ic = normalizeAreaName(item.city_name || "");
+          return ic === cleanCity || ic.includes(cleanCity) || cleanCity.includes(ic);
+        }) || list2[0];
+      if (match2 && match2.id) return match2.id;
+    }
+  }
+
+  return null;
+}
 
 module.exports = async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -105,137 +105,124 @@ module.exports = async function handler(req, res) {
 
   try {
     const body = typeof req.body === "string" ? JSON.parse(req.body) : req.body || {};
-    const apiKey = (body.apiKey || process.env.RAJAONGKIR_API_KEY || "").trim();
+    const apiKey = (
+      body.apiKey ||
+      process.env.RAJAONGKIR_API_KEY ||
+      DEFAULT_RAJAONGKIR_SHIPPING_KEY
+    ).trim();
+
     const originCity = body.originCity || "Jakarta Selatan";
     const destinationCity = body.destinationCity || "";
     const destinationDistrict = body.destinationDistrict || "";
-    const weightGrams = Math.max(100, Number(body.weightGrams) || 1000);
+    const weightGrams = Math.max(200, Number(body.weightGrams) || 1000);
 
-    if (!apiKey) {
-      return res.status(200).json({
-        ok: false,
-        source: "no_api_key",
-        message: "API Key RajaOngkir belum diisi, menggunakan tarif otomatis bawaan."
-      });
+    if (!apiKey || !destinationCity) {
+      return res.status(200).json({ ok: false, source: "missing_params" });
     }
 
-    // 1. Coba RajaOngkir Komerce API v2 terlebih dahulu
-    try {
-      const searchQuery = encodeURIComponent(
-        destinationDistrict && destinationDistrict !== "LAINNYA"
-          ? `${destinationDistrict} ${destinationCity.replace(/^(Kota|Kab\.)\s+/i, "")}`
-          : destinationCity.replace(/^(Kota|Kab\.)\s+/i, "")
-      );
-      const originSearch = encodeURIComponent(originCity.replace(/^(Kota|Kab\.)\s+/i, ""));
-
-      const [origDestRes, targetDestRes] = await Promise.all([
-        fetch(
-          `https://rajaongkir.komerce.id/api/v1/destination/domestic-destination?search=${originSearch}&limit=1&offset=0`,
-          { headers: { key: apiKey } }
-        ),
-        fetch(
-          `https://rajaongkir.komerce.id/api/v1/destination/domestic-destination?search=${searchQuery}&limit=1&offset=0`,
-          { headers: { key: apiKey } }
-        )
-      ]);
-
-      if (origDestRes.ok && targetDestRes.ok) {
-        const origData = await origDestRes.json();
-        const targetData = await targetDestRes.json();
-        const origId = origData && origData.data && origData.data[0] ? origData.data[0].id : null;
-        const destId = targetData && targetData.data && targetData.data[0] ? targetData.data[0].id : null;
-
-        if (origId && destId) {
-          const formBody = new URLSearchParams({
-            origin: String(origId),
-            destination: String(destId),
-            weight: String(weightGrams),
-            courier: "jne:pos:tiki"
-          });
-
-          const costRes = await fetch("https://rajaongkir.komerce.id/api/v1/calculate/domestic-cost", {
-            method: "POST",
-            headers: {
-              key: apiKey,
-              "Content-Type": "application/x-www-form-urlencoded"
-            },
-            body: formBody.toString()
-          });
-
-          if (costRes.ok) {
-            const costJson = await costRes.json();
-            if (costJson && Array.isArray(costJson.data) && costJson.data.length > 0) {
-              const rates = costJson.data.slice(0, 8).map((item) => ({
-                code: `${(item.code || "").toUpperCase()} ${item.service || ""}`.trim(),
-                label: `${(item.code || "").toUpperCase()} ${item.service || ""}${item.etd ? ` (${item.etd})` : ""}`,
-                cost: Number(item.cost) || 0,
-                isManual: false
-              }));
-              return res.status(200).json({ ok: true, source: "rajaongkir_v2", rates });
-            }
-          }
-        }
-      }
-    } catch (v2Err) {
-      // Lanjut fallback ke endpoint RajaOngkir Starter Classic
+    // 1. Tentukan Origin ID (Default langsung 17536 Jakarta Selatan agar cepat tanpa request tambahan)
+    let originId = DEFAULT_ORIGIN_JAKARTA_SELATAN_ID;
+    if (normalizeAreaName(originCity) !== "JAKARTA SELATAN") {
+      const foundOrigin = await findRajaOngkirV2DestinationId(apiKey, originCity, "");
+      if (foundOrigin) originId = foundOrigin;
     }
 
-    // 2. Fallback ke RajaOngkir Starter Classic API (https://api.rajaongkir.com/starter/cost)
-    const originId = RAJAONGKIR_CITY_IDS[originCity] || "153";
-    const destId = RAJAONGKIR_CITY_IDS[destinationCity];
+    // 2. Cari Destination ID (Kecamatan / Kota Tujuan)
+    const destId = await findRajaOngkirV2DestinationId(
+      apiKey,
+      destinationCity,
+      destinationDistrict
+    );
     if (!destId) {
-      return res.status(200).json({ ok: false, source: "city_unmapped" });
+      return res.status(200).json({ ok: false, source: "destination_not_found" });
     }
 
-    const couriers = ["jne", "tiki", "pos"];
-    const classicRequests = couriers.map((c) => {
-      const params = new URLSearchParams({
-        origin: originId,
-        destination: destId,
-        weight: String(weightGrams),
-        courier: c
-      });
-      return fetch("https://api.rajaongkir.com/starter/cost", {
+    // 3. Hitung Ongkir Live dari RajaOngkir Production v2
+    const formBody = new URLSearchParams({
+      origin: String(originId),
+      destination: String(destId),
+      weight: String(weightGrams),
+      courier: "jne:jnt:sicepat:anteraja:tiki:pos:ninja"
+    });
+
+    const costRes = await fetch(
+      "https://rajaongkir.komerce.id/api/v1/calculate/domestic-cost",
+      {
         method: "POST",
         headers: {
           key: apiKey,
           "Content-Type": "application/x-www-form-urlencoded"
         },
-        body: params.toString()
-      })
-        .then((r) => (r.ok ? r.json() : null))
-        .catch(() => null);
-    });
+        body: formBody.toString()
+      }
+    );
 
-    const classicResponses = await Promise.all(classicRequests);
-    const classicRates = [];
-    classicResponses.forEach((resp) => {
-      const results =
-        resp && resp.rajaongkir && Array.isArray(resp.rajaongkir.results)
-          ? resp.rajaongkir.results
-          : [];
-      results.forEach((courierObj) => {
-        const cCode = (courierObj.code || "").toUpperCase();
-        (courierObj.costs || []).forEach((srv) => {
-          const costItem = srv.cost && srv.cost[0];
-          if (costItem && costItem.value) {
-            const etdClean = (costItem.etd || "").replace(/hari/gi, "").trim();
-            classicRates.push({
-              code: `${cCode} ${srv.service}`,
-              label: `${cCode} ${srv.service}${etdClean ? ` (${etdClean} Hari)` : ""}`,
-              cost: Number(costItem.value),
-              isManual: false
-            });
-          }
-        });
+    if (!costRes.ok) {
+      return res.status(200).json({ ok: false, source: "rajaongkir_http_error", status: costRes.status });
+    }
+
+    const costJson = await costRes.json();
+    const rawList = Array.isArray(costJson.data) ? costJson.data : [];
+
+    const seen = new Set();
+    const filteredRates = [];
+
+    rawList.forEach((item) => {
+      const cCode = String(item.code || "").toLowerCase().trim();
+      const srvRaw = String(item.service || "").trim();
+      const srvUpper = srvRaw.toUpperCase();
+      const cost = Number(item.cost) || 0;
+      if (cost <= 0) return;
+
+      const allowedList = ALLOWED_SERVICES_BY_COURIER[cCode];
+      if (allowedList && !allowedList.includes(srvUpper)) {
+        return;
+      }
+
+      const brand = COURIER_DISPLAY_NAMES[cCode] || cCode.toUpperCase();
+      // Rapikan nama layanan (misal CTC -> REG untuk dalam kota JNE, Pos Reguler -> Reguler)
+      let cleanService = srvRaw.replace(/^Pos\s+/i, "");
+      if (cCode === "jne" && srvUpper === "CTC") cleanService = "REG";
+      if (cCode === "jne" && srvUpper === "CTCYES") cleanService = "YES";
+
+      const displayCode = `${brand} ${cleanService}`.trim();
+      if (seen.has(displayCode)) return;
+      seen.add(displayCode);
+
+      let etdClean = String(item.etd || "")
+        .replace(/days?/gi, "Hari")
+        .replace(/^0\s*Hari$/i, "1 Hari")
+        .trim();
+      if (etdClean === "-") etdClean = "";
+
+      filteredRates.push({
+        code: displayCode,
+        label: `${displayCode}${etdClean ? ` (${etdClean})` : ""}`,
+        cost,
+        isManual: false
       });
     });
 
-    if (classicRates.length > 0) {
-      return res.status(200).json({ ok: true, source: "rajaongkir_starter", rates: classicRates });
+    // Urutkan kurir populer lebih dulu lalu berdasarkan harga
+    const priorityOrder = ["JNE REG", "J&T EZ", "SiCepat REG", "AnterAja REG", "SiCepat HALU", "JNE YES", "SiCepat BEST"];
+    filteredRates.sort((a, b) => {
+      const idxA = priorityOrder.indexOf(a.code);
+      const idxB = priorityOrder.indexOf(b.code);
+      if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+      if (idxA !== -1) return -1;
+      if (idxB !== -1) return 1;
+      return a.cost - b.cost;
+    });
+
+    if (filteredRates.length > 0) {
+      return res.status(200).json({
+        ok: true,
+        source: "rajaongkir_v2_production",
+        rates: filteredRates
+      });
     }
 
-    return res.status(200).json({ ok: false, source: "empty_rates" });
+    return res.status(200).json({ ok: false, source: "no_matching_services" });
   } catch (err) {
     return res.status(200).json({ ok: false, source: "error", message: err.message });
   }

@@ -2039,6 +2039,7 @@
 
     let selectedShippingCost = 0;
     let selectedShippingManual = false;
+    let latestRateReqId = 0;
 
     if (weightLabelEl) {
       weightLabelEl.textContent = `${weightKg} kg (${weightGrams} gr)`;
@@ -2069,7 +2070,10 @@
     async function refreshCourierDropdown() {
       const prov = provSelect ? provSelect.value : "";
       const kota = kotaSelect ? kotaSelect.value : "";
-      const kec = kecSelect ? kecSelect.value : "";
+      let kec = kecSelect ? kecSelect.value : "";
+      if (kec === "LAINNYA" && kecManual && kecManual.value.trim()) {
+        kec = kecManual.value.trim();
+      }
 
       if (!courierSelect) return;
 
@@ -2083,10 +2087,13 @@
         return;
       }
 
+      const reqId = ++latestRateReqId;
+      const targetLabel = kec && kec !== "LAINNYA" ? `${kec}, ${kota}` : kota;
       courierSelect.disabled = true;
-      courierSelect.innerHTML = `<option value="">Menghitung ongkir ke ${kota}...</option>`;
+      courierSelect.innerHTML = `<option value="">Menghitung ongkir live ke ${targetLabel}...</option>`;
 
       const autoRates = await fetchRajaOngkirOrBuiltinRates(prov, kota, kec, weightGrams);
+      if (reqId !== latestRateReqId) return;
       const inJabodetabek = isJabodetabekCity(kota);
 
       const optionsHtml = [`<option value="">-- Pilih Layanan Kurir --</option>`];
@@ -2184,10 +2191,18 @@
           kecManual.style.display = kecSelect.value === "LAINNYA" ? "block" : "none";
           if (kecSelect.value === "LAINNYA") kecManual.focus();
         }
-        if ((STORE_CONFIG.rajaOngkirApiKey || "").trim() && kecSelect.value && kecSelect.value !== "LAINNYA") {
+        if (kecSelect.value && kecSelect.value !== "LAINNYA") {
           refreshCourierDropdown();
         }
       });
+
+      if (kecManual) {
+        kecManual.addEventListener("change", () => {
+          if (kecSelect.value === "LAINNYA" && kecManual.value.trim()) {
+            refreshCourierDropdown();
+          }
+        });
+      }
     }
 
     if (courierSelect) {
