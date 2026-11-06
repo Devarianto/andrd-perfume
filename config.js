@@ -24,12 +24,12 @@ const DEFAULT_STORE_CONFIG = {
   instagramUrl: "https://instagram.com",
   tiktokUrl: "https://tiktok.com",
   youtubeUrl: "https://youtube.com",
-  address: "Kemang Timur Raya No. 48, Jakarta Selatan",
+  address: "Jl. Baladewa Kiri RT 15/RW 11, Tanah Tinggi, Johar Baru, Jakarta Pusat 10540",
   operationalHours: "Senin – Sabtu, 09.00 – 18.00 WIB",
 
   // 3. PENGATURAN ORDER & PENGIRIMAN (RAJAONGKIR GRATIS + JABODETABEK MANUAL GOSEND/GRAB)
   orderPrefix: "ANDRD",
-  originCity: "Jakarta Selatan",
+  originCity: "Johar Baru, Jakarta Pusat",
   rajaOngkirApiKey: "", // Opsional: Isi API Key RajaOngkir Gratis (Starter / Komerce) lewat CMS
   returnPolicyDays: 7,
   announcementText: "Free Vial 2ml Setiap Pembelian • Pengiriman Seluruh Indonesia",
@@ -156,6 +156,12 @@ try {
   const rawCmsConfig = localStorage.getItem("andrd_cms_config_v1");
   if (rawCmsConfig) {
     savedCmsConfig = JSON.parse(rawCmsConfig);
+    if (savedCmsConfig.address === "Kemang Timur Raya No. 48, Jakarta Selatan") {
+      savedCmsConfig.address = DEFAULT_STORE_CONFIG.address;
+    }
+    if (savedCmsConfig.originCity === "Jakarta Selatan") {
+      savedCmsConfig.originCity = DEFAULT_STORE_CONFIG.originCity;
+    }
   }
 } catch (e) {}
 

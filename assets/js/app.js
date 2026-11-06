@@ -494,9 +494,10 @@
           <div class="footer-grid">
             <div class="footer-brand-col">
               <a href="index.html" class="footer-brand">${STORE_CONFIG.brandName}</a>
-              <p style="font-size:13.5px;margin-bottom:10px;max-width:280px;">
+              <p style="font-size:13.5px;margin-bottom:8px;max-width:280px;">
                 ${STORE_CONFIG.tagline} — ${STORE_CONFIG.subTagline}
               </p>
+              ${STORE_CONFIG.address ? `<p style="font-size:12.5px;color:var(--color-text-muted);margin-bottom:8px;max-width:280px;line-height:1.5;">${STORE_CONFIG.address}</p>` : ""}
               <p style="font-size:13px;margin-bottom:14px;">
                 WA: <a href="${waConsultUrl}" target="_blank" rel="noopener" style="color:var(--color-primary);font-weight:500;">${STORE_CONFIG.whatsappDisplay}</a>
               </p>
@@ -1991,7 +1992,7 @@
 
   async function fetchRajaOngkirOrBuiltinRates(provinsi, kota, kecamatan, weightGrams) {
     const apiKey = (STORE_CONFIG.rajaOngkirApiKey || "").trim();
-    const originCity = STORE_CONFIG.originCity || "Jakarta Selatan";
+    const originCity = STORE_CONFIG.originCity || "Johar Baru, Jakarta Pusat";
 
     // Panggil endpoint Vercel /api/shipping jika berjalan di web server (http/https)
     if (window.location.protocol.startsWith("http")) {

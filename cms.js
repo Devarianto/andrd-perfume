@@ -159,7 +159,14 @@
     try {
       const raw = localStorage.getItem(KEYS.CONFIG);
       if (raw) {
-        return Object.assign(base, JSON.parse(raw));
+        const parsed = JSON.parse(raw);
+        if (parsed.address === "Kemang Timur Raya No. 48, Jakarta Selatan") {
+          parsed.address = base.address;
+        }
+        if (parsed.originCity === "Jakarta Selatan") {
+          parsed.originCity = base.originCity;
+        }
+        return Object.assign(base, parsed);
       }
     } catch (e) {}
     return base;
@@ -1311,7 +1318,7 @@
     document.getElementById("setAddress").value = cfg.address || "";
     document.getElementById("setHours").value = cfg.operationalHours || "";
     const origEl = document.getElementById("setOriginCity");
-    if (origEl) origEl.value = cfg.originCity || "Jakarta Selatan";
+    if (origEl) origEl.value = cfg.originCity || "Johar Baru, Jakarta Pusat";
     const roKeyEl = document.getElementById("setRajaOngkirKey");
     if (roKeyEl) roKeyEl.value = cfg.rajaOngkirApiKey || "";
     document.getElementById("setGhToken").value = localStorage.getItem(KEYS.GH_TOKEN) || "";
@@ -1592,7 +1599,7 @@ window.STORE_CONFIG = STORE_CONFIG;
         cfg.address = document.getElementById("setAddress").value.trim();
         cfg.operationalHours = document.getElementById("setHours").value.trim();
         const origEl = document.getElementById("setOriginCity");
-        if (origEl) cfg.originCity = origEl.value.trim() || "Jakarta Selatan";
+        if (origEl) cfg.originCity = origEl.value.trim() || "Johar Baru, Jakarta Pusat";
         const roKeyEl = document.getElementById("setRajaOngkirKey");
         if (roKeyEl) cfg.rajaOngkirApiKey = roKeyEl.value.trim();
         saveConfig(cfg, "Memperbarui pengaturan identitas, WhatsApp & ongkir toko");

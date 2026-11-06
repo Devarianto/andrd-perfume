@@ -8,8 +8,13 @@
  */
 
 const DEFAULT_RAJAONGKIR_SHIPPING_KEY = "e9OAevuO53232ceaff7b55fbmIKxmOOS";
-// ID Kecamatan Kebayoran Baru / Kemang, Jakarta Selatan di RajaOngkir v2
-const DEFAULT_ORIGIN_JAKARTA_SELATAN_ID = 17536;
+// ID Kelurahan Tanah Tinggi, Kec. Johar Baru, Jakarta Pusat 10540 (Jl. Baladewa Kiri RT 15/RW 11) di RajaOngkir v2
+const DEFAULT_ORIGIN_TANAH_TINGGI_ID = 17608;
+const DEFAULT_ORIGIN_ALIASES = new Set([
+  "JOHAR BARU JAKARTA PUSAT",
+  "TANAH TINGGI JOHAR BARU JAKARTA PUSAT",
+  "JAKARTA PUSAT"
+]);
 
 // Daftar layanan paket reguler/ekspres/ekonomis yang relevan untuk produk parfum
 // (Menyaring kargo motor/truk seperti JTR>200, T60, BIG, GOKIL, SPS, dll.)
@@ -111,7 +116,7 @@ module.exports = async function handler(req, res) {
       DEFAULT_RAJAONGKIR_SHIPPING_KEY
     ).trim();
 
-    const originCity = body.originCity || "Jakarta Selatan";
+    const originCity = body.originCity || "Johar Baru, Jakarta Pusat";
     const destinationCity = body.destinationCity || "";
     const destinationDistrict = body.destinationDistrict || "";
     const weightGrams = Math.max(200, Number(body.weightGrams) || 1000);
@@ -120,9 +125,10 @@ module.exports = async function handler(req, res) {
       return res.status(200).json({ ok: false, source: "missing_params" });
     }
 
-    // 1. Tentukan Origin ID (Default langsung 17536 Jakarta Selatan agar cepat tanpa request tambahan)
-    let originId = DEFAULT_ORIGIN_JAKARTA_SELATAN_ID;
-    if (normalizeAreaName(originCity) !== "JAKARTA SELATAN") {
+    // 1. Tentukan Origin ID (Default langsung 17608 Tanah Tinggi, Johar Baru, Jakarta Pusat agar cepat tanpa request tambahan)
+    let originId = DEFAULT_ORIGIN_TANAH_TINGGI_ID;
+    const normOrigin = normalizeAreaName(originCity);
+    if (normOrigin && !DEFAULT_ORIGIN_ALIASES.has(normOrigin)) {
       const foundOrigin = await findRajaOngkirV2DestinationId(apiKey, originCity, "");
       if (foundOrigin) originId = foundOrigin;
     }

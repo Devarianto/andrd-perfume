@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8">
@@ -64,20 +64,20 @@
             <h2 style="font-size:24px;margin-bottom:16px;">Informasi Studio</h2>
             <div style="display:flex;flex-direction:column;gap:18px;font-size:14px;">
               <div>
-                <strong style="display:block;text-transform:uppercase;font-size:11.5px;letter-spacing:0.1em;color:var(--color-accent);">Alamat Atelier</strong>
-                <span>Jl. Kemang Timur Raya No. 48, Jakarta Selatan 12730, Indonesia</span>
+                <strong style="display:block;text-transform:uppercase;font-size:11.5px;letter-spacing:0.1em;color:var(--color-accent);">Alamat Toko / Studio</strong>
+                <span id="contactStudioAddress">Jl. Baladewa Kiri RT 15/RW 11, Tanah Tinggi, Johar Baru, Jakarta Pusat 10540</span>
               </div>
               <div>
                 <strong style="display:block;text-transform:uppercase;font-size:11.5px;letter-spacing:0.1em;color:var(--color-accent);">Jam Operasional Admin</strong>
-                <span>Senin – Sabtu: 09.00 – 18.00 WIB<br>Minggu &amp; Hari Libur Nasional: Slow Response</span>
+                <span id="contactStudioHours">Senin – Sabtu: 09.00 – 18.00 WIB<br>Minggu &amp; Hari Libur Nasional: Slow Response</span>
               </div>
               <div>
                 <strong style="display:block;text-transform:uppercase;font-size:11.5px;letter-spacing:0.1em;color:var(--color-accent);">WhatsApp Concierge Resmi</strong>
-                <span>+62 812-3456-7890 (Hanya Chat &amp; Konfirmasi Order)</span>
+                <span id="contactStudioWa">+62 812-3456-7890 (Hanya Chat &amp; Konfirmasi Order)</span>
               </div>
               <div>
                 <strong style="display:block;text-transform:uppercase;font-size:11.5px;letter-spacing:0.1em;color:var(--color-accent);">Email Resmi</strong>
-                <span>concierge@andrdperfume.com</span>
+                <span id="contactStudioEmail">concierge@andrdperfume.com</span>
               </div>
             </div>
           </div>
@@ -92,6 +92,19 @@
   <script src="products.js"></script>
   <script src="app.js"></script>
   <script>
+    (function () {
+      if (window.STORE_CONFIG) {
+        var addrEl = document.getElementById("contactStudioAddress");
+        var hoursEl = document.getElementById("contactStudioHours");
+        var waEl = document.getElementById("contactStudioWa");
+        var emailEl = document.getElementById("contactStudioEmail");
+        if (addrEl && STORE_CONFIG.address) addrEl.textContent = STORE_CONFIG.address;
+        if (hoursEl && STORE_CONFIG.operationalHours) hoursEl.textContent = STORE_CONFIG.operationalHours;
+        if (waEl && STORE_CONFIG.whatsappDisplay) waEl.textContent = STORE_CONFIG.whatsappDisplay + " (Chat & Konfirmasi Order)";
+        if (emailEl && STORE_CONFIG.email) emailEl.textContent = STORE_CONFIG.email;
+      }
+    })();
+
     document.getElementById("contactWaForm").addEventListener("submit", function (e) {
       e.preventDefault();
       var name = document.getElementById("contactName").value.trim();
