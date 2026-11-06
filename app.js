@@ -1849,19 +1849,280 @@
     }
   };
 
+  // Daftar Kota/Kabupaten Area JABODETABEK (Opsi GoSend & GrabExpress Manual HANYA muncul di area ini)
+  const JABODETABEK_CITIES = [
+    "Jakarta Selatan",
+    "Jakarta Pusat",
+    "Jakarta Barat",
+    "Jakarta Timur",
+    "Jakarta Utara",
+    "Kota Bogor",
+    "Kab. Bogor",
+    "Kota Depok",
+    "Kota Tangerang",
+    "Kota Tangerang Selatan",
+    "Kab. Tangerang",
+    "Kota Bekasi",
+    "Kab. Bekasi"
+  ];
+
+  function isJabodetabekCity(kota) {
+    return JABODETABEK_CITIES.includes(kota);
+  }
+
+  function calculateCartWeightGrams(cartItems) {
+    let grams = 80; // Berat box + bubble wrap pengaman botol kaca
+    (cartItems || []).forEach((item) => {
+      const sizeStr = String(item.size || "").toLowerCase();
+      let unitGram = 280; // Default 50ml
+      if (sizeStr.includes("15")) unitGram = 120;
+      else if (sizeStr.includes("30")) unitGram = 200;
+      else if (sizeStr.includes("100")) unitGram = 450;
+      grams += unitGram * (Number(item.qty) || 1);
+    });
+    return Math.max(200, grams);
+  }
+
+  // Tabel Tarif Dasar Domestik (per 1 kg dari Jakarta) — Digunakan instan jika API Key RajaOngkir belum diisi
+  const DOMESTIC_BASE_RATE_PER_KG = {
+    "Jakarta Selatan": { reg: 10000, yes: 18000, etd: "1-2 Hari" },
+    "Jakarta Pusat": { reg: 10000, yes: 18000, etd: "1-2 Hari" },
+    "Jakarta Barat": { reg: 10000, yes: 18000, etd: "1-2 Hari" },
+    "Jakarta Timur": { reg: 10000, yes: 18000, etd: "1-2 Hari" },
+    "Jakarta Utara": { reg: 10000, yes: 18000, etd: "1-2 Hari" },
+    "Kepulauan Seribu": { reg: 15000, yes: 24000, etd: "2-3 Hari" },
+    "Kota Tangerang Selatan": { reg: 10000, yes: 18000, etd: "1-2 Hari" },
+    "Kota Tangerang": { reg: 10000, yes: 18000, etd: "1-2 Hari" },
+    "Kab. Tangerang": { reg: 11000, yes: 19000, etd: "1-2 Hari" },
+    "Kota Depok": { reg: 10000, yes: 18000, etd: "1-2 Hari" },
+    "Kota Bekasi": { reg: 10000, yes: 18000, etd: "1-2 Hari" },
+    "Kab. Bekasi": { reg: 11000, yes: 19000, etd: "1-2 Hari" },
+    "Kota Bogor": { reg: 11000, yes: 19000, etd: "1-2 Hari" },
+    "Kab. Bogor": { reg: 11000, yes: 19000, etd: "1-2 Hari" },
+    "Kota Bandung": { reg: 12000, yes: 22000, etd: "1-2 Hari" },
+    "Kab. Bandung": { reg: 13000, yes: 24000, etd: "2-3 Hari" },
+    "Kab. Karawang": { reg: 12000, yes: 21000, etd: "1-2 Hari" },
+    "Kota Cirebon": { reg: 15000, yes: 26000, etd: "2-3 Hari" },
+    "Kota Tasikmalaya": { reg: 16000, yes: 27000, etd: "2-3 Hari" },
+    "Kab. Garut": { reg: 15000, yes: 26000, etd: "2-3 Hari" },
+    "Kota Serang": { reg: 13000, yes: 22000, etd: "1-2 Hari" },
+    "Kota Cilegon": { reg: 14000, yes: 24000, etd: "1-2 Hari" },
+    "Kota Semarang": { reg: 19000, yes: 32000, etd: "2-3 Hari" },
+    "Kota Surakarta (Solo)": { reg: 20000, yes: 34000, etd: "2-3 Hari" },
+    "Kota Yogyakarta": { reg: 20000, yes: 34000, etd: "2-3 Hari" },
+    "Kab. Sleman": { reg: 20000, yes: 34000, etd: "2-3 Hari" },
+    "Kab. Bantul": { reg: 20000, yes: 34000, etd: "2-3 Hari" },
+    "Kota Surabaya": { reg: 22000, yes: 37000, etd: "2-3 Hari" },
+    "Kota Malang": { reg: 25000, yes: 40000, etd: "2-3 Hari" },
+    "Kab. Sidoarjo": { reg: 23000, yes: 38000, etd: "2-3 Hari" },
+    "Kota Denpasar": { reg: 30000, yes: 48000, etd: "2-4 Hari" },
+    "Kab. Badung": { reg: 30000, yes: 48000, etd: "2-4 Hari" },
+    "Kab. Gianyar": { reg: 32000, yes: 50000, etd: "3-4 Hari" },
+    "Kota Medan": { reg: 37000, yes: 56000, etd: "3-4 Hari" },
+    "Kota Padang": { reg: 35000, yes: 52000, etd: "3-4 Hari" },
+    "Kota Pekanbaru": { reg: 34000, yes: 50000, etd: "3-4 Hari" },
+    "Kota Batam": { reg: 35000, yes: 52000, etd: "3-4 Hari" },
+    "Kota Palembang": { reg: 26000, yes: 42000, etd: "2-3 Hari" },
+    "Kota Bandar Lampung": { reg: 22000, yes: 36000, etd: "2-3 Hari" },
+    "Kota Balikpapan": { reg: 42000, yes: 62000, etd: "3-4 Hari" },
+    "Kota Samarinda": { reg: 45000, yes: 65000, etd: "3-5 Hari" },
+    "Kota Banjarmasin": { reg: 38000, yes: 56000, etd: "3-4 Hari" },
+    "Kota Pontianak": { reg: 36000, yes: 54000, etd: "3-4 Hari" },
+    "Kota Makassar": { reg: 44000, yes: 64000, etd: "3-4 Hari" },
+    "Kota Manado": { reg: 54000, yes: 76000, etd: "3-5 Hari" },
+    "Kota Mataram": { reg: 36000, yes: 54000, etd: "3-4 Hari" },
+    "Kota Kupang": { reg: 62000, yes: 86000, etd: "4-6 Hari" },
+    "Kota Ambon": { reg: 68000, yes: 94000, etd: "4-6 Hari" },
+    "Kota Jayapura": { reg: 95000, yes: 125000, etd: "5-7 Hari" }
+  };
+
+  const PROVINCE_DEFAULT_RATE = {
+    "DKI Jakarta": { reg: 10000, yes: 18000, etd: "1-2 Hari" },
+    "Banten": { reg: 14000, yes: 24000, etd: "2-3 Hari" },
+    "Jawa Barat": { reg: 15000, yes: 26000, etd: "2-3 Hari" },
+    "Jawa Tengah": { reg: 21000, yes: 35000, etd: "2-3 Hari" },
+    "DI Yogyakarta": { reg: 21000, yes: 35000, etd: "2-3 Hari" },
+    "Jawa Timur": { reg: 25000, yes: 40000, etd: "2-4 Hari" },
+    "Bali": { reg: 32000, yes: 50000, etd: "3-4 Hari" },
+    "Sumatera Utara": { reg: 39000, yes: 58000, etd: "3-5 Hari" },
+    "Sumatera Barat": { reg: 36000, yes: 54000, etd: "3-5 Hari" },
+    "Riau & Kepulauan Riau": { reg: 36000, yes: 54000, etd: "3-5 Hari" },
+    "Sumatera Selatan & Lampung": { reg: 26000, yes: 42000, etd: "2-4 Hari" },
+    "Kalimantan Timur": { reg: 45000, yes: 65000, etd: "3-5 Hari" },
+    "Kalimantan Selatan, Barat & Tengah": { reg: 40000, yes: 58000, etd: "3-5 Hari" },
+    "Sulawesi Selatan & Utara": { reg: 48000, yes: 68000, etd: "3-5 Hari" },
+    "NTB, NTT, Maluku & Papua": { reg: 68000, yes: 92000, etd: "4-7 Hari" }
+  };
+
+  function getBuiltinDomesticRates(provinsi, kota, weightGrams) {
+    const kg = Math.max(1, Math.ceil((Number(weightGrams) || 1000) / 1000));
+    const base =
+      DOMESTIC_BASE_RATE_PER_KG[kota] ||
+      PROVINCE_DEFAULT_RATE[provinsi] ||
+      { reg: 25000, yes: 40000, etd: "2-4 Hari" };
+
+    return [
+      {
+        code: "JNE REG",
+        label: `JNE REG (${base.etd})`,
+        cost: base.reg * kg,
+        isManual: false
+      },
+      {
+        code: "JNE YES",
+        label: `JNE YES (1-2 Hari)`,
+        cost: base.yes * kg,
+        isManual: false
+      },
+      {
+        code: "TIKI REG",
+        label: `TIKI REG (${base.etd})`,
+        cost: Math.max(9000, (base.reg - 1000) * kg),
+        isManual: false
+      },
+      {
+        code: "POS Reguler",
+        label: `POS Reguler (${base.etd})`,
+        cost: Math.max(9000, (base.reg - 1500) * kg),
+        isManual: false
+      }
+    ];
+  }
+
+  async function fetchRajaOngkirOrBuiltinRates(provinsi, kota, kecamatan, weightGrams) {
+    const apiKey = (STORE_CONFIG.rajaOngkirApiKey || "").trim();
+    const originCity = STORE_CONFIG.originCity || "Jakarta Selatan";
+
+    // Panggil endpoint Vercel /api/shipping jika berjalan di web server (http/https)
+    if (window.location.protocol.startsWith("http")) {
+      try {
+        const res = await fetch("/api/shipping", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            apiKey,
+            originCity,
+            destinationCity: kota,
+            destinationDistrict: kecamatan,
+            weightGrams
+          })
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.ok && Array.isArray(data.rates) && data.rates.length > 0) {
+            return data.rates;
+          }
+        }
+      } catch (e) {
+        // Otomatis lanjut ke tarif domestik bawaan jika offline / tanpa API key
+      }
+    }
+
+    return getBuiltinDomesticRates(provinsi, kota, weightGrams);
+  }
+
   function initCheckoutPage() {
     const form = document.getElementById("whatsappCheckoutForm");
     const summaryEl = document.getElementById("checkoutSummaryItems");
     const subtotalEl = document.getElementById("checkoutSubtotalAmount");
+    const weightLabelEl = document.getElementById("checkoutWeightLabel");
+    const shippingAmountEl = document.getElementById("checkoutShippingAmount");
+    const grandTotalEl = document.getElementById("checkoutGrandTotalAmount");
     const courierSelect = document.getElementById("custKurir");
+    const courierHintEl = document.getElementById("courierJabodetabekHint");
     if (!form || !summaryEl) return;
 
-    if (courierSelect && STORE_CONFIG.couriers) {
-      courierSelect.innerHTML =
-        `<option value="">Pilih Kurir Pengiriman</option>` +
-        STORE_CONFIG.couriers
-          .map((c) => `<option value="${c.id}">${c.label}</option>`)
-          .join("");
+    const cart = getCart();
+    const subtotal = getCartSubtotal();
+    const weightGrams = calculateCartWeightGrams(cart);
+    const weightKg = Math.max(1, Math.ceil(weightGrams / 1000));
+
+    let selectedShippingCost = 0;
+    let selectedShippingManual = false;
+
+    if (weightLabelEl) {
+      weightLabelEl.textContent = `${weightKg} kg (${weightGrams} gr)`;
+    }
+
+    function updateOrderTotalsDisplay() {
+      if (subtotalEl) subtotalEl.textContent = formatRupiah(subtotal);
+
+      if (!courierSelect || !courierSelect.value) {
+        if (shippingAmountEl) shippingAmountEl.textContent = "Pilih kurir";
+        if (grandTotalEl) grandTotalEl.textContent = formatRupiah(subtotal);
+        return;
+      }
+
+      const selectedOpt = courierSelect.options[courierSelect.selectedIndex];
+      selectedShippingManual = selectedOpt && selectedOpt.getAttribute("data-manual") === "true";
+      selectedShippingCost = selectedOpt ? Number(selectedOpt.getAttribute("data-cost") || 0) : 0;
+
+      if (selectedShippingManual) {
+        if (shippingAmountEl) shippingAmountEl.textContent = "Cek Manual via WA";
+        if (grandTotalEl) grandTotalEl.textContent = `${formatRupiah(subtotal)} + Ongkir`;
+      } else {
+        if (shippingAmountEl) shippingAmountEl.textContent = formatRupiah(selectedShippingCost);
+        if (grandTotalEl) grandTotalEl.textContent = formatRupiah(subtotal + selectedShippingCost);
+      }
+    }
+
+    async function refreshCourierDropdown() {
+      const prov = provSelect ? provSelect.value : "";
+      const kota = kotaSelect ? kotaSelect.value : "";
+      const kec = kecSelect ? kecSelect.value : "";
+
+      if (!courierSelect) return;
+
+      if (!prov || !kota) {
+        courierSelect.innerHTML = `<option value="">-- Pilih Kota/Kabupaten Dahulu untuk Cek Ongkir --</option>`;
+        courierSelect.disabled = true;
+        if (courierHintEl) {
+          courierHintEl.textContent = "Pilih Provinsi dan Kota/Kabupaten untuk menampilkan harga ongkir otomatis.";
+        }
+        updateOrderTotalsDisplay();
+        return;
+      }
+
+      courierSelect.disabled = true;
+      courierSelect.innerHTML = `<option value="">Menghitung ongkir ke ${kota}...</option>`;
+
+      const autoRates = await fetchRajaOngkirOrBuiltinRates(prov, kota, kec, weightGrams);
+      const inJabodetabek = isJabodetabekCity(kota);
+
+      const optionsHtml = [`<option value="">-- Pilih Layanan Kurir --</option>`];
+
+      // 1. Opsi Ekspedisi Reguler / Nextday dengan Harga Otomatis (RajaOngkir)
+      autoRates.forEach((rate) => {
+        optionsHtml.push(
+          `<option value="${rate.code}" data-cost="${rate.cost}" data-manual="false">${rate.label} — ${formatRupiah(rate.cost)}</option>`
+        );
+      });
+
+      // 2. Opsi GoSend & GrabExpress Manual HANYA JIKA Alamat User di JABODETABEK
+      if (inJabodetabek) {
+        optionsHtml.push(
+          `<option value="GoSend Instant / Sameday" data-cost="0" data-manual="true">GoSend Instant / Sameday — Tarif Manual via Admin WA</option>`
+        );
+        optionsHtml.push(
+          `<option value="GrabExpress Instant / Sameday" data-cost="0" data-manual="true">GrabExpress Instant / Sameday — Tarif Manual via Admin WA</option>`
+        );
+      }
+
+      courierSelect.innerHTML = optionsHtml.join("");
+      courierSelect.disabled = false;
+
+      // Pilih otomatis kurir reguler pertama agar user langsung melihat total harga
+      if (autoRates.length > 0) {
+        courierSelect.selectedIndex = 1;
+      }
+
+      if (courierHintEl) {
+        courierHintEl.textContent = inJabodetabek
+          ? `✓ Area Jabodetabek (${kota}): Tersedia ongkir otomatis & opsi GoSend/GrabExpress (tarif manual via WA).`
+          : `✓ Pengiriman ke ${kota}: Harga ongkir terhitung otomatis (${weightKg} kg). Opsi GoSend/Grab hanya untuk Jabodetabek.`;
+      }
+
+      updateOrderTotalsDisplay();
     }
 
     // Populate Cascading Wilayah Dropdowns (Provinsi -> Kota/Kabupaten -> Kecamatan)
@@ -1885,6 +2146,7 @@
         if (!selectedProv || !WILAYAH_INDONESIA[selectedProv]) {
           kotaSelect.innerHTML = `<option value="">-- Pilih Provinsi Dahulu --</option>`;
           kotaSelect.disabled = true;
+          refreshCourierDropdown();
           return;
         }
 
@@ -1893,6 +2155,7 @@
           `<option value="">-- Pilih Kota / Kabupaten --</option>` +
           kotaList.map((k) => `<option value="${k}">${k}</option>`).join("");
         kotaSelect.disabled = false;
+        refreshCourierDropdown();
       });
 
       kotaSelect.addEventListener("change", () => {
@@ -1903,6 +2166,7 @@
         if (!selectedProv || !selectedKota || !WILAYAH_INDONESIA[selectedProv][selectedKota]) {
           kecSelect.innerHTML = `<option value="">-- Pilih Kota/Kabupaten Dahulu --</option>`;
           kecSelect.disabled = true;
+          refreshCourierDropdown();
           return;
         }
 
@@ -1912,6 +2176,7 @@
           kecList.map((kc) => `<option value="${kc}">${kc}</option>`).join("") +
           `<option value="LAINNYA">Lainnya (Ketik Manual)</option>`;
         kecSelect.disabled = false;
+        refreshCourierDropdown();
       });
 
       kecSelect.addEventListener("change", () => {
@@ -1919,11 +2184,15 @@
           kecManual.style.display = kecSelect.value === "LAINNYA" ? "block" : "none";
           if (kecSelect.value === "LAINNYA") kecManual.focus();
         }
+        if ((STORE_CONFIG.rajaOngkirApiKey || "").trim() && kecSelect.value && kecSelect.value !== "LAINNYA") {
+          refreshCourierDropdown();
+        }
       });
     }
 
-    const cart = getCart();
-    const subtotal = getCartSubtotal();
+    if (courierSelect) {
+      courierSelect.addEventListener("change", updateOrderTotalsDisplay);
+    }
 
     if (cart.length === 0) {
       summaryEl.innerHTML = `
@@ -1954,9 +2223,7 @@
       )
       .join("");
 
-    if (subtotalEl) {
-      subtotalEl.textContent = formatRupiah(subtotal);
-    }
+    updateOrderTotalsDisplay();
 
     const fields = {
       nama: {
@@ -2086,6 +2353,11 @@
           ? sanitizeInput(kecManual.value)
           : sanitizeInput(fields.kecamatan.el.value);
 
+      const currentSubtotal = getCartSubtotal();
+      const grandTotal = selectedShippingManual
+        ? currentSubtotal
+        : currentSubtotal + selectedShippingCost;
+
       const orderNumber = generateOrderNumber();
       const orderPayload = {
         orderNumber: orderNumber,
@@ -2101,7 +2373,11 @@
         kurir: sanitizeInput(fields.kurir.el.value),
         catatan: sanitizeInput(document.getElementById("custCatatan").value) || "-",
         items: currentCart,
-        total: getCartSubtotal(),
+        subtotal: currentSubtotal,
+        shippingCost: selectedShippingCost,
+        isManualShipping: selectedShippingManual,
+        weightKg: weightKg,
+        total: grandTotal,
         formatCurrency: formatRupiah
       };
 

@@ -27,8 +27,10 @@ const DEFAULT_STORE_CONFIG = {
   address: "Kemang Timur Raya No. 48, Jakarta Selatan",
   operationalHours: "Senin – Sabtu, 09.00 – 18.00 WIB",
 
-  // 3. PENGATURAN ORDER & PENGIRIMAN
+  // 3. PENGATURAN ORDER & PENGIRIMAN (RAJAONGKIR GRATIS + JABODETABEK MANUAL GOSEND/GRAB)
   orderPrefix: "ANDRD",
+  originCity: "Jakarta Selatan",
+  rajaOngkirApiKey: "", // Opsional: Isi API Key RajaOngkir Gratis (Starter / Komerce) lewat CMS
   returnPolicyDays: 7,
   announcementText: "Free Vial 2ml Setiap Pembelian • Pengiriman Seluruh Indonesia",
   nonCodNotice: "Pembayaran via Transfer / QRIS setelah konfirmasi WhatsApp (Tanpa COD).",
@@ -166,6 +168,23 @@ const STORE_CONFIG = Object.assign({}, DEFAULT_STORE_CONFIG, savedCmsConfig, {
       )
       .join("\n");
 
+    const subtotalVal = Number(orderData.subtotal != null ? orderData.subtotal : orderData.total) || 0;
+    const shipCost = Number(orderData.shippingCost) || 0;
+    const isManualShip = Boolean(orderData.isManualShipping);
+    const weightInfo = orderData.weightKg ? ` (${orderData.weightKg} kg)` : "";
+
+    const ongkirLine = isManualShip
+      ? `Ongkir (${orderData.kurir}): Cek manual oleh Admin sesuai titik lokasi`
+      : shipCost > 0
+      ? `Ongkir (${orderData.kurir}${weightInfo}): ${orderData.formatCurrency(shipCost)}`
+      : `Ongkir: akan dikonfirmasi admin`;
+
+    const totalLine = isManualShip
+      ? `*Total Sementara: ${orderData.formatCurrency(subtotalVal)} (+ Ongkir Instan)*`
+      : shipCost > 0
+      ? `*Total Pembayaran: ${orderData.formatCurrency(subtotalVal + shipCost)}*`
+      : `*Subtotal: ${orderData.formatCurrency(subtotalVal)}*`;
+
     return [
       `Halo ${this.brandName}, saya ingin memesan:`,
       ``,
@@ -180,12 +199,13 @@ const STORE_CONFIG = Object.assign({}, DEFAULT_STORE_CONFIG, savedCmsConfig, {
       `*DETAIL PESANAN*`,
       itemsList,
       ``,
-      `Subtotal: ${orderData.formatCurrency(orderData.total)}`,
-      `Ongkir: akan dikonfirmasi admin`,
+      `Subtotal Produk: ${orderData.formatCurrency(subtotalVal)}`,
+      ongkirLine,
+      totalLine,
       `Catatan: ${orderData.catatan || "-"}`,
       ``,
       `No. Order: #${orderData.orderNumber}`,
-      `Mohon info total pembayaran dan nomor rekening. Terima kasih!`
+      `Mohon info nomor rekening / QRIS untuk pembayaran. Terima kasih!`
     ].join("\n");
   },
 

@@ -1310,6 +1310,10 @@
     document.getElementById("setInstagram").value = cfg.instagram || "";
     document.getElementById("setAddress").value = cfg.address || "";
     document.getElementById("setHours").value = cfg.operationalHours || "";
+    const origEl = document.getElementById("setOriginCity");
+    if (origEl) origEl.value = cfg.originCity || "Jakarta Selatan";
+    const roKeyEl = document.getElementById("setRajaOngkirKey");
+    if (roKeyEl) roKeyEl.value = cfg.rajaOngkirApiKey || "";
     document.getElementById("setGhToken").value = localStorage.getItem(KEYS.GH_TOKEN) || "";
   }
 
@@ -1364,11 +1368,26 @@ const STORE_CONFIG = Object.assign({}, DEFAULT_STORE_CONFIG, savedCmsConfig, {
     const itemsList = orderData.items
       .map((item, index) => (index + 1) + ". " + item.name + " (" + item.size + ") x" + item.qty + " = " + orderData.formatCurrency(item.price * item.qty))
       .join("\\n");
+    const subtotalVal = Number(orderData.subtotal != null ? orderData.subtotal : orderData.total) || 0;
+    const shipCost = Number(orderData.shippingCost) || 0;
+    const isManualShip = Boolean(orderData.isManualShipping);
+    const weightInfo = orderData.weightKg ? " (" + orderData.weightKg + " kg)" : "";
+    const ongkirLine = isManualShip
+      ? "Ongkir (" + orderData.kurir + "): Cek manual oleh Admin sesuai titik lokasi"
+      : shipCost > 0
+      ? "Ongkir (" + orderData.kurir + weightInfo + "): " + orderData.formatCurrency(shipCost)
+      : "Ongkir: akan dikonfirmasi admin";
+    const totalLine = isManualShip
+      ? "*Total Sementara: " + orderData.formatCurrency(subtotalVal) + " (+ Ongkir Instan)*"
+      : shipCost > 0
+      ? "*Total Pembayaran: " + orderData.formatCurrency(subtotalVal + shipCost) + "*"
+      : "*Subtotal: " + orderData.formatCurrency(subtotalVal) + "*";
     return [
       "Halo " + this.brandName + ", saya ingin memesan:",
       "",
       "*DATA PELANGGAN*",
       "Nama: " + orderData.nama,
+      "Tanggal Lahir: " + (orderData.tglLahir || "-"),
       "No. WhatsApp: " + orderData.wa,
       "Email: " + (orderData.email || "-"),
       "Alamat: " + orderData.alamat + ", " + orderData.kecamatan + ", " + orderData.kota + ", " + orderData.provinsi + " " + orderData.kodepos,
@@ -1377,12 +1396,13 @@ const STORE_CONFIG = Object.assign({}, DEFAULT_STORE_CONFIG, savedCmsConfig, {
       "*DETAIL PESANAN*",
       itemsList,
       "",
-      "Subtotal: " + orderData.formatCurrency(orderData.total),
-      "Ongkir: akan dikonfirmasi admin",
+      "Subtotal Produk: " + orderData.formatCurrency(subtotalVal),
+      ongkirLine,
+      totalLine,
       "Catatan: " + (orderData.catatan || "-"),
       "",
       "No. Order: #" + orderData.orderNumber,
-      "Mohon info total pembayaran dan nomor rekening. Terima kasih!"
+      "Mohon info nomor rekening / QRIS untuk pembayaran. Terima kasih!"
     ].join("\\n");
   },
   buildRestockMessage: function (productName, size) {
@@ -1571,7 +1591,11 @@ window.STORE_CONFIG = STORE_CONFIG;
         cfg.instagram = document.getElementById("setInstagram").value.trim();
         cfg.address = document.getElementById("setAddress").value.trim();
         cfg.operationalHours = document.getElementById("setHours").value.trim();
-        saveConfig(cfg, "Memperbarui pengaturan identitas & WhatsApp toko");
+        const origEl = document.getElementById("setOriginCity");
+        if (origEl) cfg.originCity = origEl.value.trim() || "Jakarta Selatan";
+        const roKeyEl = document.getElementById("setRajaOngkirKey");
+        if (roKeyEl) cfg.rajaOngkirApiKey = roKeyEl.value.trim();
+        saveConfig(cfg, "Memperbarui pengaturan identitas, WhatsApp & ongkir toko");
         cmsToast("Pengaturan toko berhasil disimpan!");
       });
     }
