@@ -870,9 +870,10 @@
         const name = (document.getElementById("reviewUserName").value || "").trim();
         const city = (document.getElementById("reviewUserCity").value || "").trim();
         const prodSelect = document.getElementById("reviewProductId");
-        const productId = prodSelect ? prodSelect.value : "andrd-01";
+        const productId = prodSelect ? prodSelect.value : "andrd-cedora";
         const selectedProd = PRODUCTS.find((p) => p.id === productId) || PRODUCTS[0];
-        const productName = selectedProd ? `${selectedProd.name} (50ml)` : "ANDRD Extrait";
+        const defaultSize = selectedProd && selectedProd.variants && selectedProd.variants[0] ? selectedProd.variants[0].size : "30 ML";
+        const productName = selectedProd ? `${selectedProd.name} (${defaultSize})` : "CEDORA (30 ML)";
         const rating = Math.min(5, Math.max(1, Number(ratingValInput ? ratingValInput.value : 5) || 5));
         const quote = (document.getElementById("reviewQuoteText").value || "").trim();
 
@@ -1133,13 +1134,75 @@
     const featuredGrid = document.getElementById("featuredProductsGrid");
     if (featuredGrid) {
       const featuredProducts = PRODUCTS.filter((p) => p.featured).slice(0, 4);
-      featuredGrid.innerHTML = featuredProducts.map(renderProductCard).join("");
+      if (featuredProducts.length === 1) {
+        const p = featuredProducts[0];
+        const v = p.variants[0] || { size: "30 ML", price: 109000 };
+        featuredGrid.classList.add("featured-single-spotlight");
+        featuredGrid.innerHTML = `
+          ${renderProductCard(p)}
+          <div class="cedora-brief-card">
+            <span class="section-eyebrow" style="margin-bottom:6px;">${STORE_CONFIG.brandName} ${p.concentration || "Eau de Parfum"} • ${v.size}</span>
+            <h3 style="font-size:clamp(22px, 3.5vw, 30px);font-weight:600;margin-bottom:8px;letter-spacing:-0.02em;">${p.name} — A scent that speaks without saying a word.</h3>
+            <p style="font-size:14px;color:var(--color-text-muted);line-height:1.65;margin-bottom:14px;">
+              <strong>${p.name}</strong> adalah perpaduan aroma yang menghadirkan kesegaran, keanggunan, dan kehangatan dalam satu karakter. Dibuka dengan kesegaran <strong>Green Tea</strong> yang memberikan kesan segar dan menenangkan. Kemudian <strong>Cherry</strong> dan <strong>Dark Rose</strong> menghadirkan sentuhan aroma yang elegan, memberikan kedalaman serta karakter tersendiri. Pada akhirnya, <strong>Cedarwood</strong> memberikan kehangatan dengan nuansa woody yang menciptakan kesan mendalam dan berkesan.
+            </p>
+            <div class="cedora-info-grid">
+              <div><span>Brand</span><strong>${STORE_CONFIG.brandName}</strong></div>
+              <div><span>Collection</span><strong>${p.name}</strong></div>
+              <div><span>Product Type</span><strong>${p.concentration || "Eau de Parfum"}</strong></div>
+              <div><span>Volume</span><strong>${v.size}</strong></div>
+              <div><span>Price</span><strong>${formatRupiah(v.price)}</strong></div>
+              <div><span>Fragrance Family</span><strong>${p.scentCategory}</strong></div>
+            </div>
+            <p style="font-size:13.5px;font-weight:500;color:var(--color-primary);margin:14px 0 18px;">
+              “${p.name} bukan sekadar tentang aroma. Ini tentang karakter, identitas, dan kesan yang kamu tinggalkan. <em>Find your identity. Leave your impression.</em>”
+            </p>
+            <div style="display:flex;flex-wrap:wrap;gap:10px;">
+              <button type="button" class="btn btn-primary js-quick-add" data-product-id="${p.id}" data-size="${v.size}">
+                Tambah ke Keranjang — ${formatRupiah(v.price)}
+              </button>
+              <a href="product.html?id=${p.id}" class="btn btn-outline">Detail Produk</a>
+            </div>
+          </div>
+        `;
+      } else {
+        featuredGrid.classList.remove("featured-single-spotlight");
+        featuredGrid.innerHTML = featuredProducts.map(renderProductCard).join("");
+      }
     }
 
     const seasonalTrack = document.getElementById("seasonalCarouselTrack");
     if (seasonalTrack) {
       const seasonalProducts = PRODUCTS.filter((p) => p.seasonal);
-      seasonalTrack.innerHTML = seasonalProducts.map(renderProductCard).join("");
+      if (PRODUCTS.length === 1 && PRODUCTS[0].images && PRODUCTS[0].images.length > 1) {
+        const p = PRODUCTS[0];
+        const lookbookCaptions = [
+          { title: "CEDORA — 30 ML", sub: "ANDRD Eau de Parfum • Rp 109.000" },
+          { title: "A Scent That Speaks", sub: "Without saying a word." },
+          { title: "Find Your Identity", sub: "Top Notes: Green Tea" },
+          { title: "Leave Your Impression", sub: "Middle Notes: Cherry & Dark Rose" },
+          { title: "Character & Detail", sub: "Base Notes: Cedarwood" },
+          { title: "Made to be Remembered", sub: "The ANDRD Experience" }
+        ];
+        seasonalTrack.innerHTML = p.images
+          .map((imgSrc, idx) => {
+            const cap = lookbookCaptions[idx] || { title: p.name, sub: "ANDRD Eau de Parfum" };
+            return `
+              <a href="product.html?id=${p.id}" class="product-card" style="text-decoration:none;">
+                <div class="product-media">
+                  <img src="${imgSrc}" alt="${cap.title}" class="product-img-primary" style="opacity:1 !important;" loading="lazy">
+                </div>
+                <div class="product-body">
+                  <div class="product-meta">${cap.sub}</div>
+                  <h3 class="product-title">${cap.title}</h3>
+                </div>
+              </a>
+            `;
+          })
+          .join("");
+      } else {
+        seasonalTrack.innerHTML = seasonalProducts.map(renderProductCard).join("");
+      }
 
       const prevBtn = document.getElementById("carouselPrevBtn");
       const nextBtn = document.getElementById("carouselNextBtn");
@@ -1157,9 +1220,22 @@
     if (scentGrid && STORE_CONFIG.scentCategories) {
       scentGrid.innerHTML = STORE_CONFIG.scentCategories
         .map((cat) => {
-          const count = PRODUCTS.filter((p) => p.scentCategory === cat.id).length;
+          const count = PRODUCTS.filter((p) => {
+            if (p.scentCategory === cat.id) return true;
+            const allNotes = [...(p.notes.top || []), ...(p.notes.middle || []), ...(p.notes.base || [])]
+              .join(" ")
+              .toLowerCase();
+            return cat.id
+              .toLowerCase()
+              .split(/[&,]/)
+              .some((part) => part.trim() && allNotes.includes(part.trim()));
+          }).length;
+          const targetHref =
+            PRODUCTS.length === 1
+              ? `product.html?id=${encodeURIComponent(PRODUCTS[0].id)}`
+              : `products.html?q=${encodeURIComponent(cat.id)}`;
           return `
-            <a href="products.html?scent=${encodeURIComponent(cat.id)}" class="scent-card">
+            <a href="${targetHref}" class="scent-card">
               <div class="scent-top">
                 <h3 class="scent-name">${cat.name}</h3>
                 <span class="scent-count">${count}</span>
@@ -1231,7 +1307,8 @@
     function applyFilters() {
       const q = (searchInput ? searchInput.value : "").trim().toLowerCase();
       const sortBy = sortSelect ? sortSelect.value : "featured";
-      const maxPrice = priceRangeInput ? Number(priceRangeInput.value) : 700000;
+      const maxSliderVal = priceRangeInput ? Number(priceRangeInput.max) || 500000 : 500000;
+      const maxPrice = priceRangeInput ? Number(priceRangeInput.value) : maxSliderVal;
 
       if (priceRangeLabel) {
         priceRangeLabel.textContent = formatRupiah(maxPrice);
@@ -1255,7 +1332,7 @@
         selectedGenders.length +
         selectedSizes.length +
         (q ? 1 : 0) +
-        (maxPrice < 700000 ? 1 : 0);
+        (maxPrice < maxSliderVal ? 1 : 0);
 
       if (mobileFilterText) {
         mobileFilterText.textContent =
@@ -1309,6 +1386,7 @@
       }
 
       if (filtered.length === 0) {
+        gridEl.classList.remove("featured-single-spotlight");
         gridEl.innerHTML = `
           <div style="grid-column:1/-1;text-align:center;padding:44px 16px;background:var(--color-bg-alt);border-radius:var(--radius-md);">
             <p style="font-weight:600;margin-bottom:6px;">Produk tidak ditemukan</p>
@@ -1317,7 +1395,36 @@
         `;
         const emptyReset = document.getElementById("emptyResetBtn");
         if (emptyReset) emptyReset.addEventListener("click", resetAllFilters);
+      } else if (filtered.length === 1 && PRODUCTS.length === 1) {
+        const p = filtered[0];
+        const v = p.variants[0] || { size: "30 ML", price: 109000 };
+        gridEl.classList.add("featured-single-spotlight");
+        gridEl.innerHTML = `
+          ${renderProductCard(p)}
+          <div class="cedora-brief-card">
+            <span class="section-eyebrow" style="margin-bottom:6px;">${STORE_CONFIG.brandName} ${p.concentration || "Eau de Parfum"} • ${v.size}</span>
+            <h2 style="font-size:clamp(20px, 3vw, 26px);font-weight:600;margin-bottom:8px;">${p.name} — A scent that speaks without saying a word.</h2>
+            <p style="font-size:13.5px;color:var(--color-text-muted);line-height:1.65;margin-bottom:14px;">
+              Dibuka dengan kesegaran <strong>Green Tea</strong> yang menenangkan, dilanjutkan oleh <strong>Cherry &amp; Dark Rose</strong> yang elegan dan berkarakter, serta ditutup oleh kehangatan <strong>Cedarwood</strong> yang mendalam.
+            </p>
+            <div class="cedora-info-grid">
+              <div><span>Top Notes</span><strong>${(p.notes.top || []).join(", ")}</strong></div>
+              <div><span>Middle Notes</span><strong>${(p.notes.middle || []).join(", ")}</strong></div>
+              <div><span>Base Notes</span><strong>${(p.notes.base || []).join(", ")}</strong></div>
+              <div><span>Volume</span><strong>${v.size}</strong></div>
+              <div><span>Harga</span><strong>${formatRupiah(v.price)}</strong></div>
+              <div><span>Fragrance Family</span><strong>${p.scentCategory}</strong></div>
+            </div>
+            <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:16px;">
+              <button type="button" class="btn btn-primary js-quick-add" data-product-id="${p.id}" data-size="${v.size}">
+                Tambah ke Keranjang — ${formatRupiah(v.price)}
+              </button>
+              <a href="product.html?id=${p.id}" class="btn btn-outline">Lihat Detail</a>
+            </div>
+          </div>
+        `;
       } else {
+        gridEl.classList.remove("featured-single-spotlight");
         gridEl.innerHTML = filtered.map(renderProductCard).join("");
       }
     }
@@ -1325,7 +1432,7 @@
     function resetAllFilters() {
       if (searchInput) searchInput.value = "";
       if (sortSelect) sortSelect.value = "featured";
-      if (priceRangeInput) priceRangeInput.value = "700000";
+      if (priceRangeInput) priceRangeInput.value = priceRangeInput.max || "500000";
       scentCheckboxes.forEach((cb) => (cb.checked = false));
       genderCheckboxes.forEach((cb) => (cb.checked = false));
       sizeCheckboxes.forEach((cb) => (cb.checked = false));
@@ -1434,23 +1541,23 @@
 
           <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:12px;background:var(--color-bg-alt);border-radius:var(--radius-sm);margin-bottom:16px;font-size:11.5px;">
             <div>
-              <span style="color:var(--color-text-muted);display:block;">Tipe</span>
-              <strong>Extrait</strong>
+              <span style="color:var(--color-text-muted);display:block;">Product Type</span>
+              <strong>${product.concentration || "Eau de Parfum"}</strong>
             </div>
             <div>
-              <span style="color:var(--color-text-muted);display:block;">Ketahanan</span>
-              <strong>${product.longevity}</strong>
+              <span style="color:var(--color-text-muted);display:block;">Volume</span>
+              <strong>${selectedVariant.size}</strong>
             </div>
             <div>
-              <span style="color:var(--color-text-muted);display:block;">Sillage</span>
-              <strong>${product.sillage}</strong>
+              <span style="color:var(--color-text-muted);display:block;">Fragrance Family</span>
+              <strong>${product.scentCategory}</strong>
             </div>
           </div>
 
           <div class="accordion" id="detailAccordion">
             <div class="accordion-item open">
               <button type="button" class="accordion-trigger">
-                <span>Notes Aroma</span>
+                <span>Fragrance Notes</span>
                 <span>−</span>
               </button>
               <div class="accordion-content">
@@ -1471,23 +1578,37 @@
               </div>
             </div>
 
-            <div class="accordion-item">
+            <div class="accordion-item open">
               <button type="button" class="accordion-trigger">
-                <span>Deskripsi</span>
-                <span>+</span>
+                <span>Deskripsi &amp; Product Information</span>
+                <span>−</span>
               </button>
               <div class="accordion-content">
-                <p>${product.description}</p>
+                <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:14px;">
+                  ${String(product.description || "")
+                    .split(/\n\n+/)
+                    .map((para) => `<p>${sanitizeInput(para)}</p>`)
+                    .join("")}
+                </div>
+                <div class="cedora-info-grid" style="margin-top:10px;">
+                  <div><span>Brand</span><strong>${STORE_CONFIG.brandName}</strong></div>
+                  <div><span>Collection</span><strong>${product.name}</strong></div>
+                  <div><span>Product Type</span><strong>${product.concentration || "Eau de Parfum"}</strong></div>
+                  <div><span>Volume</span><strong>${selectedVariant.size}</strong></div>
+                  <div><span>Price</span><strong>${formatRupiah(selectedVariant.price)}</strong></div>
+                  <div><span>Fragrance Family</span><strong>${product.scentCategory}</strong></div>
+                </div>
               </div>
             </div>
 
             <div class="accordion-item">
               <button type="button" class="accordion-trigger">
-                <span>Cara Pakai &amp; Pengiriman</span>
+                <span>The ANDRD Experience &amp; Pengiriman</span>
                 <span>+</span>
               </button>
               <div class="accordion-content">
-                <p>Semprotkan pada titik nadi dengan jarak 15 cm. Setiap pembelian mendapat gratis 2ml vial dan garansi retur ${STORE_CONFIG.returnPolicyDays} hari.</p>
+                <p style="margin-bottom:8px;"><strong>Diciptakan untuk mereka yang menghargai karakter, detail, dan ekspresi diri. ANDRD — Made to be remembered.</strong></p>
+                <p>Semprotkan pada titik nadi (pergelangan tangan, leher, atau belakang telinga) dengan jarak 15 cm. Pengiriman ke seluruh Indonesia dengan perhitungan ongkir otomatis dan garansi retur ${STORE_CONFIG.returnPolicyDays} hari.</p>
               </div>
             </div>
           </div>
@@ -1602,7 +1723,31 @@
           p.id !== product.id &&
           (p.scentCategory === product.scentCategory || p.gender === product.gender)
       ).slice(0, 4);
-      relatedGrid.innerHTML = related.map(renderProductCard).join("");
+      if (related.length > 0) {
+        relatedGrid.innerHTML = related.map(renderProductCard).join("");
+      } else if (product.images && product.images.length > 1) {
+        const galleryItems = [
+          { img: product.images[1], title: "A Scent That Speaks", sub: "Without saying a word" },
+          { img: product.images[2] || product.images[0], title: "Top: Green Tea", sub: "Segar & menenangkan" },
+          { img: product.images[3] || product.images[1], title: "Middle: Cherry & Dark Rose", sub: "Elegan & berkarakter" },
+          { img: product.images[5] || product.images[4] || product.images[0], title: "Base: Cedarwood", sub: "Hangat & mendalam" }
+        ];
+        relatedGrid.innerHTML = galleryItems
+          .map(
+            (g) => `
+            <div class="product-card">
+              <div class="product-media">
+                <img src="${g.img}" alt="${g.title}" class="product-img-primary" style="opacity:1 !important;" loading="lazy">
+              </div>
+              <div class="product-body">
+                <div class="product-meta">${g.sub}</div>
+                <h3 class="product-title">${g.title}</h3>
+              </div>
+            </div>
+          `
+          )
+          .join("");
+      }
     }
 
     renderProductDetailReviews(product.id);

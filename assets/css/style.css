@@ -764,6 +764,65 @@ h1, h2, h3, h4, .serif {
   }
 }
 
+.product-grid.featured-single-spotlight {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 20px;
+  align-items: stretch;
+}
+
+@media (min-width: 768px) {
+  .product-grid.featured-single-spotlight {
+    grid-template-columns: minmax(260px, 380px) minmax(0, 1fr);
+    gap: 28px;
+  }
+}
+
+.cedora-brief-card {
+  background-color: var(--color-bg-alt);
+  border-radius: var(--radius-md);
+  padding: 22px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+@media (min-width: 768px) {
+  .cedora-brief-card {
+    padding: 32px 36px;
+  }
+}
+
+.cedora-info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 14px;
+  padding: 14px;
+  background-color: #FFFFFF;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  font-size: 12.5px;
+}
+
+@media (min-width: 640px) {
+  .cedora-info-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.cedora-info-grid span {
+  display: block;
+  font-size: 11px;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 2px;
+}
+
+.cedora-info-grid strong {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
 .product-card {
   background-color: transparent;
   border: none;

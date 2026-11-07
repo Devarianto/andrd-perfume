@@ -2,166 +2,181 @@
  * ============================================================================
  * KONFIGURASI UTAMA TOKO PARFUME "ANDRD" (config.js)
  * ============================================================================
+ * Disesuaikan dengan Content Brief Resmi Client (CEDORA — ANDRD Eau de Parfum).
  * Terintegrasi dengan ANDRD CMS (admin.html).
- * Perubahan yang disimpan di CMS akan otomatis diterapkan ke seluruh halaman.
  */
 
 const DEFAULT_STORE_CONFIG = {
-  // 1. IDENTITAS BRAND
+  // 1. IDENTITAS BRAND (THE ANDRD EXPERIENCE)
   brandName: "ANDRD",
-  brandLegalName: "ANDRD Studio Indonesia",
-  tagline: "Scent as Memory",
-  subTagline: "Extrait de Parfum — Diracik untuk iklim tropis.",
+  brandLegalName: "ANDRD Eau de Parfum",
+  tagline: "Made to be remembered",
+  subTagline: "Diciptakan untuk mereka yang menghargai karakter, detail, dan ekspresi diri.",
   domain: "https://andrd-perfume.vercel.app",
 
   // 2. KONTAK & WHATSAPP ADMIN (Gunakan awalan 628xxx tanpa + atau spasi)
   whatsappAdmin: "6281234567890",
   whatsappDisplay: "+62 812-3456-7890",
   email: "hello@andrdperfume.com",
-  instagram: "@andrd.olfactory",
-  tiktok: "@andrd.olfactory",
-  youtube: "@andrd.olfactory",
+  instagram: "@andrd.official",
+  tiktok: "@andrd.official",
+  youtube: "@andrd.official",
   instagramUrl: "https://instagram.com",
   tiktokUrl: "https://tiktok.com",
   youtubeUrl: "https://youtube.com",
   address: "Jl. Baladewa Kiri RT 15/RW 11, Tanah Tinggi, Johar Baru, Jakarta Pusat 10540",
   operationalHours: "Senin – Sabtu, 09.00 – 18.00 WIB",
 
-  // 3. PENGATURAN ORDER & PENGIRIMAN (RAJAONGKIR GRATIS + JABODETABEK MANUAL GOSEND/GRAB)
+  // 3. PENGATURAN ORDER & PENGIRIMAN (RAJAONGKIR LIVE + JABODETABEK MANUAL GOSEND/GRAB)
   orderPrefix: "ANDRD",
   originCity: "Johar Baru, Jakarta Pusat",
-  rajaOngkirApiKey: "", // Opsional: Isi API Key RajaOngkir Gratis (Starter / Komerce) lewat CMS
+  rajaOngkirApiKey: "", // Server /api/shipping sudah aktif memakai Production API Key
   returnPolicyDays: 7,
-  announcementText: "Free Vial 2ml Setiap Pembelian • Pengiriman Seluruh Indonesia",
+  announcementText: "ANDRD Eau de Parfum • CEDORA 30 ML (Rp 109.000) • Pengiriman Seluruh Indonesia",
   nonCodNotice: "Pembayaran via Transfer / QRIS setelah konfirmasi WhatsApp (Tanpa COD).",
 
-  // 4. KONTEN VISUAL HERO SLIDER (Dapat diubah lewat CMS)
+  // 4. KONTEN VISUAL HERO SLIDER (Menggunakan Foto Asli dari Brief Client)
   heroSlides: [
     {
-      eyebrow: "Signature Collection",
-      title: "Scent as Memory.",
-      desc: "Extrait de Parfum konsentrasi tinggi (25%–35%), diracik untuk ketahanan hingga 12 jam.",
-      btnPrimaryText: "Belanja Sekarang",
-      btnPrimaryLink: "products.html",
-      btnSecondaryText: "01 Senja di Bali",
-      btnSecondaryLink: "product.html?id=andrd-01",
-      image: "" // Kosong = otomatis ambil gambar produk 1
+      eyebrow: "ANDRD Eau de Parfum • 30 ML",
+      title: "CEDORA.",
+      desc: "A scent that speaks without saying a word. Perpaduan kesegaran Green Tea, keanggunan Cherry & Dark Rose, serta kehangatan Cedarwood.",
+      btnPrimaryText: "Beli CEDORA — Rp 109.000",
+      btnPrimaryLink: "product.html?id=andrd-cedora",
+      btnSecondaryText: "Lihat Katalog",
+      btnSecondaryLink: "products.html",
+      image: "assets/img/products/cedora-bottle.jpg"
     },
     {
-      eyebrow: "Daily Freshness",
-      title: "02 Embun Pagi.",
-      desc: "Perpaduan segar Yuzu Jepang, White Tea, dan Bergamot untuk aktivitas sepanjang hari.",
-      btnPrimaryText: "Lihat Produk",
-      btnPrimaryLink: "product.html?id=andrd-02",
-      btnSecondaryText: "Koleksi Citrus",
-      btnSecondaryLink: "products.html?scent=Citrus",
-      image: "" // Kosong = otomatis ambil gambar produk 2
+      eyebrow: "Fresh Woody Floral",
+      title: "Find Your Identity.",
+      desc: "CEDORA bukan sekadar tentang aroma. Ini tentang karakter, identitas, dan kesan yang kamu tinggalkan. Leave your impression.",
+      btnPrimaryText: "Eksplor Karakter",
+      btnPrimaryLink: "product.html?id=andrd-cedora",
+      btnSecondaryText: "Tentang ANDRD",
+      btnSecondaryLink: "about.html",
+      image: "assets/img/products/cedora-hand.jpg"
     },
     {
-      eyebrow: "Night Floral",
-      title: "03 Malam Melati.",
-      desc: "Sentuhan modern melati malam, tuberose lembut, dan kayu kasmir hangat.",
-      btnPrimaryText: "Lihat Produk",
-      btnPrimaryLink: "product.html?id=andrd-03",
-      btnSecondaryText: "For Her",
-      btnSecondaryLink: "products.html?gender=For+Her",
-      image: "" // Kosong = otomatis ambil gambar produk 3
+      eyebrow: "The ANDRD Experience",
+      title: "Made to be Remembered.",
+      desc: "Diciptakan untuk mereka yang menghargai karakter, detail, dan ekspresi diri dalam setiap semprotan.",
+      btnPrimaryText: "Pesan Sekarang",
+      btnPrimaryLink: "product.html?id=andrd-cedora",
+      btnSecondaryText: "Hubungi Kami",
+      btnSecondaryLink: "contact.html",
+      image: "assets/img/products/cedora-model-bw-1.jpg"
     }
   ],
 
-  // 5. KONTEN KARTU SEGMENTASI (Dapat diubah lewat CMS)
+  // 5. KONTEN KARTU KARAKTER AROMA CEDORA (Menggunakan Foto Model Asli dari Brief Client)
   segments: [
     {
-      gender: "For Her",
-      title: "For Her",
-      desc: "Floral, fruity & silky musk.",
-      link: "products.html?gender=For+Her",
-      image: ""
-    },
-    {
-      gender: "For Him",
-      title: "For Him",
-      desc: "Smoked vetiver, cedar & espresso.",
-      link: "products.html?gender=For+Him",
-      image: ""
+      gender: "Unisex",
+      title: "Top: Green Tea",
+      desc: "Dibuka dengan kesegaran Green Tea yang memberikan kesan segar dan menenangkan.",
+      link: "product.html?id=andrd-cedora",
+      image: "assets/img/products/cedora-model-bw-1.jpg"
     },
     {
       gender: "Unisex",
-      title: "Unisex",
-      desc: "Sandalwood, yuzu & clean skin-scent.",
-      link: "products.html?gender=Unisex",
-      image: ""
+      title: "Middle: Cherry & Dark Rose",
+      desc: "Menghadirkan sentuhan aroma yang elegan, memberikan kedalaman serta karakter tersendiri.",
+      link: "product.html?id=andrd-cedora",
+      image: "assets/img/products/cedora-model-black.jpg"
+    },
+    {
+      gender: "Unisex",
+      title: "Base: Cedarwood",
+      desc: "Memberikan kehangatan dengan nuansa woody yang menciptakan kesan mendalam dan berkesan.",
+      link: "product.html?id=andrd-cedora",
+      image: "assets/img/products/cedora-models-duo.jpg"
     }
   ],
 
   // 6. PILIHAN KURIR PENGIRIMAN
   couriers: [
-    { id: "JNE Reguler", label: "JNE Reguler (2-4 Hari)" },
-    { id: "JNE YES", label: "JNE YES (1-2 Hari)" },
-    { id: "J&T Express", label: "J&T Express (2-4 Hari)" },
-    { id: "SiCepat REG", label: "SiCepat REG (2-4 Hari)" },
-    { id: "SiCepat BEST", label: "SiCepat BEST (1-2 Hari)" },
-    { id: "Paxel", label: "Paxel Sameday / Nextday" },
-    { id: "Instant / Sameday", label: "GoSend / GrabExpress (Jakarta)" }
+    { id: "JNE Reguler", label: "JNE Reguler (1-3 Hari)" },
+    { id: "JNE YES", label: "JNE YES (1 Hari)" },
+    { id: "J&T Express", label: "J&T Express (1-3 Hari)" },
+    { id: "SiCepat REG", label: "SiCepat REG (1-3 Hari)" },
+    { id: "SiCepat BEST", label: "SiCepat BEST (1 Hari)" },
+    { id: "Instant / Sameday", label: "GoSend / GrabExpress (Jabodetabek)" }
   ],
 
-  // 7. KATEGORI AROMA (EXPLORE BY SCENT)
+  // 7. KATEGORI AROMA & NOTES (EXPLORE BY SCENT)
   scentCategories: [
-    { id: "Citrus", name: "Citrus", subtitle: "Segar & cerah", accent: "#000000" },
-    { id: "Floral", name: "Floral", subtitle: "Lembut & anggun", accent: "#000000" },
-    { id: "Fruity", name: "Fruity", subtitle: "Manis & segar", accent: "#000000" },
-    { id: "Woody & Vanilla", name: "Woody & Vanilla", subtitle: "Hangat & memikat", accent: "#000000" },
-    { id: "Gourmand", name: "Gourmand", subtitle: "Kopi, cacao & tonka", accent: "#000000" },
-    { id: "Musky", name: "Musky", subtitle: "Bersih & menyatu di kulit", accent: "#000000" }
+    { id: "Fresh Woody Floral", name: "Fresh Woody Floral", subtitle: "Signature keluarga aroma CEDORA", accent: "#000000" },
+    { id: "Green Tea", name: "Top: Green Tea", subtitle: "Kesan awal segar & menenangkan", accent: "#000000" },
+    { id: "Cherry & Dark Rose", name: "Middle: Cherry & Dark Rose", subtitle: "Sentuhan elegan & berkarakter", accent: "#000000" },
+    { id: "Cedarwood", name: "Base: Cedarwood", subtitle: "Nuansa woody hangat & mendalam", accent: "#000000" }
   ],
 
-  // 8. TESTIMONIAL PELANGGAN
+  // 8. TESTIMONIAL PELANGGAN (CEDORA — 30 ML)
   testimonials: [
     {
       id: "rev-1",
-      name: "Nadia Kusuma",
-      city: "Jakarta Selatan",
+      name: "Rizky Pratama",
+      city: "Jakarta Pusat",
       rating: 5,
-      productId: "andrd-01",
-      productName: "01 Senja di Bali (50ml)",
-      quote: "Wanginya beneran tahan seharian dari pagi ngantor sampai malam. Dry-down sandalwood dan vanillanya halus banget, gak bikin pusing sama sekali.",
-      date: "2026-10-25"
+      productId: "andrd-cedora",
+      productName: "CEDORA (30 ML)",
+      quote: "First spray Green Tea-nya langsung berasa segar dan tenang. Begitu masuk ke middle notes Cherry & Dark Rose sampai dry-down Cedarwood, karakternya berkelas banget dengan harga Rp109.000.",
+      date: "2026-11-01"
     },
     {
       id: "rev-2",
-      name: "Raka Pradana",
+      name: "Dimas Aditya",
       city: "Bandung",
       rating: 5,
-      productId: "andrd-04",
-      productName: "04 Kayu & Rupa (50ml)",
-      quote: "Karakter woody smokey-nya berkelas, mirip parfum niche harga jutaan. Dapat free vial 2ml juga jadi bisa coba varian lain sebelum beli full size.",
-      date: "2026-10-28"
+      productId: "andrd-cedora",
+      productName: "CEDORA (30 ML)",
+      quote: "Botol hitam doff-nya elegan dan travel-friendly ukuran 30 ML. Aroma Fresh Woody Floral-nya pas dipakai harian maupun acara malam, meninggalkan kesan yang kuat.",
+      date: "2026-11-03"
     },
     {
       id: "rev-3",
-      name: "Clara Wijaya",
+      name: "Nadia Kusuma",
       city: "Surabaya",
       rating: 5,
-      productId: "andrd-02",
-      productName: "02 Embun Pagi (100ml)",
-      quote: "Seger banget buat cuaca panas! Perpaduan yuzu dan white tea-nya clean, sering banget ditanyain teman kantor pakai parfum apa.",
-      date: "2026-10-30"
+      productId: "andrd-cedora",
+      productName: "CEDORA (30 ML)",
+      quote: "Perpaduan Dark Rose dan Cedarwood di CEDORA unik banget, ada sisi segar sekaligus hangat. Banyak yang nanya pakai parfum apa.",
+      date: "2026-11-05"
     }
   ]
 };
 
-// Gabungkan dengan konfigurasi yang disimpan dari CMS (localStorage) jika ada
+// Gabungkan dengan konfigurasi yang disimpan dari CMS (localStorage) jika ada,
+// sekaligus migrasi otomatis jika localStorage masih menyimpan konten dummy lama ("Scent as Memory" / "01 Senja di Bali")
 let savedCmsConfig = {};
 try {
   const rawCmsConfig = localStorage.getItem("andrd_cms_config_v1");
   if (rawCmsConfig) {
-    savedCmsConfig = JSON.parse(rawCmsConfig);
-    if (savedCmsConfig.address === "Kemang Timur Raya No. 48, Jakarta Selatan") {
-      savedCmsConfig.address = DEFAULT_STORE_CONFIG.address;
+    const parsed = JSON.parse(rawCmsConfig);
+    const isLegacyConfig =
+      parsed.tagline === "Scent as Memory" ||
+      (Array.isArray(parsed.heroSlides) &&
+        parsed.heroSlides.some((s) => s.title && (s.title.includes("Senja di Bali") || s.title.includes("Scent as Memory"))));
+
+    if (isLegacyConfig) {
+      localStorage.removeItem("andrd_cms_config_v1");
+      localStorage.removeItem("andrd_cms_reviews_v1");
+      savedCmsConfig = {};
+    } else {
+      savedCmsConfig = parsed;
+      if (savedCmsConfig.address === "Kemang Timur Raya No. 48, Jakarta Selatan") {
+        savedCmsConfig.address = DEFAULT_STORE_CONFIG.address;
+      }
+      if (savedCmsConfig.originCity === "Jakarta Selatan") {
+        savedCmsConfig.originCity = DEFAULT_STORE_CONFIG.originCity;
+      }
     }
-    if (savedCmsConfig.originCity === "Jakarta Selatan") {
-      savedCmsConfig.originCity = DEFAULT_STORE_CONFIG.originCity;
-    }
+  }
+
+  const rawRev = localStorage.getItem("andrd_cms_reviews_v1");
+  if (rawRev && rawRev.includes("Senja di Bali")) {
+    localStorage.removeItem("andrd_cms_reviews_v1");
   }
 } catch (e) {}
 
@@ -221,7 +236,7 @@ const STORE_CONFIG = Object.assign({}, DEFAULT_STORE_CONFIG, savedCmsConfig, {
   },
 
   buildGeneralInquiryMessage: function () {
-    return `Halo Admin ${this.brandName}, saya ingin bertanya mengenai rekomendasi parfum.`;
+    return `Halo Admin ${this.brandName}, saya ingin bertanya mengenai parfum CEDORA (ANDRD Eau de Parfum).`;
   }
 });
 

@@ -142,7 +142,14 @@
       const raw = localStorage.getItem(KEYS.PRODUCTS);
       if (raw) {
         const parsed = JSON.parse(raw);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        const isLegacy =
+          Array.isArray(parsed) &&
+          parsed.some((p) => p.id === "andrd-01" || (p.name && p.name.includes("Senja di Bali")));
+        if (isLegacy) {
+          localStorage.removeItem(KEYS.PRODUCTS);
+        } else if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed;
+        }
       }
     } catch (e) {}
     return JSON.parse(JSON.stringify(window.DEFAULT_PRODUCTS || window.PRODUCTS || []));
@@ -160,6 +167,10 @@
       const raw = localStorage.getItem(KEYS.CONFIG);
       if (raw) {
         const parsed = JSON.parse(raw);
+        if (parsed.tagline === "Scent as Memory") {
+          localStorage.removeItem(KEYS.CONFIG);
+          return base;
+        }
         if (parsed.address === "Kemang Timur Raya No. 48, Jakarta Selatan") {
           parsed.address = base.address;
         }
@@ -182,8 +193,12 @@
     try {
       const raw = localStorage.getItem(KEYS.REVIEWS);
       if (raw) {
-        const parsed = JSON.parse(raw);
-        if (Array.isArray(parsed)) return parsed;
+        if (raw.includes("Senja di Bali")) {
+          localStorage.removeItem(KEYS.REVIEWS);
+        } else {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed)) return parsed;
+        }
       }
     } catch (e) {}
     const cfg = getConfig();
@@ -221,35 +236,41 @@
   function getOrders() {
     try {
       const raw = localStorage.getItem(KEYS.ORDERS);
-      if (raw) return JSON.parse(raw);
+      if (raw) {
+        if (raw.includes("Senja di Bali")) {
+          localStorage.removeItem(KEYS.ORDERS);
+        } else {
+          return JSON.parse(raw);
+        }
+      }
     } catch (e) {}
     // Seed 2 contoh pesanan awal agar tidak kosong saat pertama dibuka
     const sampleOrders = [
       {
-        orderNumber: "ANDRD-261030-A8F2",
+        orderNumber: "ANDRD-261105-A8F2",
         createdAt: new Date(Date.now() - 3600 * 1000 * 5).toISOString(),
         status: "Paid",
-        nama: "Nadira Prameswari",
+        nama: "Rizky Pratama",
         wa: "6281298765432",
-        email: "nadira@email.com",
-        alamat: "Jl. Senopati No. 18, Kebayoran Baru, Jakarta Selatan, DKI Jakarta 12190",
-        kurir: "Paxel",
-        catatan: "Request free vial 02 Embun Pagi",
-        items: [{ name: "01 Senja di Bali", size: "50ml", qty: 1, price: 349000 }],
-        total: 349000
+        email: "rizky@email.com",
+        alamat: "Jl. Cempaka Putih Tengah No. 12, Cempaka Putih, Jakarta Pusat, DKI Jakarta 10510",
+        kurir: "JNE REG (1 Hari)",
+        catatan: "-",
+        items: [{ name: "CEDORA", size: "30 ML", qty: 1, price: 109000 }],
+        total: 119000
       },
       {
-        orderNumber: "ANDRD-261030-K3M9",
+        orderNumber: "ANDRD-261106-K3M9",
         createdAt: new Date(Date.now() - 3600 * 1000 * 18).toISOString(),
         status: "Pending",
-        nama: "Dimas Anggara",
+        nama: "Dimas Aditya",
         wa: "6281311223344",
         email: "-",
         alamat: "Jl. Dago No. 88, Coblong, Bandung, Jawa Barat 40135",
-        kurir: "JNE Reguler",
+        kurir: "SiCepat REG (2-3 Hari)",
         catatan: "-",
-        items: [{ name: "04 Kayu & Rupa", size: "100ml", qty: 1, price: 579000 }],
-        total: 579000
+        items: [{ name: "CEDORA", size: "30 ML", qty: 2, price: 109000 }],
+        total: 229000
       }
     ];
     localStorage.setItem(KEYS.ORDERS, JSON.stringify(sampleOrders));
@@ -697,10 +718,10 @@
     document.getElementById("prodBaseNotes").value =
       prod && prod.notes && prod.notes.base ? prod.notes.base.join(", ") : "Vanilla, White Musk";
 
-    // Variants (15ml, 50ml, 100ml)
-    const v1 = prod && prod.variants[0] ? prod.variants[0] : { size: "15ml", price: 149000, compareAtPrice: null };
-    const v2 = prod && prod.variants[1] ? prod.variants[1] : { size: "50ml", price: 349000, compareAtPrice: null };
-    const v3 = prod && prod.variants[2] ? prod.variants[2] : { size: "100ml", price: 549000, compareAtPrice: null };
+    // Variants (misal 30 ML, 50 ML, 100 ML)
+    const v1 = prod && prod.variants[0] ? prod.variants[0] : { size: "30 ML", price: 109000, compareAtPrice: null };
+    const v2 = prod && prod.variants[1] ? prod.variants[1] : { size: "", price: "", compareAtPrice: null };
+    const v3 = prod && prod.variants[2] ? prod.variants[2] : { size: "", price: "", compareAtPrice: null };
 
     document.getElementById("v1Size").value = v1.size;
     document.getElementById("v1Price").value = v1.price;
@@ -716,10 +737,10 @@
 
     // Images
     const defaultImg1 = window.createBottleSvg
-      ? window.createBottleSvg(prod ? prod.name : "NEW SCENT", prod ? prod.scentCategory : "Extrait", "Extrait de Parfum")
+      ? window.createBottleSvg(prod ? prod.name : "NEW SCENT", prod ? prod.scentCategory : "Eau de Parfum", "Eau de Parfum")
       : "";
     const defaultImg2 = window.createNotesSvg
-      ? window.createNotesSvg(prod ? prod.name : "NEW SCENT", "Bergamot  •  Sandalwood  •  Vanilla")
+      ? window.createNotesSvg(prod ? prod.name : "NEW SCENT", "Green Tea  •  Dark Rose  •  Cedarwood")
       : "";
 
     tempImage1 = prod && prod.images[0] ? prod.images[0] : defaultImg1;
@@ -777,6 +798,12 @@
     }
 
     const all = getProducts();
+    const existingProd = editingProductId ? all.find((p) => p.id === editingProductId) : null;
+    const extraGalleryImages =
+      existingProd && Array.isArray(existingProd.images) && existingProd.images.length > 2
+        ? existingProd.images.slice(2)
+        : [];
+
     const newObj = {
       id: editingProductId || "andrd-" + Date.now().toString().slice(-4),
       name: name,
@@ -785,16 +812,16 @@
       scentCategory: category,
       shortDescription: document.getElementById("prodShortDesc").value.trim(),
       description: document.getElementById("prodFullDesc").value.trim(),
-      concentration: "Extrait de Parfum (30%)",
-      longevity: document.getElementById("prodLongevity").value.trim() || "10 – 12 Jam",
-      sillage: document.getElementById("prodSillage").value.trim() || "Moderate",
+      concentration: (existingProd && existingProd.concentration) || "Eau de Parfum",
+      longevity: document.getElementById("prodLongevity").value.trim() || "6 – 8 Jam",
+      sillage: document.getElementById("prodSillage").value.trim() || "Moderate to Strong",
       notes: {
-        top: topArr.length ? topArr : ["Bergamot"],
-        middle: midArr.length ? midArr : ["Sandalwood"],
-        base: baseArr.length ? baseArr : ["Vanilla"]
+        top: topArr.length ? topArr : ["Green Tea"],
+        middle: midArr.length ? midArr : ["Cherry", "Dark Rose"],
+        base: baseArr.length ? baseArr : ["Cedarwood"]
       },
       variants: variants,
-      images: [tempImage1, tempImage2 || tempImage1],
+      images: [tempImage1, tempImage2 || tempImage1, ...extraGalleryImages],
       status: document.getElementById("prodStatus").value,
       badge: document.getElementById("prodBadge").value || null,
       featured: document.getElementById("prodFeatured").checked,

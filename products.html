@@ -1,16 +1,16 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Koleksi Parfum — ANDRD</title>
-  <meta name="description" content="Jelajahi koleksi parfum ANDRD. Filter berdasarkan aroma, gender, ukuran, dan harga.">
+  <title>Katalog Parfum — ANDRD Eau de Parfum</title>
+  <meta name="description" content="Jelajahi koleksi resmi ANDRD Eau de Parfum — CEDORA (30 ML). Fresh Woody Floral dengan Green Tea, Cherry, Dark Rose & Cedarwood.">
   <meta name="robots" content="index, follow">
 
   <meta property="og:type" content="website">
-  <meta property="og:title" content="Koleksi Parfum — ANDRD">
-  <meta property="og:description" content="Extrait de Parfum lokal dalam batch terbatas.">
-  <meta property="og:image" content="assets/img/products/perfume-1-a.svg">
+  <meta property="og:title" content="Katalog Parfum — ANDRD Eau de Parfum">
+  <meta property="og:description" content="ANDRD — Made to be remembered.">
+  <meta property="og:image" content="assets/img/products/cedora-bottle.jpg">
 
   <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -28,8 +28,8 @@
       <div class="container">
         <!-- Judul Singkat -->
         <div style="margin-bottom:20px;">
-          <h1 class="section-title" id="catalogPageTitle">Semua Parfum</h1>
-          <span id="catalogCountLabel" style="font-size:12.5px;color:var(--color-text-muted);">Menampilkan 10 produk</span>
+          <h1 class="section-title" id="catalogPageTitle">Katalog ANDRD</h1>
+          <span id="catalogCountLabel" style="font-size:12.5px;color:var(--color-text-muted);">Menampilkan 1 produk</span>
         </div>
 
         <!-- Toolbar Mobile & Desktop: Tombol Filter (Mobile) + Urutkan -->
@@ -64,19 +64,17 @@
 
             <!-- Cari Kata Kunci -->
             <div class="filter-group">
-              <input type="search" id="catalogSearchInput" class="form-control" placeholder="Cari parfum / notes...">
+              <input type="search" id="catalogSearchInput" class="form-control" placeholder="Cari CEDORA / notes...">
             </div>
 
             <!-- Filter Kategori Aroma -->
             <div class="filter-group">
-              <h3 class="filter-title">Aroma</h3>
+              <h3 class="filter-title">Fragrance Family</h3>
               <div class="filter-options">
+                <label class="filter-checkbox"><input type="checkbox" name="filterScent" value="Fresh Woody Floral"> Fresh Woody Floral</label>
                 <label class="filter-checkbox"><input type="checkbox" name="filterScent" value="Citrus"> Citrus</label>
                 <label class="filter-checkbox"><input type="checkbox" name="filterScent" value="Floral"> Floral</label>
-                <label class="filter-checkbox"><input type="checkbox" name="filterScent" value="Fruity"> Fruity</label>
                 <label class="filter-checkbox"><input type="checkbox" name="filterScent" value="Woody & Vanilla"> Woody &amp; Vanilla</label>
-                <label class="filter-checkbox"><input type="checkbox" name="filterScent" value="Gourmand"> Gourmand</label>
-                <label class="filter-checkbox"><input type="checkbox" name="filterScent" value="Musky"> Musky</label>
               </div>
             </div>
 
@@ -84,19 +82,19 @@
             <div class="filter-group">
               <h3 class="filter-title">Karakter</h3>
               <div class="filter-options">
-                <label class="filter-checkbox"><input type="checkbox" name="filterGender" value="For Her"> For Her</label>
-                <label class="filter-checkbox"><input type="checkbox" name="filterGender" value="For Him"> For Him</label>
                 <label class="filter-checkbox"><input type="checkbox" name="filterGender" value="Unisex"> Unisex</label>
+                <label class="filter-checkbox"><input type="checkbox" name="filterGender" value="For Him"> For Him</label>
+                <label class="filter-checkbox"><input type="checkbox" name="filterGender" value="For Her"> For Her</label>
               </div>
             </div>
 
             <!-- Filter Ukuran -->
             <div class="filter-group">
-              <h3 class="filter-title">Ukuran</h3>
+              <h3 class="filter-title">Volume</h3>
               <div class="filter-options">
-                <label class="filter-checkbox"><input type="checkbox" name="filterSize" value="15ml"> 15ml</label>
-                <label class="filter-checkbox"><input type="checkbox" name="filterSize" value="50ml"> 50ml</label>
-                <label class="filter-checkbox"><input type="checkbox" name="filterSize" value="100ml"> 100ml</label>
+                <label class="filter-checkbox"><input type="checkbox" name="filterSize" value="30 ML"> 30 ML</label>
+                <label class="filter-checkbox"><input type="checkbox" name="filterSize" value="50ml"> 50 ML</label>
+                <label class="filter-checkbox"><input type="checkbox" name="filterSize" value="100ml"> 100 ML</label>
               </div>
             </div>
 
@@ -104,9 +102,9 @@
             <div class="filter-group">
               <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
                 <label for="catalogPriceRange" class="filter-title" style="margin-bottom:0;">Maks. Harga</label>
-                <strong id="catalogPriceLabel" style="font-size:12px;">Rp 700.000</strong>
+                <strong id="catalogPriceLabel" style="font-size:12px;">Rp 500.000</strong>
               </div>
-              <input type="range" id="catalogPriceRange" min="135000" max="700000" step="10000" value="700000" style="width:100%;accent-color:var(--color-primary);">
+              <input type="range" id="catalogPriceRange" min="50000" max="500000" step="10000" value="500000" style="width:100%;accent-color:var(--color-primary);">
             </div>
           </aside>
 
@@ -126,4 +124,3 @@
   <script src="app.js"></script>
 </body>
 </html>
-
