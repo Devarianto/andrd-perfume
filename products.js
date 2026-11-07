@@ -68,7 +68,7 @@ const DEFAULT_PRODUCTS = [
     description:
       "A scent that speaks without saying a word.\n\nCEDORA adalah perpaduan aroma yang menghadirkan kesegaran, keanggunan, dan kehangatan dalam satu karakter. Dibuka dengan kesegaran Green Tea yang memberikan kesan segar dan menenangkan. Kemudian Cherry dan Dark Rose menghadirkan sentuhan aroma yang elegan, memberikan kedalaman serta karakter tersendiri. Pada akhirnya, Cedarwood memberikan kehangatan dengan nuansa woody yang menciptakan kesan mendalam dan berkesan.\n\nCEDORA bukan sekadar tentang aroma. Ini tentang karakter, identitas, dan kesan yang kamu tinggalkan.\n\nFind your identity. Leave your impression.",
     concentration: "Eau de Parfum",
-    longevity: "6 – 8 Jam",
+    longevity: "6 sampai 8 Jam",
     sillage: "Moderate to Strong",
     notes: {
       top: ["Green Tea"],

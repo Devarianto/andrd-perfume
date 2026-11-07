@@ -426,7 +426,7 @@
                   <button type="button" class="star-pick-btn active" data-val="3" aria-label="3 Bintang">★</button>
                   <button type="button" class="star-pick-btn active" data-val="4" aria-label="4 Bintang">★</button>
                   <button type="button" class="star-pick-btn active" data-val="5" aria-label="5 Bintang">★</button>
-                  <span class="star-pick-label" id="reviewStarLabel">5 / 5 — Sangat Puas</span>
+                  <span class="star-pick-label" id="reviewStarLabel">5 / 5 (Sangat Puas)</span>
                 </div>
                 <input type="hidden" id="reviewRatingValue" value="5">
               </div>
@@ -495,7 +495,7 @@
             <div class="footer-brand-col">
               <a href="index.html" class="footer-brand">${STORE_CONFIG.brandName}</a>
               <p style="font-size:13.5px;margin-bottom:8px;max-width:280px;">
-                ${STORE_CONFIG.tagline} — ${STORE_CONFIG.subTagline}
+                <strong>${STORE_CONFIG.tagline}.</strong> ${STORE_CONFIG.subTagline}
               </p>
               ${STORE_CONFIG.address ? `<p style="font-size:12.5px;color:var(--color-text-muted);margin-bottom:8px;max-width:280px;line-height:1.5;">${STORE_CONFIG.address}</p>` : ""}
               <p style="font-size:13px;margin-bottom:14px;">
@@ -828,11 +828,11 @@
     const reviewForm = document.getElementById("customerReviewForm");
 
     const starDescriptions = {
-      1: "1 / 5 — Kurang Sesuai",
-      2: "2 / 5 — Cukup",
-      3: "3 / 5 — Baik",
-      4: "4 / 5 — Puas",
-      5: "5 / 5 — Sangat Puas"
+      1: "1 / 5 (Kurang Sesuai)",
+      2: "2 / 5 (Cukup)",
+      3: "3 / 5 (Baik)",
+      4: "4 / 5 (Puas)",
+      5: "5 / 5 (Sangat Puas)"
     };
 
     if (closeReviewBtn && reviewModal) {
@@ -1141,8 +1141,9 @@
         featuredGrid.innerHTML = `
           ${renderProductCard(p)}
           <div class="cedora-brief-card">
-            <span class="section-eyebrow" style="margin-bottom:6px;">${STORE_CONFIG.brandName} ${p.concentration || "Eau de Parfum"} • ${v.size}</span>
-            <h3 style="font-size:clamp(22px, 3.5vw, 30px);font-weight:600;margin-bottom:8px;letter-spacing:-0.02em;">${p.name} — A scent that speaks without saying a word.</h3>
+            <span class="section-eyebrow" style="margin-bottom:4px;">${STORE_CONFIG.brandName} ${p.concentration || "Eau de Parfum"} • ${v.size}</span>
+            <h3 style="font-size:clamp(22px, 3.5vw, 30px);font-weight:600;margin-bottom:2px;letter-spacing:-0.02em;">${p.name}</h3>
+            <p style="font-size:15px;font-weight:500;color:var(--color-primary);margin-bottom:10px;">A scent that speaks without saying a word.</p>
             <p style="font-size:14px;color:var(--color-text-muted);line-height:1.65;margin-bottom:14px;">
               <strong>${p.name}</strong> adalah perpaduan aroma yang menghadirkan kesegaran, keanggunan, dan kehangatan dalam satu karakter. Dibuka dengan kesegaran <strong>Green Tea</strong> yang memberikan kesan segar dan menenangkan. Kemudian <strong>Cherry</strong> dan <strong>Dark Rose</strong> menghadirkan sentuhan aroma yang elegan, memberikan kedalaman serta karakter tersendiri. Pada akhirnya, <strong>Cedarwood</strong> memberikan kehangatan dengan nuansa woody yang menciptakan kesan mendalam dan berkesan.
             </p>
@@ -1159,7 +1160,7 @@
             </p>
             <div style="display:flex;flex-wrap:wrap;gap:10px;">
               <button type="button" class="btn btn-primary js-quick-add" data-product-id="${p.id}" data-size="${v.size}">
-                Tambah ke Keranjang — ${formatRupiah(v.price)}
+                Tambah ke Keranjang (${formatRupiah(v.price)})
               </button>
               <a href="product.html?id=${p.id}" class="btn btn-outline">Detail Produk</a>
             </div>
@@ -1177,7 +1178,7 @@
       if (PRODUCTS.length === 1 && PRODUCTS[0].images && PRODUCTS[0].images.length > 1) {
         const p = PRODUCTS[0];
         const lookbookCaptions = [
-          { title: "CEDORA — 30 ML", sub: "ANDRD Eau de Parfum • Rp 109.000" },
+          { title: "CEDORA 30 ML", sub: "ANDRD Eau de Parfum • Rp 109.000" },
           { title: "A Scent That Speaks", sub: "Without saying a word." },
           { title: "Find Your Identity", sub: "Top Notes: Green Tea" },
           { title: "Leave Your Impression", sub: "Middle Notes: Cherry & Dark Rose" },
@@ -1402,8 +1403,9 @@
         gridEl.innerHTML = `
           ${renderProductCard(p)}
           <div class="cedora-brief-card">
-            <span class="section-eyebrow" style="margin-bottom:6px;">${STORE_CONFIG.brandName} ${p.concentration || "Eau de Parfum"} • ${v.size}</span>
-            <h2 style="font-size:clamp(20px, 3vw, 26px);font-weight:600;margin-bottom:8px;">${p.name} — A scent that speaks without saying a word.</h2>
+            <span class="section-eyebrow" style="margin-bottom:4px;">${STORE_CONFIG.brandName} ${p.concentration || "Eau de Parfum"} • ${v.size}</span>
+            <h2 style="font-size:clamp(20px, 3vw, 26px);font-weight:600;margin-bottom:2px;">${p.name}</h2>
+            <p style="font-size:14.5px;font-weight:500;color:var(--color-primary);margin-bottom:10px;">A scent that speaks without saying a word.</p>
             <p style="font-size:13.5px;color:var(--color-text-muted);line-height:1.65;margin-bottom:14px;">
               Dibuka dengan kesegaran <strong>Green Tea</strong> yang menenangkan, dilanjutkan oleh <strong>Cherry &amp; Dark Rose</strong> yang elegan dan berkarakter, serta ditutup oleh kehangatan <strong>Cedarwood</strong> yang mendalam.
             </p>
@@ -1417,7 +1419,7 @@
             </div>
             <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:16px;">
               <button type="button" class="btn btn-primary js-quick-add" data-product-id="${p.id}" data-size="${v.size}">
-                Tambah ke Keranjang — ${formatRupiah(v.price)}
+                Tambah ke Keranjang (${formatRupiah(v.price)})
               </button>
               <a href="product.html?id=${p.id}" class="btn btn-outline">Lihat Detail</a>
             </div>
@@ -1464,7 +1466,7 @@
     const product =
       PRODUCTS.find((p) => p.id === idParam || p.slug === slugParam) || PRODUCTS[0];
 
-    document.title = `${product.name} — ${STORE_CONFIG.brandName}`;
+    document.title = `${product.name} | ${STORE_CONFIG.brandName}`;
 
     let selectedVariant = product.variants[1] || product.variants[0];
 
@@ -1607,7 +1609,7 @@
                 <span>+</span>
               </button>
               <div class="accordion-content">
-                <p style="margin-bottom:8px;"><strong>Diciptakan untuk mereka yang menghargai karakter, detail, dan ekspresi diri. ANDRD — Made to be remembered.</strong></p>
+                <p style="margin-bottom:8px;"><strong>Diciptakan untuk mereka yang menghargai karakter, detail, dan ekspresi diri. ANDRD. Made to be remembered.</strong></p>
                 <p>Semprotkan pada titik nadi (pergelangan tangan, leher, atau belakang telinga) dengan jarak 15 cm. Pengiriman ke seluruh Indonesia dengan perhitungan ongkir otomatis dan garansi retur ${STORE_CONFIG.returnPolicyDays} hari.</p>
               </div>
             </div>
@@ -2224,7 +2226,7 @@
       if (!courierSelect) return;
 
       if (!prov || !kota) {
-        courierSelect.innerHTML = `<option value="">-- Pilih Kota/Kabupaten Dahulu untuk Cek Ongkir --</option>`;
+        courierSelect.innerHTML = `<option value="">Pilih Kota atau Kabupaten Dahulu untuk Cek Ongkir</option>`;
         courierSelect.disabled = true;
         if (courierHintEl) {
           courierHintEl.textContent = "Pilih Provinsi dan Kota/Kabupaten untuk menampilkan harga ongkir otomatis.";
@@ -2242,22 +2244,22 @@
       if (reqId !== latestRateReqId) return;
       const inJabodetabek = isJabodetabekCity(kota);
 
-      const optionsHtml = [`<option value="">-- Pilih Layanan Kurir --</option>`];
+      const optionsHtml = [`<option value="">Pilih Layanan Kurir</option>`];
 
       // 1. Opsi Ekspedisi Reguler / Nextday dengan Harga Otomatis (RajaOngkir)
       autoRates.forEach((rate) => {
         optionsHtml.push(
-          `<option value="${rate.code}" data-cost="${rate.cost}" data-manual="false">${rate.label} — ${formatRupiah(rate.cost)}</option>`
+          `<option value="${rate.code}" data-cost="${rate.cost}" data-manual="false">${rate.label} (${formatRupiah(rate.cost)})</option>`
         );
       });
 
       // 2. Opsi GoSend & GrabExpress Manual HANYA JIKA Alamat User di JABODETABEK
       if (inJabodetabek) {
         optionsHtml.push(
-          `<option value="GoSend Instant / Sameday" data-cost="0" data-manual="true">GoSend Instant / Sameday — Tarif Manual via Admin WA</option>`
+          `<option value="GoSend Instant / Sameday" data-cost="0" data-manual="true">GoSend Instant / Sameday (Tarif Manual via Admin WA)</option>`
         );
         optionsHtml.push(
-          `<option value="GrabExpress Instant / Sameday" data-cost="0" data-manual="true">GrabExpress Instant / Sameday — Tarif Manual via Admin WA</option>`
+          `<option value="GrabExpress Instant / Sameday" data-cost="0" data-manual="true">GrabExpress Instant / Sameday (Tarif Manual via Admin WA)</option>`
         );
       }
 
@@ -2287,17 +2289,17 @@
     if (provSelect && kotaSelect && kecSelect) {
       const provList = Object.keys(WILAYAH_INDONESIA);
       provSelect.innerHTML =
-        `<option value="">-- Pilih Provinsi --</option>` +
+        `<option value="">Pilih Provinsi</option>` +
         provList.map((p) => `<option value="${p}">${p}</option>`).join("");
 
       provSelect.addEventListener("change", () => {
         const selectedProv = provSelect.value;
-        kecSelect.innerHTML = `<option value="">-- Pilih Kota/Kabupaten Dahulu --</option>`;
+        kecSelect.innerHTML = `<option value="">Pilih Kota atau Kabupaten Dahulu</option>`;
         kecSelect.disabled = true;
         if (kecManual) kecManual.style.display = "none";
 
         if (!selectedProv || !WILAYAH_INDONESIA[selectedProv]) {
-          kotaSelect.innerHTML = `<option value="">-- Pilih Provinsi Dahulu --</option>`;
+          kotaSelect.innerHTML = `<option value="">Pilih Provinsi Dahulu</option>`;
           kotaSelect.disabled = true;
           refreshCourierDropdown();
           return;
@@ -2305,7 +2307,7 @@
 
         const kotaList = Object.keys(WILAYAH_INDONESIA[selectedProv]);
         kotaSelect.innerHTML =
-          `<option value="">-- Pilih Kota / Kabupaten --</option>` +
+          `<option value="">Pilih Kota / Kabupaten</option>` +
           kotaList.map((k) => `<option value="${k}">${k}</option>`).join("");
         kotaSelect.disabled = false;
         refreshCourierDropdown();
@@ -2317,7 +2319,7 @@
         if (kecManual) kecManual.style.display = "none";
 
         if (!selectedProv || !selectedKota || !WILAYAH_INDONESIA[selectedProv][selectedKota]) {
-          kecSelect.innerHTML = `<option value="">-- Pilih Kota/Kabupaten Dahulu --</option>`;
+          kecSelect.innerHTML = `<option value="">Pilih Kota atau Kabupaten Dahulu</option>`;
           kecSelect.disabled = true;
           refreshCourierDropdown();
           return;
@@ -2325,7 +2327,7 @@
 
         const kecList = WILAYAH_INDONESIA[selectedProv][selectedKota];
         kecSelect.innerHTML =
-          `<option value="">-- Pilih Kecamatan --</option>` +
+          `<option value="">Pilih Kecamatan</option>` +
           kecList.map((kc) => `<option value="${kc}">${kc}</option>`).join("") +
           `<option value="LAINNYA">Lainnya (Ketik Manual)</option>`;
         kecSelect.disabled = false;

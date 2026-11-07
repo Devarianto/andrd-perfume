@@ -16,7 +16,7 @@ const DEFAULT_STORE_CONFIG = {
 
   // 2. KONTAK & WHATSAPP ADMIN (Gunakan awalan 628xxx tanpa + atau spasi)
   whatsappAdmin: "6281234567890",
-  whatsappDisplay: "+62 812-3456-7890",
+  whatsappDisplay: "+62 812 3456 7890",
   email: "hello@andrdperfume.com",
   instagram: "@andrd.official",
   tiktok: "@andrd.official",
@@ -25,7 +25,7 @@ const DEFAULT_STORE_CONFIG = {
   tiktokUrl: "https://tiktok.com",
   youtubeUrl: "https://youtube.com",
   address: "Jl. Baladewa Kiri RT 15/RW 11, Tanah Tinggi, Johar Baru, Jakarta Pusat 10540",
-  operationalHours: "Senin – Sabtu, 09.00 – 18.00 WIB",
+  operationalHours: "Senin sampai Sabtu, 09.00 sampai 18.00 WIB",
 
   // 3. PENGATURAN ORDER & PENGIRIMAN (RAJAONGKIR LIVE + JABODETABEK MANUAL GOSEND/GRAB)
   orderPrefix: "ANDRD",
@@ -41,7 +41,7 @@ const DEFAULT_STORE_CONFIG = {
       eyebrow: "ANDRD Eau de Parfum • 30 ML",
       title: "CEDORA.",
       desc: "A scent that speaks without saying a word. Perpaduan kesegaran Green Tea, keanggunan Cherry & Dark Rose, serta kehangatan Cedarwood.",
-      btnPrimaryText: "Beli CEDORA — Rp 109.000",
+      btnPrimaryText: "Beli CEDORA (Rp 109.000)",
       btnPrimaryLink: "product.html?id=andrd-cedora",
       btnSecondaryText: "Lihat Katalog",
       btnSecondaryLink: "products.html",
@@ -112,7 +112,7 @@ const DEFAULT_STORE_CONFIG = {
     { id: "Cedarwood", name: "Base: Cedarwood", subtitle: "Nuansa woody hangat & mendalam", accent: "#000000" }
   ],
 
-  // 8. TESTIMONIAL PELANGGAN (CEDORA — 30 ML)
+  // 8. TESTIMONIAL PELANGGAN (CEDORA 30 ML)
   testimonials: [
     {
       id: "rev-1",
@@ -121,7 +121,7 @@ const DEFAULT_STORE_CONFIG = {
       rating: 5,
       productId: "andrd-cedora",
       productName: "CEDORA (30 ML)",
-      quote: "First spray Green Tea-nya langsung berasa segar dan tenang. Begitu masuk ke middle notes Cherry & Dark Rose sampai dry-down Cedarwood, karakternya berkelas banget dengan harga Rp109.000.",
+      quote: "Semprotan awal Green Tea terasa segar dan menenangkan. Saat masuk ke aroma Cherry serta Dark Rose hingga akhir Cedarwood, karakternya terasa sangat berkelas untuk harga Rp109.000.",
       date: "2026-11-01"
     },
     {
@@ -131,7 +131,7 @@ const DEFAULT_STORE_CONFIG = {
       rating: 5,
       productId: "andrd-cedora",
       productName: "CEDORA (30 ML)",
-      quote: "Botol hitam doff-nya elegan dan travel-friendly ukuran 30 ML. Aroma Fresh Woody Floral-nya pas dipakai harian maupun acara malam, meninggalkan kesan yang kuat.",
+      quote: "Desain botol hitam tampak elegan dan ukuran 30 ML sangat praktis dibawa bepergian. Karakter Fresh Woody Floral cocok dipakai aktivitas harian maupun acara malam.",
       date: "2026-11-03"
     },
     {
@@ -141,14 +141,14 @@ const DEFAULT_STORE_CONFIG = {
       rating: 5,
       productId: "andrd-cedora",
       productName: "CEDORA (30 ML)",
-      quote: "Perpaduan Dark Rose dan Cedarwood di CEDORA unik banget, ada sisi segar sekaligus hangat. Banyak yang nanya pakai parfum apa.",
+      quote: "Perpaduan Dark Rose dan Cedarwood pada CEDORA terasa unik, memberi kesan segar sekaligus hangat. Banyak teman yang menanyakan parfum ini.",
       date: "2026-11-05"
     }
   ]
 };
 
 // Gabungkan dengan konfigurasi yang disimpan dari CMS (localStorage) jika ada,
-// sekaligus migrasi otomatis jika localStorage masih menyimpan konten dummy lama ("Scent as Memory" / "01 Senja di Bali")
+// sekaligus migrasi otomatis jika localStorage masih menyimpan konten dummy lama atau tanda hubung AI
 let savedCmsConfig = {};
 try {
   const rawCmsConfig = localStorage.getItem("andrd_cms_config_v1");
@@ -157,7 +157,11 @@ try {
     const isLegacyConfig =
       parsed.tagline === "Scent as Memory" ||
       (Array.isArray(parsed.heroSlides) &&
-        parsed.heroSlides.some((s) => s.title && (s.title.includes("Senja di Bali") || s.title.includes("Scent as Memory"))));
+        parsed.heroSlides.some(
+          (s) =>
+            (s.title && (s.title.includes("Senja di Bali") || s.title.includes("Scent as Memory"))) ||
+            (s.btnPrimaryText && s.btnPrimaryText.includes("—"))
+        ));
 
     if (isLegacyConfig) {
       localStorage.removeItem("andrd_cms_config_v1");
@@ -175,7 +179,7 @@ try {
   }
 
   const rawRev = localStorage.getItem("andrd_cms_reviews_v1");
-  if (rawRev && rawRev.includes("Senja di Bali")) {
+  if (rawRev && (rawRev.includes("Senja di Bali") || rawRev.includes("dry-down") || rawRev.includes("travel-friendly"))) {
     localStorage.removeItem("andrd_cms_reviews_v1");
   }
 } catch (e) {}

@@ -193,7 +193,7 @@
     try {
       const raw = localStorage.getItem(KEYS.REVIEWS);
       if (raw) {
-        if (raw.includes("Senja di Bali")) {
+        if (raw.includes("Senja di Bali") || raw.includes("dry-down") || raw.includes("travel-friendly")) {
           localStorage.removeItem(KEYS.REVIEWS);
         } else {
           const parsed = JSON.parse(raw);
@@ -708,7 +708,7 @@
     document.getElementById("prodSeasonal").checked = prod ? Boolean(prod.seasonal) : true;
     document.getElementById("prodShortDesc").value = prod ? prod.shortDescription : "";
     document.getElementById("prodFullDesc").value = prod ? prod.description : "";
-    document.getElementById("prodLongevity").value = prod ? prod.longevity : "10 – 12 Jam";
+    document.getElementById("prodLongevity").value = prod ? prod.longevity : "6 sampai 8 Jam";
     document.getElementById("prodSillage").value = prod ? prod.sillage : "Moderate to Strong";
 
     document.getElementById("prodTopNotes").value =
@@ -813,7 +813,7 @@
       shortDescription: document.getElementById("prodShortDesc").value.trim(),
       description: document.getElementById("prodFullDesc").value.trim(),
       concentration: (existingProd && existingProd.concentration) || "Eau de Parfum",
-      longevity: document.getElementById("prodLongevity").value.trim() || "6 – 8 Jam",
+      longevity: document.getElementById("prodLongevity").value.trim() || "6 sampai 8 Jam",
       sillage: document.getElementById("prodSillage").value.trim() || "Moderate to Strong",
       notes: {
         top: topArr.length ? topArr : ["Green Tea"],
